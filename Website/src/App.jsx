@@ -17,7 +17,8 @@ function App() {
 
   const darkTheme = {
      token: {
-        colorPrimary: 'red'
+        colorPrimary: 'red',
+        colorBgContainer : 'yellow'
       }
   }
 
