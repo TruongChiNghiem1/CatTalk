@@ -2,7 +2,7 @@ import './App.scss'
 import { ConfigProvider } from 'antd';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { HappyProvider } from '@ant-design/happy-work-theme';
-import Login from './page/login'
+import Login from './page/Login'
 import NotFound from './page/NotFound';
 import Home from './page/Home';
 import { useState } from 'react';
@@ -11,14 +11,19 @@ function App() {
 
   const lightTheme = {
      token: {
-        colorPrimary: 'green'
+        colorPrimary: 'green',
+        colorBgContainer : 'aliceblue',
+        colorBgSecondary: '#D8FEFF',
+
+        
       }
   }
 
   const darkTheme = {
      token: {
         colorPrimary: 'red',
-        colorBgContainer : 'yellow'
+        colorBgContainer : 'yellow',
+        colorBgSecondary: '#00393b'
       }
   }
 

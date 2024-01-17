@@ -1,45 +1,85 @@
 import React, { useState } from 'react';
 import {
-  MenuFoldOutlined,
+  SearchOutlined,
   MenuUnfoldOutlined,
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
+  MenuFoldOutlined,
+  HeartOutlined,
+  HomeOutlined,
+  MessageOutlined,
+  SettingOutlined
 } from '@ant-design/icons';
 import { Layout, Menu, Button, theme } from 'antd';
+import logo from '../assets/logo.png';
+import logo_vertical from '../assets/logo_vertical.png';
+import admin from '../assets/admin.jpg';
+
 const { Header, Sider, Content } = Layout;
 const Home = () => {
   const [collapsed, setCollapsed] = useState(false);
+   const [activeKey, setActiveKey] = useState('1'); // Trạng thái active của menu item
+
+  const handleMenuSelect = ({ key }) => {
+    setActiveKey(key);
+  };
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: { colorBgContainer, colorBgSecondary },
   } = theme.useToken();
   return (
-    <Layout className='vh-100 vw-100'>
-      <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div className="demo-logo-vertical" />
+    <Layout className='main' style={{background: colorBgSecondary, padding: '12px'}}>
+      <Sider id='left_menu' trigger={null} collapsible collapsed={collapsed} width={240} collapsedWidth={100}
+      style={{ backgroundColor: colorBgContainer}}>
+        <div>
+            <div className="demo-logo-verticalc flex-center"><img src={collapsed ? logo : logo_vertical} width={collapsed ? 90 : 190}/></div>
+            <Menu
+            mode="inline"
+            defaultSelectedKeys={[activeKey]}
+            onSelect={handleMenuSelect}
+            items={[
+                {
+                key: '1',
+                icon: <HomeOutlined />,
+                label: 'Home',
+                },
+                {
+                key: '2',
+                icon: <SearchOutlined />,
+                label: 'Search',
+                },
+                {
+                key: '3',
+                icon: <MessageOutlined />,
+                label: 'Message',
+                },
+                {
+                key: '4',
+                icon: <HeartOutlined />,
+                label: 'Notification',
+                },
+            ]}
+            />
+        </div>
         <Menu
           mode="inline"
-          defaultSelectedKeys={['1']}
+          defaultSelectedKeys={[activeKey]}
+            onSelect={handleMenuSelect}
           items={[
             {
-              key: '1',
-              icon: <UserOutlined />,
-              label: 'nav 1',
+                key: '5',
+                icon: () => (
+                    collapsed ? <img width={60} height={60} style={{ borderRadius: 100 }} src={admin} alt="Admin" /> : 'User admin'
+                ),
+                label: null,
             },
             {
-              key: '2',
-              icon: <VideoCameraOutlined />,
-              label: 'nav 2',
-            },
-            {
-              key: '3',
-              icon: <UploadOutlined />,
-              label: 'nav 3',
+              key: '6',
+              icon: <SettingOutlined />,
+              label: 'Settings',
             },
           ]}
         />
+
       </Sider>
-      <Layout>
+      <Layout style={{background: colorBgSecondary, marginLeft: '24px'}}>
         <Header
           style={{
             padding: 0,
@@ -48,7 +88,7 @@ const Home = () => {
         >
           <Button
             type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined/>}
             onClick={() => setCollapsed(!collapsed)}
             style={{
               fontSize: '16px',
@@ -59,11 +99,9 @@ const Home = () => {
         </Header>
         <Content
           style={{
-            margin: '24px 16px',
             padding: 24,
             minHeight: 280,
             background: colorBgContainer,
-            borderRadius: borderRadiusLG,
           }}
         >
           Content

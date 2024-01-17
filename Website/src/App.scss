@@ -11,3 +11,44 @@
 .not_found{
   background-color: aliceblue;
 }
+
+.main{
+  width: 100vw;
+  height: 100vh;
+  padding: 16px;
+}
+
+
+#left_menu{
+.ant-menu {
+    font-size: 16px !important;
+  }
+
+  .ant-menu .ant-menu-item .anticon {
+    font-size: 20px !important;
+  }
+
+  .ant-menu-inline-collapsed>.ant-menu-item .ant-menu-item-icon {
+    font-size: 28px !important;
+  }
+
+  .ant-menu-vertical .ant-menu-item {
+    height: 50px !important;
+  }
+
+  .ant-menu-inline-collapsed>.ant-menu-item {
+    padding-inline: 30% !important;
+  }
+
+  .ant-menu-vertical .ant-menu-item {
+    margin-block: 15px !important;
+    padding-top: 9px !important;
+  }
+
+  .ant-layout-sider-children {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}
+
