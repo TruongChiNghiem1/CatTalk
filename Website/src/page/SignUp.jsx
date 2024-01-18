@@ -1,30 +1,25 @@
-import React from "react";
-import { Row, Col, theme, Typography } from "antd"
+import React from 'react';
+import { Col, Row, Typography,theme } from 'antd';
 import { Link } from "react-router-dom";
 import { HomeOutlined } from '@ant-design/icons';
-import LoginForm from "../component/LoginForm";
-
-
-const Login = () => {
-      const {
-    token: { colorBgSecondary },
+const SignUp = () => {
+     const {
+    token: { colorLightSecondary },
     } = theme.useToken();
+
     return (
-        <div className="wrapper" style={{background: colorBgSecondary ,padding: '2rem 0 '}}>
+        <div className='wrapper' style={{background: colorLightSecondary}} id='login'>
             <Row justify="space-around" className="w-100 ">
                 <Col span={10} className="flex-start">
                     <Link to={'/'}><span style={{ cursor: 'pointer' }}><HomeOutlined style={{ fontSize: '200%' }} /></span></Link>
                 </Col>
                 <Col span={10} style={{ textAlign: 'end' }}>
-                     <Typography.Paragraph>Don't have an account? <Link to={'/signup'}><b>Sign up now</b></Link></Typography.Paragraph>
+                     <Typography.Paragraph>You have an account? <Link to={'/login'}><b>Login</b></Link></Typography.Paragraph>
                 </Col>
             </Row>
             <div className="flex-center">
-                <LoginForm/>
             </div>
-           
-        </div>
+    </div>
     )
-}
-
-export default Login
+};
+export default SignUp;

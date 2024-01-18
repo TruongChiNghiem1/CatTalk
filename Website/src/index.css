@@ -33,8 +33,16 @@ body {
   height: 100vh !important;
 }
 
+.vh-75{
+  height: 75vh !important;
+}
+
 .vw-100{
   width: 100vw !important;
+}
+
+.vw-75{
+  width: 75vw !important;
 }
 
 .wrapper {
@@ -56,6 +64,13 @@ body {
   align-items: center;
 }
 
+.flex-column-around {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
 .flex-start{
   display: flex;
   justify-content: start;
@@ -63,5 +78,22 @@ body {
 }
 
 .mt-2{
-  margin-top: 1.25 rem;
+  margin-top: 1.5 rem;
+}
+
+.mt-1{
+  margin-top: 0.85rem;
+}
+
+.mb-0{
+  margin-bottom: 0 !important;
+}
+
+.text-end{
+  text-align: end;
+}
+
+
+.ant-btn.ant-btn-round{
+  border-radius: 100% !important;
 }
