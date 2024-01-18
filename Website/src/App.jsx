@@ -11,19 +11,30 @@ function App() {
 
   const lightTheme = {
      token: {
-        colorPrimary: 'green',
+        colorPrimary: '#44bccc',
         colorBgContainer : 'aliceblue',
         colorBgSecondary: '#D8FEFF',
-
-        
+        controlItemBgActive: '#c4fcff',
+        borderRadius: '20px',
+        color: '#36a7b6',
+        colorTextBase : 'black', 
+        colorTextQuaternary : 'black', 
+        colorPrimaryText: 'black', 
+        colorIcon: 'black', 
+        colorLink: 'orange'
       }
   }
 
   const darkTheme = {
      token: {
-        colorPrimary: 'red',
-        colorBgContainer : 'yellow',
-        colorBgSecondary: '#00393b'
+        colorPrimary: '#005f70',
+        colorBgContainer : '#003a44',
+        colorBgSecondary: '#001e24',
+        borderRadius: '30px',
+        colorTextBase : 'white',
+         colorPrimaryText: 'white',
+         colorIcon: 'white', 
+         colorLink: 'orange'
       }
   }
 
