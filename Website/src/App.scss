@@ -68,12 +68,31 @@
           font-size: 28px !important;
         }
     }
-
     .ant-input-outlined{
       padding: 0.4rem 0.8rem;
     }
   }
-
- 
 }
 
+#signup {
+    padding: 3rem;
+    .signup_box{
+      border-radius: 30px;
+      width: 60%;
+      height: 65vh;
+    }
+    .signup_form{
+      width: 70vw;
+      box-shadow: #b4e1e2 2.4px 2.4px 3.2px;
+      border-radius: 30px;
+      .box_mail{
+        height: 40vh;
+      }
+      .mail{
+        width: 350px;
+      }
+    }
+    .ant-form-item {
+      margin-bottom: 10px !important;
+    }
+}
