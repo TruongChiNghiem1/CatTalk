@@ -44,6 +44,55 @@
     justify-content: space-between;
   }
 
-  
+    .ant-menu-light.ant-menu-root.ant-menu-inline{
+      border-inline-end: none !important;
+    }
 }
 
+#login{
+  .ant-form-item{
+    margin-bottom: 15px !important;
+  }
+
+  .login_box{
+    border-radius: 30px;
+    margin-left: 6rem;
+    width: 280px;
+    padding: 3rem 5rem;
+    box-shadow: #b4e1e2 2.4px 2.4px 3.2px;
+    .login_btn {
+        height: 70px;
+        width: 70px;
+        box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+        .anticon {
+          font-size: 28px !important;
+        }
+    }
+    .ant-input-outlined{
+      padding: 0.4rem 0.8rem;
+    }
+  }
+}
+
+#signup {
+    padding: 3rem;
+    .signup_box{
+      border-radius: 30px;
+      width: 60%;
+      height: 65vh;
+    }
+    .signup_form{
+      width: 70vw;
+      box-shadow: #b4e1e2 2.4px 2.4px 3.2px;
+      border-radius: 30px;
+      .box_mail{
+        height: 40vh;
+      }
+      .mail{
+        width: 350px;
+      }
+    }
+    .ant-form-item {
+      margin-bottom: 10px !important;
+    }
+}
