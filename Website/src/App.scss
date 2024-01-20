@@ -44,9 +44,13 @@
     justify-content: space-between;
   }
 
-    .ant-menu-light.ant-menu-root.ant-menu-inline{
+  .ant-menu-light.ant-menu-root.ant-menu-inline{
       border-inline-end: none !important;
-    }
+  }
+  .ant-menu-submenu-title{
+    display: flex;
+    align-items: center;
+  }
 }
 
 #login{
@@ -79,7 +83,7 @@
     .signup_box{
       border-radius: 30px;
       width: 60%;
-      height: 65vh;
+      height: 70vh;
     }
     .signup_form{
       width: 70vw;
@@ -90,6 +94,18 @@
       }
       .mail{
         width: 350px;
+      }
+
+      .cat_hello{
+        position: absolute;
+        top: 40%;
+        right: 20%;
+      }
+
+      .login_btn{
+          position: absolute;
+            top: 58%;
+            right: 30%;
       }
     }
     .ant-form-item {

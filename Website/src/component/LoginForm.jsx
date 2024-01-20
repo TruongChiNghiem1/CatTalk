@@ -3,6 +3,7 @@ import { Button, Carousel , Form, Input, Typography, theme} from 'antd';
 import logo_login from '../assets/logo_login.png';
 import carousel_01 from '../assets/carousel_01.png';
 import carousel_02 from '../assets/carousel_02.png';
+import carousel_03 from '../assets/carousel_03.png';
 import { useForm } from 'antd/es/form/Form';
 import { LoginOutlined } from '@ant-design/icons';
 const LoginForm = () => {
@@ -14,10 +15,13 @@ const LoginForm = () => {
         <div className='flex-center vw-75 vh-75' id='login' style={{ marginTop: '2.5rem'}}>
             <Carousel autoplay style={{width: '40vw', height: '70vh'}}>
                 <div>
-                    <img style={{width: '40vw', height: '75vh', objectFit: 'cover'}} src={carousel_01}/>
+                    <img style={{width: '40vw', height: '70vh', objectFit: 'cover'}} src={carousel_01}/>
                 </div>
                 <div>
-                    <img style={{width: '40vw', height: '75vh', objectFit: 'cover'}} src={carousel_02}/>
+                    <img style={{width: '40vw', height: '70vh', objectFit: 'cover'}} src={carousel_02}/>
+                </div>
+                <div>
+                    <img style={{width: '40vw', height: '70vh', objectFit: 'cover'}} src={carousel_03}/>
                 </div>
             </Carousel>
             <div className='form flex-column-around login_box' style={{background: baseColor}} >
