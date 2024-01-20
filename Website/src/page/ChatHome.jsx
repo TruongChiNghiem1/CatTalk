@@ -6,18 +6,21 @@ import {
   HeartOutlined,
   HomeOutlined,
   MessageOutlined,
-  SettingOutlined
+  LogoutOutlined,
+  UserOutlined
 } from '@ant-design/icons';
 import { Layout, Menu, Button, theme, Switch } from 'antd';
 import logo from '../assets/logo.png';
 import logo_vertical from '../assets/logo_vertical.png';
 import admin from '../assets/admin.jpg';
+import { useNavigate } from 'react-router-dom';
 
 const { Header, Sider, Content } = Layout;
 const Home = (props) => {
   const [collapsed, setCollapsed] = useState(false);
-   const [activeKey, setActiveKey] = useState('1'); // Trạng thái active của menu item
-
+  const [activeKey, setActiveKey] = useState('1'); // Trạng thái active của menu item
+  const {SubMenu}  = Menu
+  const navigate = useNavigate()
   const handleMenuSelect = ({ key }) => {
     setActiveKey(key);
   };
@@ -59,13 +62,13 @@ const Home = (props) => {
             />
         </div>
         <Menu
-          mode="inline"
+          mode="vertical"
             selectedKeys={[activeKey]} 
             onSelect={handleMenuSelect} 
             style={{borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px'}}
         >
-            <Menu.Item
-                key="1"
+          <Menu.Item
+                key="6"
                 icon={<Switch 
                     className='switch'
                     onChange={(value) => props.theme(value ? 'dark' : 'light')}
@@ -74,6 +77,15 @@ const Home = (props) => {
                 >
                 Night mode
             </Menu.Item>
+           <SubMenu
+              key="5"
+              icon={<img width={30} height={30} style={{objectFit: 'cover', borderRadius: '100%'}} src={admin}/>}
+              title="User Admin"
+            >
+              <Menu.Item key="5-1" icon={<UserOutlined />} onClick={() => navigate('/profile')}>My Profile</Menu.Item>
+              <Menu.Item key="5-2" icon={<LogoutOutlined />} onClick={() => navigate('/login')}>Log out</Menu.Item>
+            </SubMenu>
+            
         </Menu>
       </Sider>
       <Layout style={{background: colorBgSecondary, marginLeft: '24px'}}>

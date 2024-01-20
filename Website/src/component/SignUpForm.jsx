@@ -1,20 +1,21 @@
-import { Button, Carousel , Form, Input, Steps, theme} from 'antd';
+import { Button, Carousel , Form, Input, Steps, Typography, theme} from 'antd';
 import logo_login from '../assets/logo_login.png';
-import carousel_01 from '../assets/carousel_01.png';
-import carousel_02 from '../assets/carousel_02.png';
+import signup from '../assets/signup.png';
 import { useForm } from 'antd/es/form/Form';
-import { LoginOutlined,LogoutOutlined } from '@ant-design/icons';
+import { LoginOutlined,LogoutOutlined, DoubleRightOutlined} from '@ant-design/icons';
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import showMessage from '../helper/showMessage';
 import cattalk from '../assets/carousel_02.png';
+import cat_hello from '../assets/cat_hello.png';
+import { useNavigate } from 'react-router-dom';
 
 const SignUpForm = () => {
         const {
     token: { baseColor },
     } = theme.useToken();
     const [form] = useForm()
-
+    const navigate = useNavigate()
     const [step, setStep] = useState(0)
     const [email, setEmail] = useState('')
     const [otp, setOtp] = useState('')
@@ -44,7 +45,6 @@ const SignUpForm = () => {
     }
 
     useEffect(() => {
-        console.log('fdkhjgsdkfhgjkdf');
         if (step === 1) {
             const interval = setInterval(() => {
             setCount(prevCount => prevCount - 1);
@@ -62,14 +62,25 @@ const SignUpForm = () => {
         }
     }
 
+    const handleSendInfoUser = async () =>{
+        try {
+            // let formData = await form.validateFields();
+            // if(formData)
+                setStep(3)
+            // const send = await axios.post('/sign-up', formData)
+            //     .then(res => {
+            //         showMessage(res.status, res.data.message)
+            //     })
+        } catch (error) {
+            console.log("Error: ", error.message);
+        }
+    }
+
     return(
         <div className='flex-between' style={{padding: '24px'}}>
-            <Carousel autoplay style={{width: '20vw', height: '70vh', overflow:'hidden'}}>
+                <Carousel autoplay style={{width: '20vw', overflow:'hidden'}}>
                 <div>
-                    <img style={{width: '40vw', objectFit: 'cover'}} src={carousel_01}/>
-                </div>
-                <div>
-                    <img style={{width: '40vw', objectFit: 'cover'}} src={carousel_02}/>
+                    <img style={{width: '20vw', objectFit: 'cover'}} src={signup}/>
                 </div>
             </Carousel>
             <div className='flex-column-start signup_box' style={{background: baseColor}} >
@@ -151,7 +162,7 @@ const SignUpForm = () => {
                     <Button icon={<LogoutOutlined />} type='primary' onClick={handleConfirmOTP}>Next</Button>
                     </div>
                 ) : step == 2 ? (
-                    <div className='w-100 flex-column-center' style={{ marginTop: '2rem'}}>
+                    <div className='w-100 flex-column-center' style={{ marginTop: '1rem'}}>
                          <Form
                     form={form}
                     layout='vertical'
@@ -226,12 +237,20 @@ const SignUpForm = () => {
                         icon={<LoginOutlined />} 
                         className='mt-1' 
                         type='primary'
-                        onClick={()=> setStep(3)}
+                        onClick={handleSendInfoUser}
                         >Sign up</Button>
                 </div>
                 ) : (
-                    <div className='flex-column mt-2'>
-                        {/* <img src={}/> */}
+                    <div className='mt-2 position-relative'>
+                        <img width={400} src={cat_hello}/>
+                        <Typography.Paragraph className='cat_hello'><h3>Let's start looking for everyone</h3></Typography.Paragraph>
+                        <Button 
+                            className='login_btn' 
+                            type='secondary' 
+                            size='large'
+                            icon={<DoubleRightOutlined />}
+                            onClick={() => navigate('/login')}
+                            style={{fontStyle: 'italic', color: 'orange', fontWeight: 'bold', fontSize: '24px'}}>Start now</Button>
                     </div>
                 )}
                

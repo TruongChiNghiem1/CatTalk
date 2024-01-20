@@ -4,9 +4,10 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { HappyProvider } from '@ant-design/happy-work-theme';
 import Login from './page/Login'
 import NotFound from './page/NotFound';
-import Home from './page/Home';
+import Home from './page/ChatHome.jsx';
 import { useState } from 'react';
 import SignUp from './page/SignUp';
+import Profile from './page/Profile.jsx';
 function App() {
   const [currentTheme, setCurrentTheme] = useState('light')
 
@@ -29,6 +30,10 @@ function App() {
         colorPrimaryText: 'black', 
         colorIcon: 'black', 
         colorLink: 'orange',
+
+        colorFillSecondary: '#FFBD59',
+        colorTextSecondary: '#FFF5EB',
+        
         paragraph: {
             color: 'red',
             fontSize: '14px',
@@ -58,6 +63,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/" element={<Home theme={setCurrentTheme}/> } />
+          <Route path="/profile" element={<Profile/>} />
           <Route path="*" element={<NotFound/>} />
         </Routes>
       </Router>
