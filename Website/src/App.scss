@@ -11,6 +11,10 @@
   padding: 16px;
 }
 
+.ant-layout-content{
+  height: 100% !important;
+}
+
 
 #left_menu{
 .ant-menu {
@@ -111,4 +115,75 @@
     .ant-form-item {
       margin-bottom: 10px !important;
     }
+}
+
+#chat-home{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .circle1{
+    position: relative;
+    // animation: rotate-animation_1 20s linear infinite;
+  }
+  .circle2{
+    position: absolute;
+    // animation: rotate-animation_2 20s linear infinite;
+    top: 15%;
+    left: 10%;
+  }
+
+  .main_home{
+    position: absolute;
+    left: 20%;
+    top: 20%;
+    z-index: 2;
+  }
+
+  .home_title{
+    font-weight: bold;
+    font-size: 36px;
+    margin-bottom: .25em !important;
+  }
+
+  .user_name{
+    font-size: 36px;
+    color: orange;
+  }
+
+  .feature_title{
+    color: #4ad1d6;
+    font-size: 24px;
+    margin-bottom: .25em;
+    font-family: 'Courgette', cursive;
+  }
+
+
+
+  @keyframes rotate-animation_1 {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes rotate-animation_2 {
+    0% {
+      transform: rotate(360deg);
+    }
+
+    100% {
+      transform: rotate(0deg);
+    }
+  }
+}
+
+.container{
+  width: 100%;
+  padding: 24px;
+  min-height: 280px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
 }

@@ -1,124 +1,42 @@
-import React, { useState } from 'react';
-import {
-  SearchOutlined,
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
-  HeartOutlined,
-  HomeOutlined,
-  MessageOutlined,
-  LogoutOutlined,
-  UserOutlined
-} from '@ant-design/icons';
-import { Layout, Menu, Button, theme, Switch } from 'antd';
-import logo from '../assets/logo.png';
-import logo_vertical from '../assets/logo_vertical.png';
-import admin from '../assets/admin.jpg';
-import { useNavigate } from 'react-router-dom';
 
-const { Header, Sider, Content } = Layout;
-const Home = (props) => {
-  const [collapsed, setCollapsed] = useState(false);
-  const [activeKey, setActiveKey] = useState('1'); // Trạng thái active của menu item
-  const {SubMenu}  = Menu
+import { useNavigate } from 'react-router-dom';
+import { Button, Layout, theme, Typography } from 'antd';
+import cat_01 from '../assets/cat_01.png';
+import {MessageOutlined} from '@ant-design/icons';
+const {Content } = Layout;
+const Home = () => {
   const navigate = useNavigate()
-  const handleMenuSelect = ({ key }) => {
-    setActiveKey(key);
-  };
-  const {
-    token: { colorBgContainer, colorBgSecondary },
-  } = theme.useToken();
+  const {token: { colorBgContainer }} = theme.useToken();
+
   return (
-    <Layout className='main' style={{background: colorBgSecondary, padding: '12px',}}>
-      <Sider id='left_menu' trigger={null} collapsible collapsed={collapsed} width={240} collapsedWidth={100}
-      style={{ backgroundColor: colorBgContainer, borderRadius: '20px'}}>
-        <div>
-            <div className="demo-logo-verticalc flex-center" style={{padding: '4px'}}><img src={collapsed ? logo : logo_vertical} width={collapsed ? 90 : 190}/></div>
-            <Menu
-            mode="inline"
-            selectedKeys={[activeKey]}
-            onSelect={handleMenuSelect}
-            items={[
-                {
-                key: '1',
-                icon: <HomeOutlined />,
-                label: 'Home',
-                },
-                {
-                key: '2',
-                icon: <SearchOutlined />,
-                label: 'Search',
-                },
-                {
-                key: '3',
-                icon: <MessageOutlined />,
-                label: 'Message',
-                },
-                {
-                key: '4',
-                icon: <HeartOutlined />,
-                label: 'Notification',
-                },
-            ]}
-            />
-        </div>
-        <Menu
-          mode="vertical"
-            selectedKeys={[activeKey]} 
-            onSelect={handleMenuSelect} 
-            style={{borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px'}}
-        >
-          <Menu.Item
-                key="6"
-                icon={<Switch 
-                    className='switch'
-                    onChange={(value) => props.theme(value ? 'dark' : 'light')}
-                    />}
-                label="Night mode"
-                >
-                Night mode
-            </Menu.Item>
-           <SubMenu
-              key="5"
-              icon={<img width={30} height={30} style={{objectFit: 'cover', borderRadius: '100%'}} src={admin}/>}
-              title="User Admin"
-            >
-              <Menu.Item key="5-1" icon={<UserOutlined />} onClick={() => navigate('/profile')}>My Profile</Menu.Item>
-              <Menu.Item key="5-2" icon={<LogoutOutlined />} onClick={() => navigate('/login')}>Log out</Menu.Item>
-            </SubMenu>
-            
-        </Menu>
-      </Sider>
-      <Layout style={{background: colorBgSecondary, marginLeft: '24px'}}>
-        <Header
-          style={{
-            padding: 0,
-            background: colorBgContainer,
-            borderTopLeftRadius:'20px',
-            borderTopRightRadius: '20px'
-          }}
-        >
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined/>}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{
-              fontSize: '16px',
-              width: 64,
-              height: 64,
-            }}
-          />
-        </Header>
         <Content
+          id='chat-home'
+          className='container'
           style={{
-            padding: 24,
-            minHeight: 280,
             background: colorBgContainer,
-            borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px'
           }}
         >
+
+          <div className='position-relative'>
+            <div className="circle1">
+              <svg xmlns="http://www.w3.org/2000/svg" width="830" height="732" viewBox="0 0 1254 972" fill="none">
+                <path d="M1254 458.042C1254 741.893 956.292 972 621.068 972C285.845 972 -76.4214 780.018 14.0927 458.042C84.9812 205.878 338.878 -177.484 525.23 92.1331C669.43 300.764 1254 174.191 1254 458.042Z" fill="#FFFAF1"/>
+              </svg>
+            </div>
+            <div className="circle2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="660" height="510" viewBox="0 0 1018 810" fill="none">
+                <path d="M1018 381.702C1018 618.244 776.32 810 504.185 810C232.049 810 -62.0391 650.015 11.4404 381.702C68.9879 171.565 275.102 -147.904 426.383 76.7776C543.445 250.637 1018 145.159 1018 381.702Z" fill="#FFEFD8"/>
+              </svg>
+            </div>
+            <div className='main_home flex-column-center'>
+              <img src={cat_01}/>
+              <Typography.Paragraph className='home_title'>Good morning, <span className='user_name'>User Admin </span> !</Typography.Paragraph>
+              <Typography.Text className='feature_title'>Greet someone to start the day ^^</Typography.Text>
+              <Button onClick={() => navigate('/redirect/0')} icon={<MessageOutlined />} type='primary' size='large'></Button>
+            </div>
+            
+          </div>
         </Content>
-      </Layout>
-    </Layout>
   );
 };
 export default Home;
