@@ -1,6 +1,6 @@
 import './App.scss'
 import { ConfigProvider } from 'antd';
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { HappyProvider } from '@ant-design/happy-work-theme';
 import Login from './page/Login'
 import NotFound from './page/NotFound';
@@ -8,6 +8,9 @@ import Home from './page/ChatHome.jsx';
 import { useState } from 'react';
 import SignUp from './page/SignUp';
 import Profile from './page/Profile.jsx';
+import AppLayout from './page/Layout.jsx';
+import Redirect from './page/Redirect.jsx';
+import AppContext from 'antd/es/app/context.js';
 function App() {
   const [currentTheme, setCurrentTheme] = useState('light')
 
@@ -15,7 +18,7 @@ function App() {
      token: {
         colorPrimary: '#44bccc',
 
-        colorBgContainer : 'aliceblue',
+        colorBgContainer : 'white',
         colorBgSecondary: '#D8FEFF',
 
         baseColor: 'white',
@@ -58,11 +61,15 @@ function App() {
   return (
     <ConfigProvider theme={currentTheme === 'light' ? lightTheme : darkTheme}>
      <HappyProvider>
-      <Router>
+        <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/" element={<Home theme={setCurrentTheme}/> } />
+          <Route path="/" element={<AppLayout theme={setCurrentTheme}/> } >
+            <Route index element={<Navigate to="home" />} />
+            <Route path="home" element={<Home />} />
+            <Route path="redirect/:id" element={<Redirect/>} />
+          </Route>~
           <Route path="/profile" element={<Profile/>} />
           <Route path="*" element={<NotFound/>} />
         </Routes>
