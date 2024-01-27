@@ -94,8 +94,15 @@ body {
   margin-top: 0.85rem;
 }
 
+.mt-3{
+  margin-top: 1.5rem;
+}
+
 .mb-0{
   margin-bottom: 0 !important;
+}
+.mt-0{
+  margin-top: 0 !important;
 }
 
 .text-end{

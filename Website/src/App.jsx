@@ -11,13 +11,14 @@ import Profile from './page/Profile.jsx';
 import AppLayout from './page/Layout.jsx';
 import Redirect from './page/Redirect.jsx';
 import AppContext from 'antd/es/app/context.js';
+import AppProvider from './context/AppContext.jsx';
 function App() {
   const [currentTheme, setCurrentTheme] = useState('light')
 
   const lightTheme = {
      token: {
         colorPrimary: '#44bccc',
-
+        colorTextHeading: '#44bccc',
         colorBgContainer : 'white',
         colorBgSecondary: '#D8FEFF',
 
@@ -31,7 +32,7 @@ function App() {
         color: '#36a7b6',
         colorTextBase : 'black', 
         colorPrimaryText: 'black', 
-        colorIcon: 'black', 
+        colorIcon: '#36a7b6', 
         colorLink: 'orange',
 
         colorFillSecondary: '#FFBD59',
@@ -59,8 +60,9 @@ function App() {
   }
 
   return (
-    <ConfigProvider theme={currentTheme === 'light' ? lightTheme : darkTheme}>
-     <HappyProvider>
+    <AppProvider>
+      <HappyProvider>
+      <ConfigProvider theme={currentTheme === 'light' ? lightTheme : darkTheme}>
         <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
@@ -69,13 +71,15 @@ function App() {
             <Route index element={<Navigate to="home" />} />
             <Route path="home" element={<Home />} />
             <Route path="redirect/:id" element={<Redirect/>} />
-          </Route>~
+          </Route>
           <Route path="/profile" element={<Profile/>} />
           <Route path="*" element={<NotFound/>} />
         </Routes>
       </Router>
+       </ConfigProvider>
     </HappyProvider>
-    </ConfigProvider>
+    </AppProvider>
+   
   )
 }
 

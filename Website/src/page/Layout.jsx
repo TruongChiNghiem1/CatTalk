@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import {
   SearchOutlined,
   MenuUnfoldOutlined,
@@ -16,18 +16,18 @@ import admin from '../assets/admin.jpg';
 import { useNavigate, Outlet } from 'react-router-dom';
 import Search from '../component/Search';
 import Notify from '../component/Notify';
+import { AppContext } from '../context/AppContext';
 
 const { Header, Sider} = Layout;
 const AppLayout = (props) => {
   const [collapsed, setCollapsed] = useState(false);
-  const [activeKey, setActiveKey] = useState('home');
   const {SubMenu}  = Menu
   const navigate = useNavigate()
-  const [openSeach, setOpenSearch] = useState(false)
-  const [openNofity, setOpenNotify] = useState(false)
-
+  const {activeMenu, setActiveMenu,
+     openSearch, setOpenSearch,
+     openNofity, setOpenNotify} = useContext(AppContext)
   const handleMenuSelect = ({ key }) => {
-    setActiveKey(key);
+    setActiveMenu(key);
   };
   const {
     token: { colorBgContainer, colorBgSecondary },
@@ -42,7 +42,7 @@ const AppLayout = (props) => {
             </div>
             <Menu
             mode="inline"
-            selectedKeys={[activeKey]}
+            selectedKeys={[activeMenu]}
             onSelect={handleMenuSelect}
             items={[
                 {
@@ -55,7 +55,7 @@ const AppLayout = (props) => {
                 key: 'seacrch',
                 icon: <SearchOutlined />,
                 label: 'Search',
-                onClick: () => {setOpenSearch(!openSeach), setOpenNotify(false)}
+                onClick: () => {setOpenSearch(!openSearch), setOpenNotify(false)}
                 },
                 {
                 key: 'redirect',
@@ -74,7 +74,7 @@ const AppLayout = (props) => {
         </div>
         <Menu
           mode="vertical"
-            selectedKeys={[activeKey]} 
+            selectedKeys={[activeMenu]} 
             onSelect={handleMenuSelect} 
             style={{borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px'}}
         >
@@ -120,7 +120,7 @@ const AppLayout = (props) => {
           />
         </Header>
         <div className='flex-center h-100'>
-          {openSeach && <Search/>}
+          {openSearch && <Search/>}
           {openNofity && <Notify/>}
           <Outlet className='h-100'/>
         </div>

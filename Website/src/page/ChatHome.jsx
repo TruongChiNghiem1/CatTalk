@@ -3,10 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Layout, theme, Typography } from 'antd';
 import cat_01 from '../assets/cat_01.png';
 import {MessageOutlined} from '@ant-design/icons';
+import { useContext } from 'react';
+import { AppContext } from '../context/AppContext';
 const {Content } = Layout;
 const Home = () => {
   const navigate = useNavigate()
   const {token: { colorBgContainer }} = theme.useToken();
+  const {setActiveMenu} = useContext(AppContext)
 
   return (
         <Content
@@ -32,7 +35,7 @@ const Home = () => {
               <img src={cat_01}/>
               <Typography.Paragraph className='home_title'>Good morning, <span className='user_name'>User Admin </span> !</Typography.Paragraph>
               <Typography.Text className='feature_title'>Greet someone to start the day ^^</Typography.Text>
-              <Button onClick={() => navigate('/redirect/0')} icon={<MessageOutlined />} type='primary' size='large'></Button>
+              <Button onClick={() => {navigate('/redirect/0'), setActiveMenu('redirect')}} icon={<MessageOutlined />} type='primary' size='large'></Button>
             </div>
             
           </div>

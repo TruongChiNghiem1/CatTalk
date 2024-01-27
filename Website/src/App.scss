@@ -187,3 +187,25 @@
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
 }
+
+#search {
+    padding: 0 24px;
+    min-height: 280px;
+    width: 45%;
+    border-bottom-left-radius: 20px;
+    position: relative;
+    .ant-input-affix-wrapper{
+      background-color: rgb(255, 238, 207);
+    }
+    .ant-input-outlined{
+      border-color: transparent;
+    }
+    .ant-input::placeholder {
+      color: orange;
+    }
+
+    .recent{
+      border-bottom: 1px solid #b4e1e2;
+      padding: 4px 11px;
+    }
+}
