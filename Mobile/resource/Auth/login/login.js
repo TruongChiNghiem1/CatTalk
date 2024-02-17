@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Button,
   Image,
   ImageBackground,
   Text,
@@ -15,7 +14,10 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faArrowRightToBracket} from '@fortawesome/free-solid-svg-icons/faArrowRightToBracket';
 import {SvgUri} from 'react-native-svg';
 import {UIInput} from '../../../components';
-function mainScreen(res) {
+// import { useNavigate } from 'react-router-native';
+
+const Login = (res) => {
+  // let navigate = useNavigate;
   return (
     <View
       style={{
@@ -103,6 +105,7 @@ function mainScreen(res) {
               You don't have account ?{' '}
             </Text>
             <Text
+              onPress={() => navigation.navigate('SignUp')}
               style={{
                 color: colors.primary,
                 fontSize: fontSize.h5,
@@ -117,7 +120,7 @@ function mainScreen(res) {
   );
 }
 
-export default mainScreen;
+export default Login;
 /*
 import {sum2Number, subtract2Number} from '../utilies/caculator'
 const mainScreen = (props) => {
