@@ -1,6 +1,6 @@
-import Joi from "joi";
+const Joi = require('joi');
 
-export const signUp = Joi.object(
+const signUpValid = Joi.object(
     {
         firstName: Joi.string().required().min(3).messages({
             "string.empty": "firstName is required",
@@ -28,3 +28,8 @@ export const signUp = Joi.object(
             "string.empty": "confirmpassword is not empty",
         }),
     });
+
+module.exports = {
+    signUpValid,
+};
+
