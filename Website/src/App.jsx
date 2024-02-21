@@ -45,7 +45,7 @@ function App() {
       }
   }
 
-  const darkTheme = {
+  const darkTheme = { 
      token: {
         colorPrimary: '#005f70',
         colorBgContainer : '#003a44',
