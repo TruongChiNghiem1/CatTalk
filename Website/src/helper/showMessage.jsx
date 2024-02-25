@@ -1,12 +1,12 @@
 import { message } from "antd";
 
-const showMessage = (status, message) =>{
+const showMessage = (status, text) =>{
     switch (status) {
         case 200:
-            message.succes(message, status)
+            message.success(text)
             break;
         case 500:
-            message.error(message)
+            message.error(text)
             break;
         default:
             break;

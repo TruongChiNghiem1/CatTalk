@@ -4,11 +4,11 @@ import signup from '../assets/signup.png';
 import { useForm } from 'antd/es/form/Form';
 import { LoginOutlined,LogoutOutlined, DoubleRightOutlined} from '@ant-design/icons';
 import { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
 import showMessage from '../helper/showMessage';
 import cattalk from '../assets/carousel_02.png';
 import cat_hello from '../assets/cat_hello.png';
 import { useNavigate } from 'react-router-dom';
+import { mailConfirm } from '../service/user';
 
 const SignUpForm = () => {
         const {
@@ -19,20 +19,19 @@ const SignUpForm = () => {
     const [step, setStep] = useState(0)
     const [email, setEmail] = useState('')
     const [otp, setOtp] = useState('')
-    const [count, setCount] = useState(60)
+    const [count, setCount] = useState(60) 
     const otpRef = useRef()
 
     const getOTP = async () =>{
         try {
-            // const otp = await axios.post('/get-otp', {email: email})
-            //     .then(res =>{
-            //         showMessage(res.status, res.data.message)
-            //         if(res.status == 200){
-            //             setOtp(res.data.otp)
-            //         }
-            //            setStep(2)
-            //     })
-            setStep(1)
+            const res = await mailConfirm(email);
+            showMessage(res.status, res.data.message)
+            if(res.status == 200){
+                setOtp(res.data.otp)
+                setStep(1)
+            }else{
+                setStep(0)
+            }
         } catch (error) {
             console.log("Error: ", error.message);
         }
@@ -130,6 +129,7 @@ const SignUpForm = () => {
                         >
                             <Input 
                                 placeholder='example@gmail.com'
+                                type='mail'
                                 onChange={(e) =>setEmail(e.target.value)}
                             />
                         </Form.Item>
@@ -138,27 +138,7 @@ const SignUpForm = () => {
                     </div>
                 ) : step == 1 ? (
                     <div className='flex-column-center w-100 box_mail'>
-                    <Form
-                        form={form}
-                        layout='vertical'
-                        className='w-100 flex-center'
-                    >
-                        <Form.Item
-                            label="OTP"
-                            className='mail'
-                            rules={[
-                            {
-                                required: true,
-                                message: 'OTP is required!'
-                            },
-                            ]}
-                        >
-                            <Input 
-                                placeholder='Your OTP'
-                                ref={otpRef}
-                            />
-                        </Form.Item>
-                    </Form>
+                    <Typography.Paragraph>CATTALK has sent a verification link to your email, please verify your email to go to the next step.</Typography.Paragraph>
                     <Button icon={<LogoutOutlined />} type='primary' onClick={handleConfirmOTP}>Next</Button>
                     </div>
                 ) : step == 2 ? (
