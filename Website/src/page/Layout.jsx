@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
   SearchOutlined,
   MenuUnfoldOutlined,
@@ -17,21 +17,38 @@ import { useNavigate, Outlet } from 'react-router-dom';
 import Search from '../component/Search';
 import Notify from '../component/Notify';
 import { AppContext } from '../context/AppContext';
+import { useCookies } from 'react-cookie';
 
 const { Header, Sider} = Layout;
 const AppLayout = (props) => {
   const [collapsed, setCollapsed] = useState(false);
   const {SubMenu}  = Menu
   const navigate = useNavigate()
+  const [cookies,setCookie, removeCookie] = useCookies(['loginToken', 'user']);
   const {activeMenu, setActiveMenu,
      openSearch, setOpenSearch,
-     openNofity, setOpenNotify} = useContext(AppContext)
+     openNofity, setOpenNotify, user} = useContext(AppContext)
+
+
   const handleMenuSelect = ({ key }) => {
     setActiveMenu(key);
   };
   const {
     token: { colorBgContainer, colorBgSecondary },
   } = theme.useToken();
+
+
+  const logOut = () =>{
+    removeCookie(['loginToken', 'user'])
+    navigate('/login')
+  }
+
+  useEffect(() =>{
+    if(!user){
+      navigate('/login')
+    }
+  }, [user]) 
+
   return (
     <Layout className='main' style={{background: colorBgSecondary, padding: '12px',}}>
       <Sider id='left_menu' trigger={null} collapsible collapsed={collapsed} width={240} collapsedWidth={100}
@@ -91,10 +108,10 @@ const AppLayout = (props) => {
            <SubMenu
               key="5"
               icon={<img width={30} height={30} style={{objectFit: 'cover', borderRadius: '100%'}} src={admin}/>}
-              title="User Admin"
+              title={`${user.firstName} ${user.lastName}`}
             >
               <Menu.Item key="5-1" icon={<UserOutlined />} onClick={() => navigate('/profile')}>My Profile</Menu.Item>
-              <Menu.Item key="5-2" icon={<LogoutOutlined />} onClick={() => navigate('/login')}>Log out</Menu.Item>
+              <Menu.Item key="5-2" icon={<LogoutOutlined />} onClick={logOut}>Log out</Menu.Item>
             </SubMenu>
             
         </Menu>

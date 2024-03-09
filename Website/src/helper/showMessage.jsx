@@ -8,6 +8,9 @@ const showMessage = (status, text) =>{
         case 500:
             message.error(text)
             break;
+        case 400:
+        message.error(text)
+        break;
         default:
             break;
     }
