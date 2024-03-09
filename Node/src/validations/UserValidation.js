@@ -3,33 +3,51 @@ const Joi = require('joi');
 const signUpValid = Joi.object(
     {
         firstName: Joi.string().required().min(3).messages({
-            "string.empty": "firstName is required",
-            "any.required": "firstName is required",
-            "string.min": "firstName must be at least 3 characters"
+            "string.empty": "First name is required",
+            "any.required": "First name is required",
+            "string.min": "First name must be at least 3 characters"
         }),
         lastName: Joi.string().required().min(3).messages({
-            "string.empty": "lastName is required",
-            "any.required": "lastName is required",
-            "string.min": "lastName must be at least 3 characters"
+            "string.empty": "Last name is required",
+            "any.required": "Last name is required",
+            "string.min": "Last name must be at least 3 characters"
         }),
-        email: Joi.string().email().required().messages({
-            "string.empty": "email is required",
-            "any.required": "email is required",
-            "string.email": "email is invalid"
+        userName: Joi.string().required().min(3).messages({
+            "string.empty": "User name is required",
+            "any.required": "User name is required",
+            "string.min": "User name must be at least 3 characters"
         }),
-        password: Joi.string().required().messages({
-            "string.empty": "password is required",
-            "any.required": "password is required",
-            "string.min": "password must be at least 6 characters",
+        password: Joi.string().required().min(8).messages({
+            "string.empty": "Password is required",
+            "any.required": "Password is required",
+            "string.min": "Password must be at least 6 characters",
         }),
-        confirmPassword: Joi.string().required().valid(Joi.ref("password")).messages({
-            "any.required": "confirmpassword is required",
-            "any.only": "confirmpassword is not matching",
-            "string.empty": "confirmpassword is not empty",
+        confirmPassword: Joi.string().required().min(8).valid(Joi.ref("password")).messages({
+            "any.required": "Confirm password is required",
+            "any.only": "Confirm password is not matching",
+            "string.empty": "Confirmpassword is not empty",
+        }),
+        token: Joi.string().required().messages({
+            "string.empty": "Please check your confirmation information again!",
+            "any.required": "Please check your confirmation information again!",
+        }),
+    });
+
+const signInValid = Joi.object(
+    {
+        userName: Joi.string().required().min(3).messages({
+            "string.empty": "User name is required",
+            "any.required": "User name is required",
+            "string.min": "User name must be at least 3 characters"
+        }),
+        password: Joi.string().required().min(8).messages({
+            "string.empty": "Password is required",
+            "any.required": "Password is required",
+            "string.min": "Password must be at least 6 characters",
         }),
     });
 
 module.exports = {
-    signUpValid,
+    signUpValid, signInValid
 };
 

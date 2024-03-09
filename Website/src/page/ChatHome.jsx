@@ -5,12 +5,12 @@ import cat_01 from '../assets/cat_01.png';
 import {MessageOutlined} from '@ant-design/icons';
 import { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
+import { useCookies } from 'react-cookie';
 const {Content } = Layout;
 const Home = () => {
   const navigate = useNavigate()
   const {token: { colorBgContainer }} = theme.useToken();
-  const {setActiveMenu} = useContext(AppContext)
-
+  const {user, setActiveMenu} = useContext(AppContext)
   return (
         <Content
           id='chat-home'
@@ -33,7 +33,7 @@ const Home = () => {
             </div>
             <div className='main_home flex-column-center'>
               <img src={cat_01}/>
-              <Typography.Paragraph className='home_title'>Good morning, <span className='user_name'>User Admin </span> !</Typography.Paragraph>
+              <Typography.Paragraph className='home_title'>Good morning, <span className='user_name'>{user.firstName}</span> !</Typography.Paragraph>
               <Typography.Text className='feature_title'>Greet someone to start the day ^^</Typography.Text>
               <Button onClick={() => {navigate('/redirect/0'), setActiveMenu('redirect')}} icon={<MessageOutlined />} type='primary' size='large'></Button>
             </div>
