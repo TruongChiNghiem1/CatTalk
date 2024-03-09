@@ -7,6 +7,7 @@ const AppProvider = ({children}) =>{
     const [openNofity, setOpenNotify] = useState(false)
     const [cookies] = useCookies(['user']);
     const [user, setUser] = useState([])
+
     return <AppContext.Provider value={
         {activeMenu, setActiveMenu,
              openSearch, setOpenSearch,

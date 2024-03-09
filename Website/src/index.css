@@ -94,6 +94,10 @@ body {
   margin-top: 0.85rem;
 }
 
+.mr-1{
+  margin-right: 0.85rem;
+}
+
 .mt-3{
   margin-top: 1.5rem;
 }
@@ -116,3 +120,13 @@ body {
 .position-relative{
   position: relative !important;
 }
+
+.object-cover{
+  object-fit: cover !important;
+}
+
+.flex-end{
+  display: flex;
+  justify-content: end;
+}
+/* Test */

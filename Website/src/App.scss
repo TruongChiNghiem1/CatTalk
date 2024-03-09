@@ -1,6 +1,9 @@
 @import "./Styles/variables";
 @import "./Styles/mixins";
 
+*{
+  color: #004346;
+}
 .not_found{
   background-color: aliceblue;
 }
@@ -186,6 +189,7 @@
   min-height: 280px;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
+      position: relative;
 }
 
 #search {
@@ -208,4 +212,47 @@
       border-bottom: 1px solid #b4e1e2;
       padding: 4px 11px;
     }
+}
+
+#profile{
+  .background_box{
+    .ant-image, .user_bg {
+        height: 250px !important;  
+        width: 100% !important;
+        object-fit: cover;
+        border-radius: 20px 20px 0 0;
+      }
+  }
+ 
+
+
+  .avt_user{
+    height: 180px;
+    width: 180px;
+    border-radius: 100%;
+  
+  }
+  .box_user{
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .userName{
+      color: orange;
+      margin-top: 6%;
+      margin-bottom: 0 !important;
+    }
+  }
+  .user_form_box{
+    display: flex;
+    justify-content: center;
+    margin-top: 5%;
+    width: 100%;
+    .user_form{
+      width: 50%;
+    }
+  }
 }

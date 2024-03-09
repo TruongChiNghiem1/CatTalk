@@ -110,7 +110,7 @@ const AppLayout = (props) => {
               icon={<img width={30} height={30} style={{objectFit: 'cover', borderRadius: '100%'}} src={admin}/>}
               title={`${user.firstName} ${user.lastName}`}
             >
-              <Menu.Item key="5-1" icon={<UserOutlined />} onClick={() => navigate('/profile')}>My Profile</Menu.Item>
+              <Menu.Item key="profile" icon={<UserOutlined />} onClick={() => navigate('/profile')}>My Profile</Menu.Item>
               <Menu.Item key="5-2" icon={<LogoutOutlined />} onClick={logOut}>Log out</Menu.Item>
             </SubMenu>
             

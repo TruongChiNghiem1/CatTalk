@@ -1,7 +1,5 @@
 import axios from "axios";
 import { url } from "./cattalk";
-
-
 export const mailConfirm = async (mail) => {
     return await axios.post(`${url}/user/mail-confirm`, { email: mail });
 };
@@ -21,4 +19,10 @@ export const authEmail = async (token) => {
 
 export const logIn = async (user) => {
     return await axios.post(`${url}/user/login`, user);
+}
+
+export const editProfile = async (data, token) => {
+    return await axios.post(`${url}/user/edit-profile`, data, {
+        headers: { authorization: `Bearer  ${token}` }
+    });
 }
