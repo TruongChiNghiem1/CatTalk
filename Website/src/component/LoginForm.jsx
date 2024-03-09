@@ -27,7 +27,6 @@ const LoginForm = () => {
             let values = await form.validateFields();
             const user = await logIn(values)
             if(user.data.status == 200){
-                alert('dshjdffhjdfsdfskj')
                 removeCookie('token');
                 setCookie('loginToken', user.data.accessToken);
                 setCookie('user', user.data.user);
