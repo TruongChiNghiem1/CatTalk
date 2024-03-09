@@ -1,4 +1,4 @@
-import { Button, Carousel , Form, Input, Steps, Typography, theme, message} from 'antd';
+import { Button, Carousel , Form, Input, Steps, Typography, theme, message, DatePicker, Select} from 'antd';
 import logo_login from '../assets/logo_login.png';
 import signup from '../assets/signup.png';
 import { useForm } from 'antd/es/form/Form';
@@ -81,7 +81,6 @@ const SignUpForm = () => {
             let values = await form.validateFields();
             values['token'] = cookies.token;
             const res = await signUp(values);
-            console.log(res.data.status);
             if (res.data.status == 200) {
                 message.success(res.data.message)
                 navigate('/signup/4')

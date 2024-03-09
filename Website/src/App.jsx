@@ -72,8 +72,8 @@ function App() {
             <Route index element={<Navigate to="home" />} />
             <Route path="home" element={<Home />} />
             <Route path="redirect/:id" element={<Redirect/>} />
+            <Route path="profile" element={<Profile/>} />
           </Route>
-          <Route path="/profile" element={<Profile/>} />
           <Route path="*" element={<NotFound/>} />
         </Routes>
       </Router>

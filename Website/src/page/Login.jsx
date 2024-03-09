@@ -22,7 +22,6 @@ const Login = () => {
             <div className="flex-center">
                 <LoginForm/>
             </div>
-           
         </div>
     )
 }
