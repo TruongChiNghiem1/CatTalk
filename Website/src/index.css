@@ -109,6 +109,10 @@ body {
   margin-top: 0 !important;
 }
 
+.ml-2{
+  margin-left: 1.5rem;
+}
+
 .text-end{
   text-align: end;
 }
