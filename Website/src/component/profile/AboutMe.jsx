@@ -1,7 +1,10 @@
 import { useForm } from "antd/es/form/Form";
-import { Layout, Form, Input, Select, Tag, Switch} from "antd";
+import { Layout, Form, Input, Select, Tag, Switch, Button, message} from "antd";
+import { updateAboutUs } from "../../service/user";
+import { useContext, useState } from "react";
+import { AppContext } from '../../context/AppContext';
+import {SaveOutlined} from '@ant-design/icons'
 const {Content} = Layout;
-
 const options = [
   {
     label: 'Photography',
@@ -43,6 +46,28 @@ const tagRender = (props) => {
 
 const AboutMe = (props) => {
     const [form] = useForm()
+    const [loading, setLoading] = useState(false)
+    const {cookies, setCookie, user, setUser} = useContext(AppContext)
+
+    const handleUpdateAboutUs = async() => {
+      try {
+        const values = await form.validateFields();
+        setLoading(true);
+        const res = await updateAboutUs(values, cookies.loginToken)
+        if(res.data.status ===  200){
+                message.success(res.data.message);
+                setUser({...user, description: res.data.description, hobbies: res.data.hobbies})
+                setCookie('user', JSON.stringify({ ...cookies.user, description: res.data.description, hobbies: res.data.hobbies}));
+                setLoading(false);
+            }else{
+                message.error(res.data.message);
+            }
+        
+      } catch (error) {
+        console.log("Error: ", error);
+      }
+    } 
+
     return (
         <Content className='column-start'>
             <Form
@@ -78,6 +103,15 @@ const AboutMe = (props) => {
                 >
                     <Switch defaultChecked disabled={!props.isEdit}/>
                 </Form.Item>
+               {props.isEdit && (
+                 <div className="w-100 flex-center"> 
+                    <Button 
+                      icon={<SaveOutlined />} 
+                      loading={loading}
+                      onClick={handleUpdateAboutUs}
+                      >Save</Button>
+                </div>
+               )}
             </Form>
         </Content>
     )

@@ -107,7 +107,7 @@ const AppLayout = (props) => {
             </Menu.Item>
            <SubMenu
               key="5"
-              icon={<img width={30} height={30} style={{objectFit: 'cover', borderRadius: '100%'}} src={admin}/>}
+              icon={<img width={30} height={30} style={{objectFit: 'cover', borderRadius: '100%'}} src={user.avatar}/>}
               title={`${user.firstName} ${user.lastName}`}
             >
               <Menu.Item key="profile" icon={<UserOutlined />} onClick={() => navigate('/profile')}>My Profile</Menu.Item>

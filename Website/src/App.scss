@@ -1,9 +1,5 @@
 @import "./Styles/variables";
 @import "./Styles/mixins";
-
-*{
-  color: #004346;
-}
 .not_found{
   background-color: aliceblue;
 }
@@ -232,6 +228,34 @@
     position: relative;
     z-index: 1;
   }
+
+  .avatar_box{
+    position: relative;
+  }
+
+  .avatar_box:hover .overlay_change{
+    display: flex;
+  }
+
+  .overlay_change{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 180px;
+    width: 180px;
+    display: none;
+    background-color: #00434654;
+    border-radius: 100%;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    transition: all .4s;
+    .anticon{
+      font-size: 52px;
+      color: white;
+    }
+  } 
+  
 
 
   .avt_user{
