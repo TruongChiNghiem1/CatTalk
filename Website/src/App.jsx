@@ -10,7 +10,6 @@ import SignUp from './page/SignUp';
 import Profile from './page/Profile.jsx';
 import AppLayout from './page/Layout.jsx';
 import Redirect from './page/Redirect.jsx';
-import Auth from './page/Auth.jsx';
 import AppProvider from './context/AppContext.jsx';
 function App() {
   const [currentTheme, setCurrentTheme] = useState('light')
@@ -67,7 +66,6 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup/:step" element={<SignUp />} />
-          <Route path="/auth-mail/:token" element={<Auth />} />
           <Route path="/" element={<AppLayout theme={setCurrentTheme}/> } >
             <Route index element={<Navigate to="home" />} />
             <Route path="home" element={<Home />} />

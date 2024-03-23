@@ -12,8 +12,8 @@ export const listenEvents = async () => {
     return await axios.get(`${url}/user/events`);
 }
 
-export const authEmail = async (token) => {
-    return await axios.get(`${url}/user/auth-mail?token=${token}`);
+export const authEmail = async (data) => {
+    return await axios.post(`${url}/user/auth-mail`, data);
 }
 
 
@@ -27,17 +27,17 @@ export const editProfile = async (data, token) => {
     });
 }
 
-export const uploadAvatar = async (avatar,token) => {
-    return await axios.post(`${url}/user/upload-avatar`, avatar , {
+export const uploadAvatar = async (avatar, token) => {
+    return await axios.post(`${url}/user/upload-avatar`, avatar, {
         headers: { authorization: `Bearer ${token}` }
     });
 }
 
-export const updateAboutUs = async(data, token) => {
+export const updateAboutUs = async (data, token) => {
     return await axios.post(`${url}/user/update-about-us`, data, {
         headers: { authorization: `Bearer ${token}` }
     });
-} 
+}
 
 export const getFriends = async (token) => {
     return await axios.get(`${url}/user/get-friends`, {
