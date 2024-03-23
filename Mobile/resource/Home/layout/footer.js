@@ -7,6 +7,12 @@ import {Icon} from '@ant-design/react-native';
 import {images, fontSize, colors} from '../../../constant';
 import Welcome from '../Welcome/index';
 import Chat from '../chat/ChatItem';
+import PhoneBookItem from '../phonebook/phoneBookItem';
+import {faAddressBook} from '@fortawesome/free-solid-svg-icons/faAddressBook';
+import {faUser} from '@fortawesome/free-solid-svg-icons/faUser';
+import {faStar} from '@fortawesome/free-solid-svg-icons/faStar';
+import RenderProfile from '../profile/profile';
+
 export default class BasicTabBarExample extends React.Component {
   constructor(props) {
     super(props);
@@ -19,8 +25,16 @@ export default class BasicTabBarExample extends React.Component {
     return <Chat></Chat>;
   }
 
+  renderContent2(pageText) {
+    return <PhoneBookItem></PhoneBookItem>;
+  }
+
   renderContent3(pageText) {
     return <Welcome></Welcome>;
+  }
+
+  renderContent4(pageText) {
+    return <RenderProfile></RenderProfile>;
   }
 
   renderContent(pageText) {
@@ -51,26 +65,26 @@ export default class BasicTabBarExample extends React.Component {
           {this.renderContent1('Life Tab')}
         </TabBar.Item>
         <TabBar.Item
-          icon={<Icon name="home" />}
+          icon={<FontAwesomeIcon icon={faAddressBook} />}
           title="Danh bạ"
           badge={2}
           selected={this.state.selectedTab === 'redTab'}
           onPress={() => this.onChangeTab('redTab')}>
-          {this.renderContent('Koubei Tab')}
+          {this.renderContent2('Koubei Tab')}
         </TabBar.Item>
         <TabBar.Item
-          icon={<Icon name="like" />}
+          icon={<FontAwesomeIcon icon={faStar} />}
           title="Welcome"
           selected={this.state.selectedTab === 'greenTab'}
           onPress={() => this.onChangeTab('greenTab')}>
           {this.renderContent3('Friend Tab')}
         </TabBar.Item>
         <TabBar.Item
-          icon={<Icon name="user" />}
+          icon={<FontAwesomeIcon icon={faUser} />}
           title="Cá nhân"
           selected={this.state.selectedTab === 'yellowTab'}
           onPress={() => this.onChangeTab('yellowTab')}>
-          {this.renderContent('My Tab')}
+          {this.renderContent4('My Tab')}
         </TabBar.Item>
       </TabBar>
     );
