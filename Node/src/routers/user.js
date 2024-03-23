@@ -1,5 +1,5 @@
 const express = require('express');
-const { signUp, mailConfirm, authEmail, listenEvents, signIn } = require('../controllers/UserController');
+const { signUp, mailConfirm, authEmail, listenEvents, signIn, testData } = require('../controllers/UserController');
 
 const routerUser = express.Router();
 //Sign up
@@ -11,5 +11,6 @@ routerUser.get('/events',listenEvents)
 // Log in 
 routerUser.post('/login', signIn)
 
-module.exports = routerUser;
+routerUser.get('/test-data', testData)
 
+module.exports = routerUser;

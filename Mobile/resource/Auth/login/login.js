@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Image,
   ImageBackground,
@@ -17,6 +17,35 @@ import {UIInput} from '../../../components';
 // import { useNavigate } from 'react-router-native';
 
 const Login = (res) => {
+  const {navigation} = res;
+  // const {userInfo, setUserInfo} = useState({
+  //   email: '',
+  //   password: '',
+  // });
+  // const {email, password} = userInfo;
+  // const handleLogIn = async () => {
+  //   alert(userInfo, setUserInfo);
+  //   setLoading(true);
+  //   try {
+  //     let values = await form.validateFields();
+  //     const user = await logIn(values);
+  //     if (user.data.status == 200) {
+  //       removeCookie('token');
+  //       setCookie('loginToken', user.data.accessToken);
+  //       setCookie('user', user.data.user);
+  //       setUser(user.data.user);
+  //       message.success(user.data.message);
+  //       navigate('/home');
+  //     } else if (user.data.status == 401) {
+  //       user.data.message.map(item => message.warning(item));
+  //     } else {
+  //       message.error(user.data.message);
+  //     }
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.log('Error: ', +error);
+  //   }
+  // };
   // let navigate = useNavigate;
   return (
     <View
@@ -44,7 +73,7 @@ const Login = (res) => {
               width: 200,
               height: 200,
             }}></Image>
-          <UIInput placeholder="Phone"></UIInput>
+          <UIInput placeholder="email"></UIInput>
           <UIInput placeholder="Password"></UIInput>
           <View style={{width: 300, display: 'flex', alignItems: 'flex-end'}}>
             <Text
@@ -58,10 +87,8 @@ const Login = (res) => {
               Forgot password
             </Text>
           </View>
+          {/* // onPress={handleLogIn} */}
           <TouchableOpacity
-            onPress={() => {
-              alert('You login');
-            }}
             style={{
               width: 65,
               height: 65,
@@ -118,7 +145,7 @@ const Login = (res) => {
       </ImageBackground>
     </View>
   );
-}
+};
 
 export default Login;
 /*
