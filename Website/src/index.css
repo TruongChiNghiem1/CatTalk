@@ -85,6 +85,9 @@ body {
   justify-content: start;
   align-items: center;
 }
+.m-0{
+  margin: 0 !important;
+}
 
 .mt-2{
   margin-top: 1.5 rem !important;
@@ -113,6 +116,9 @@ body {
   margin-left: 1.5rem;
 }
 
+.ml-1 {
+  margin-left: 1rem;
+}
 .text-end{
   text-align: end;
 }
@@ -133,4 +139,15 @@ body {
   display: flex;
   justify-content: end;
 }
-/* Test */
+ #layout_main{
+  max-height: 98vh;
+  overflow: hidden;
+ }
+
+ .title_feature{
+  font-size: 28px  !important;
+ }
+
+ .primary{
+  color: #44bccc !important
+ }

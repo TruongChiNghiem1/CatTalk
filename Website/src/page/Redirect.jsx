@@ -1,6 +1,8 @@
 
-import { Layout, theme, Typography } from 'antd';
-const {Content } = Layout;
+import { Layout, theme, Typography, Row } from 'antd';
+import ChatList from '../component/redirect/ChatList';
+import ChatBox from '../component/redirect/ChatBox';
+const {Content} = Layout;
 const Home = () => {
   const {
     token: { colorBgContainer },
@@ -10,7 +12,11 @@ const Home = () => {
           className='container'
           style={{background: colorBgContainer,}}
         >
-        <Typography.Paragraph>REDIRECT</Typography.Paragraph>
+        <Row>
+          <ChatList/>
+          <ChatBox/>
+        </Row>
+
         </Content>
   );
 };
