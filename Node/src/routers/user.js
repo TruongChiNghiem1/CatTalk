@@ -1,12 +1,7 @@
 const express = require('express');
-<<<<<<< HEAD
-const { signUp, mailConfirm, authEmail, listenEvents, signIn, testData } = require('../controllers/UserController');
-
-=======
-const { signUp, mailConfirm, authEmail, listenEvents, signIn, editProfile } = require('../controllers/UserController');
+const { signUp, mailConfirm, authEmail, listenEvents, signIn, editProfile, testData } = require('../controllers/UserController');
 const checkLogin = require('../middlewares/auth');
 const app = express();
->>>>>>> main
 const routerUser = express.Router();
 //Sign up
 routerUser.post('/mail-confirm', mailConfirm)

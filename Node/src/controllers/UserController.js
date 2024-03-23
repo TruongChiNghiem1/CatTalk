@@ -5,18 +5,12 @@ const dotenv = require('dotenv')
 const jwt = require('jsonwebtoken')
 const Mailgen = require('mailgen')
 dotenv.config()
-<<<<<<< HEAD
 const nodemailer = require('nodemailer')
 const http = require('http')
 const url = require('url')
 const fs = require('fs')
 
 const clients = []
-=======
-const nodemailer = require("nodemailer");
-const fs = require("fs");
-const clients = [];
->>>>>>> main
 const handleHTTP = (req, res) => {
     fs.readFile('index.html', (err, data) => {
         if (err) {
@@ -47,10 +41,6 @@ const mailConfirm = async (req, res) => {
 
         let email = req.body.email
         let checkUser = await User.find({ email: email })
-<<<<<<< HEAD
-        console.log(checkUser)
-=======
->>>>>>> main
         if (checkUser.length > 0) {
             return res.json({
                 status: 500,
@@ -361,16 +351,6 @@ const editProfile = async(req, res) => {
             })
         }
 
-<<<<<<< HEAD
-module.exports = {
-    signUp,
-    mailConfirm,
-    authEmail,
-    listenEvents,
-    signIn,
-    testData,
-}
-=======
         const dataUpdate = await User.findOneAndUpdate({ email: email }, req.body, { new: false });
         if (!dataUpdate) {
             return res.json({
@@ -391,5 +371,4 @@ module.exports = {
     }
 }
 
-module.exports = { signUp, mailConfirm, authEmail, listenEvents, signIn, editProfile };
->>>>>>> main
+module.exports = { signUp, mailConfirm, authEmail, listenEvents, signIn, testData, editProfile };
