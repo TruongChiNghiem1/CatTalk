@@ -1,1 +1,1 @@
-export const url = 'http://https://cattalk.id.vn/cattalk';
+export const url = 'http://cattalk.id.vn/cattalk';
