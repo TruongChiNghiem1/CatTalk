@@ -114,7 +114,7 @@ const authEmail = async (req, res) => {
                 status: 200,
                 token: token
             })
-        }else {
+        } else {
             return res.json({
                 status: 500,
                 message: 'OTP code is invalid'
