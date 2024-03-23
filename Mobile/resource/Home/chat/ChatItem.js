@@ -25,7 +25,7 @@ const ChatItem = () => {
     setLoading(true);
     try {
       const res = await axios.get(
-        'http://172.20.10.4:2080/cattalk/user/test-data',
+        'http://172.28.34.97:2080/cattalk/user/test-data',
       );
       setData(res.data.data);
       setLoading(false);
