@@ -6,24 +6,24 @@ import {faArrowRightToBracket} from '@fortawesome/free-solid-svg-icons/faArrowRi
 import {Icon} from '@ant-design/react-native';
 import {images, fontSize, colors} from '../../../constant';
 import Welcome from '../Welcome/index';
-import Chat from '../chat/chat';
-export default class BasicTabBarExample extends React.Component<any, any> {
-  constructor(props: any) {
+import Chat from '../chat/ChatItem';
+export default class BasicTabBarExample extends React.Component {
+  constructor(props) {
     super(props);
     this.state = {
       selectedTab: 'blueTab',
     };
   }
 
-  renderContent1(pageText: any) {
+  renderContent1(pageText) {
     return <Chat></Chat>;
   }
 
-  renderContent3(pageText: any) {
+  renderContent3(pageText) {
     return <Welcome></Welcome>;
   }
 
-  renderContent(pageText: any) {
+  renderContent(pageText) {
     return (
       <View style={{flex: 1, alignItems: 'center', backgroundColor: 'red'}}>
         <Text style={{margin: 50}}>{pageText}</Text>
@@ -31,7 +31,7 @@ export default class BasicTabBarExample extends React.Component<any, any> {
     );
   }
 
-  onChangeTab(tabName: any) {
+  onChangeTab(tabName) {
     this.setState({
       selectedTab: tabName,
     });
@@ -64,13 +64,6 @@ export default class BasicTabBarExample extends React.Component<any, any> {
           selected={this.state.selectedTab === 'greenTab'}
           onPress={() => this.onChangeTab('greenTab')}>
           {this.renderContent3('Friend Tab')}
-        </TabBar.Item>
-        <TabBar.Item
-          icon={<Icon name="user" />}
-          title="Cá nhân"
-          selected={this.state.selectedTab === 'yellowTab'}
-          onPress={() => this.onChangeTab('yellowTab')}>
-          {this.renderContent('My Tab')}
         </TabBar.Item>
         <TabBar.Item
           icon={<Icon name="user" />}

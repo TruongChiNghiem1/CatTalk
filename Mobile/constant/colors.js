@@ -5,4 +5,5 @@ export default {
     bgHeader: '#D8FEFF',
     textGreen: '#47C8CD',
     colorFooterMenu: '#E3FEFF',
+    colorBgButton: '#4AD1D6'
 }
