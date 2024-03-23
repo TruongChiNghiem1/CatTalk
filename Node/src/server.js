@@ -7,7 +7,7 @@ const router = require('./routers');
 const bodyParser = require('body-parser');
 const checkLogin = require('./middlewares/auth');
 dotenv.config();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 2080;
 const URI_DB = process.env.URI_DB;
 connect(URI_DB); 
 app.use(cors());
