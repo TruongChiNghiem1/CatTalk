@@ -9,6 +9,17 @@ dotenv.config()
 const nodemailer = require("nodemailer");
 const s3 = require("../config/aws-helper.js");
 
+const clients = []
+const handleHTTP = (req, res) => {
+    fs.readFile('index.html', (err, data) => {
+        if (err) {
+            res.writeHead(500)
+            return res.end('Error loading index.html')
+        }
+        res.writeHead(200, { 'Content-Type': 'text/html' })
+        res.end(data)
+    })
+}
 
 const { SECRET_CODE, AUTH_MAIL, AUTH_PASS, EXPIRATION_TIME } = process.env;
 const mailConfirm = async (req, res) => {
@@ -19,14 +30,14 @@ const mailConfirm = async (req, res) => {
                 user: AUTH_MAIL,
                 pass: AUTH_PASS,
             },
-        });
+        })
 
-        let email = req.body.email;
+        let email = req.body.email
         let checkUser = await User.find({ email: email })
         if (checkUser.length > 0) {
             return res.json({
                 status: 500,
-                message: 'Email already in use!'
+                message: 'Email already in use!',
             })
         } else {
             let otp = Math.floor(1000 + Math.random() * 9000);
@@ -44,7 +55,7 @@ const mailConfirm = async (req, res) => {
             var emailConfig = {
                 body: {
                     name: 'Newbie',
-                    intro: 'Welcome to CATTALK! We\'re very excited to have you on board.',
+                    intro: "Welcome to CATTALK! We're very excited to have you on board.",
                     action: {
                         instructions: 'To get started with CATTALK, please input this OTP at step three:',
                         button: {
@@ -53,9 +64,9 @@ const mailConfirm = async (req, res) => {
                             link: 'https://mailgen.js/confirm?s=d9729feb74992cc3482b350163a1a010'
                         }
                     },
-                    outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
-                }
-            };
+                    outro: "Need help, or have questions? Just reply to this email, we'd love to help.",
+                },
+            }
 
             // Generate an HTML email with the provided contents
             var mail = mailGenerator.generate(emailConfig);
@@ -64,18 +75,23 @@ const mailConfirm = async (req, res) => {
                 from: 'cattalkvn@gmail.com',
                 subject: 'Confirm your email address',
                 to: email,
-                html: mail
-            };
+                html: mail,
+            }
 
             transporter.sendMail(mailOptions, (error) => {
                 if (error) {
-                    res.json({ status: 500, message: 'Error sending verification email.' });
+                    res.json({
+                        status: 500,
+                        message: 'Error sending verification email.',
+                    })
                 } else {
-                    res.json({ status: 200, message: 'Verification email sent.' });
+                    res.json({
+                        status: 200,
+                        message: 'Verification email sent.',
+                    })
                 }
-            });
+            })
         }
-
     } catch (error) {
         console.log(error);
         return res.status(500).json({
@@ -131,28 +147,40 @@ const authEmail = async (req, res) => {
 
 }
 
+const authEmail = (req, res) => {
+    const { token } = req.query
+
+    const confirmationData = {
+        message: 'Confirmation received',
+        timestamp: new Date().toISOString(),
+        token: token,
+    }
+    sendSSE(confirmationData)
+    res.writeHead(200, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify(confirmationData))
+}
 
 const signUp = async (req, res) => {
     try {
         // Validation
         const { userName, firstName, lastName, password, token } = req.body
-        const decoded = jwt.verify(token, SECRET_CODE);
-        const email = decoded.email;
-        const { error } = signUpValid.validate(req.body, { abortEarly: false });
+        const decoded = jwt.verify(token, SECRET_CODE)
+        const email = decoded.email
+        const { error } = signUpValid.validate(req.body, { abortEarly: false })
         if (error) {
-            const errors = error.details.map(err => err.message)
+            const errors = error.details.map((err) => err.message)
             return res.json({
                 status: 400,
                 message: errors,
-            });
+            })
         }
         // Check email
         const emailExists = await User.findOne({ email: email, otp: 1 })
         if (emailExists) {
             return res.json({
                 status: 500,
-                message: "Email already used"
-            });
+                message: 'Email already used',
+            })
         }
 
         //check username
@@ -160,10 +188,9 @@ const signUp = async (req, res) => {
         if (userNameExists) {
             return res.json({
                 status: 500,
-                message: "Username already used"
-            });
+                message: 'Username already used',
+            })
         }
-
 
         // Hash password
         const hashedPassword = await bcrypyjs.hash(password, 10);
@@ -177,10 +204,10 @@ const signUp = async (req, res) => {
         })
         console.log(user);
         //  Get info for client
-        user.password = undefined;
+        user.password = undefined
         return res.json({
             status: 200,
-            message: "User created successfully",
+            message: 'User created successfully',
         })
     } catch (error) {
         console.log(error);
@@ -189,35 +216,34 @@ const signUp = async (req, res) => {
             message: 'Opps, somthing went wrong!!!',
         })
     }
-};
-
+}
 
 const signIn = async (req, res) => {
     try {
         // Validation
         const { userName, password } = req.body
-        const { error } = signInValid.validate(req.body, { abortEarly: false });
+        const { error } = signInValid.validate(req.body, { abortEarly: false })
         if (error) {
-            const errors = error.details.map(err => err.message)
+            const errors = error.details.map((err) => err.message)
             return res.json({
                 status: 401,
                 message: errors,
-            });
+            })
         }
         // Check email
         const user = await User.findOne({ userName })
         if (!user) {
             return res.json({
                 status: 400,
-                message: "User not found"
+                message: 'User not found',
             })
         }
 
-        const isMatch = await bcrypyjs.compare(password, user.password);
+        const isMatch = await bcrypyjs.compare(password, user.password)
         if (!isMatch) {
             return res.json({
                 status: 400,
-                message: "Invalid credentials"
+                message: 'Invalid credentials',
             })
         }
         //  Creat jwt token
@@ -232,9 +258,9 @@ const signIn = async (req, res) => {
 
         return res.json({
             status: 200,
-            message: "User logged in successfully",
+            message: 'User logged in successfully',
             user: user,
-            accessToken: token
+            accessToken: token,
         })
     } catch (error) {
         return res.json({
@@ -242,7 +268,93 @@ const signIn = async (req, res) => {
             message: 'Opps, somthing went wrong!!!',
         })
     }
-};
+}
+
+const testData = async (req, res) => {
+    try {
+        const data = [
+            {
+                name: 'Trương Chí Nghiệm',
+                avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzVzoUQXLR61QEJa7ZlHUEVt1YtBkXc7wRhA&usqp=CAU',
+                notify: 2,
+                contentNew: 'Em ăn gì chưa?',
+            },
+            {
+                name: 'Nguyễn Uyển Quyên',
+                avatar: 'https://thoibaotaichinhvietnam.vn/stores/news_dataimages/thoibaotaichinhvietnamvn/122015/03/11/10-nguoi-quyen-luc-nhat-lang-cong-nghe-the-gioi-03-.8340.jpg',
+                notify: 2,
+                contentNew: 'Ủa em',
+            },
+            {
+                name: 'Vũ Đăng Khôi',
+                avatar: 'https://thoibaotaichinhvietnam.vn/stores/news_dataimages/thoibaotaichinhvietnamvn/122015/03/11/10-nguoi-quyen-luc-nhat-lang-cong-nghe-the-gioi-12-.0831.jpg',
+                notify: 2,
+                contentNew: 'Chổ đó hôm qua sao rồi',
+            },
+            {
+                name: 'Trần Văn Nam',
+                avatar: 'https://thoibaotaichinhvietnam.vn/stores/news_dataimages/thoibaotaichinhvietnamvn/122015/03/11/10-nguoi-quyen-luc-nhat-lang-cong-nghe-the-gioi-12-.2508.jpg',
+                notify: 2,
+                contentNew: 'T chuyển cho m rồi',
+            },
+            {
+                name: 'Nguyễn Đức Thịnh',
+                avatar: 'https://thoibaotaichinhvietnam.vn/stores/news_dataimages/thoibaotaichinhvietnamvn/122015/03/11/10-nguoi-quyen-luc-nhat-lang-cong-nghe-the-gioi-03-.9139.jpg',
+                notify: 2,
+                contentNew: 'Chết rồi, t quên mất tiêu',
+            },
+            {
+                name: 'Co be khoc nhe',
+                avatar: 'https://cafefcdn.com/2019/7/5/photo-1-15622920117161385854940.jpg',
+                notify: 2,
+                contentNew: 'Oki a',
+            },
+            {
+                name: 'Trần Văn Lục',
+                avatar: 'https://vtv1.mediacdn.vn/2017/photo-2-1484589031686.jpg',
+                notify: 2,
+                contentNew: 'Dạ đr a',
+            },
+            {
+                name: 'Nguyễn Lê Vi Thanh',
+                avatar: 'https://nld.mediacdn.vn/2019/6/6/photo-1-15598019716201065303494.jpg',
+                notify: 2,
+                contentNew: 'Oki tks u',
+            },
+            {
+                name: 'Trần Đỉnh Chi',
+                avatar: 'https://static.tuoitre.vn/tto/i/s626/2016/05/25/obama-hanoi5-4read-only-1464133884.jpg',
+                notify: 2,
+                contentNew: 'À vậy hả, tks ô nha',
+            },
+            {
+                name: 'Nguyễn Trấn Thành',
+                avatar: 'https://cafebiz.cafebizcdn.vn/2019/5/17/photo-2-15580579930601897948260.jpg',
+                notify: 2,
+                contentNew: 'Chết rồi, t quên mất tiêu',
+            },
+
+            {
+                name: 'Bill gate',
+                avatar: 'https://topviecit.vn/blog/wp-content/uploads/2023/01/review-nganh-cong-nghe-thong-tin-topcv1.jpg',
+                notify: 2,
+                contentNew: 'Hôm qua cô có giao bài tập gì hong',
+            },
+        ]
+
+        return res.json({
+            status: 200,
+            message: 'Data test message',
+            data: data,
+        })
+    } catch (error) {
+        console.log(error)
+        return res.json({
+            status: 500,
+            message: 'Opps, somthing went wrong!!!',
+        })
+    }
+}
 
 const editProfile = async (req, res) => {
     try {

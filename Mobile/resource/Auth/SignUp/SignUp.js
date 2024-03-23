@@ -5,6 +5,7 @@ import {Image} from 'react-native';
 import {UIInput} from '../../../components';
 
 function SignUp(res) {
+  const {navigation} = res;
   return (
     <View
       style={{

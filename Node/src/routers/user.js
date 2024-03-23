@@ -21,3 +21,4 @@ routerUser.post('/upload-avatar', upload.single('avatar'), uploadAvatar)
 routerUser.post('/update-about-us', updateAboutUs)
 module.exports = routerUser;
 
+module.exports = routerUser;
