@@ -5,12 +5,18 @@ const dotenv = require('dotenv')
 const jwt = require('jsonwebtoken')
 const Mailgen = require('mailgen')
 dotenv.config()
+<<<<<<< HEAD
 const nodemailer = require('nodemailer')
 const http = require('http')
 const url = require('url')
 const fs = require('fs')
 
 const clients = []
+=======
+const nodemailer = require("nodemailer");
+const fs = require("fs");
+const clients = [];
+>>>>>>> main
 const handleHTTP = (req, res) => {
     fs.readFile('index.html', (err, data) => {
         if (err) {
@@ -41,7 +47,10 @@ const mailConfirm = async (req, res) => {
 
         let email = req.body.email
         let checkUser = await User.find({ email: email })
+<<<<<<< HEAD
         console.log(checkUser)
+=======
+>>>>>>> main
         if (checkUser.length > 0) {
             return res.json({
                 status: 500,
@@ -327,8 +336,32 @@ const testData = async (req, res) => {
     }
 }
 
-// const token = crypto.randomBytes(32).toString('hex');
+const editProfile = async(req, res) => {
+    try{
+        const { error } = signInValid.validate(req.body, { abortEarly: false });
+        if (error) {
+            const errors = error.details.map(err => err.message)
+            return res.json({
+                status: 401,
+                message: errors,
+            });
+        }
+        const user = await User.findOne({email});
+        if (!user) {
+            return res.json({
+                status: 400,
+                message: "User not found"
+            })
+        }
+        const isMatch = await bcrypyjs.compare(password, user.password);
+        if (!isMatch) {
+            return res.json({
+                status: 500,
+                message: "Invalid credentials"
+            })
+        }
 
+<<<<<<< HEAD
 module.exports = {
     signUp,
     mailConfirm,
@@ -337,3 +370,26 @@ module.exports = {
     signIn,
     testData,
 }
+=======
+        const dataUpdate = await User.findOneAndUpdate({ email: email }, req.body, { new: false });
+        if (!dataUpdate) {
+            return res.json({
+                status: 500,
+                message: "Your information is invalid, please try again",
+            });
+        }
+        return res.status(200).json({
+            message: "Your information has been successfully updated",
+            user: dataUpdate,
+        })
+
+    }catch(e){
+        return res.json({
+            status: 500,
+            message: 'Opps, somthing went wrong!!!',
+        })
+    }
+}
+
+module.exports = { signUp, mailConfirm, authEmail, listenEvents, signIn, editProfile };
+>>>>>>> main
