@@ -4,7 +4,7 @@ const bcrypyjs = require("bcryptjs");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 const Mailgen = require('mailgen');
-const Token = require("../models/Token.js");
+const Token = require("../models/token.js");
 dotenv.config()
 const nodemailer = require("nodemailer");
 const s3 = require("../config/aws-helper.js");
