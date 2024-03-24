@@ -5,7 +5,7 @@ import {Image} from 'react-native';
 import {UIInput} from '../../../components';
 
 function SignUp(res) {
-  const {navigation} = res;
+  // const {navigation} = res;
   return (
     <View
       style={{
@@ -180,7 +180,7 @@ function SignUp(res) {
               You have an account ?{' '}
             </Text>
             <Text
-              onPress={() => navigation.navigate('SignUp')}
+              // onPress={() => navigation.navigate('SignUp')}
               style={{
                 color: colors.primary,
                 fontSize: fontSize.h5,
