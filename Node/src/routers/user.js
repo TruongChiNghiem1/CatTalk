@@ -19,6 +19,7 @@ routerUser.post('/edit-profile', editProfile)
 routerUser.get('/get-friends', getFriends)
 routerUser.post('/upload-avatar', upload.single('avatar'), uploadAvatar)
 routerUser.post('/update-about-us', updateAboutUs)
-module.exports = routerUser;
+
+routerUser.get('/test-data', testData)
 
 module.exports = routerUser;
