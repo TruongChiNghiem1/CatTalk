@@ -19,7 +19,7 @@ const checkLogin = async (req, res, next) => {
         // Decode token
         const decoded = jwt.verify(token, SECRET_CODE)
         // Firn user from token.payload decoded 
-        const user = await User.findById(decoded.email)
+        const user = await User.findOne({ userName: decoded.username })
         // Check role
         if (!user) {
             throw new Error("You are not authorized to access this")

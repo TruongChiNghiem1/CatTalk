@@ -21,7 +21,7 @@ const Search = () => {
         <Content id='search' style={{background: colorBgContainer}}>
           <animated.div style={animationProps}>
             <div className='flex-between'>
-              <Typography.Title className='mt-0'>Search</Typography.Title>
+              <Typography.Title className='mt-0 title_feature'>Search</Typography.Title>
               <Button icon={<CloseOutlined style={{color: ' #36a7b6'}}/>} type='secondary' onClick={() => setOpenSearch(false)}></Button>
             </div>
             

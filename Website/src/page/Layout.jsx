@@ -116,7 +116,7 @@ const AppLayout = (props) => {
             
         </Menu>
       </Sider>
-      <Layout style={{background: colorBgSecondary, marginLeft: '24px'}}>
+      <Layout style={{background: colorBgSecondary, marginLeft: '24px'}} id='layout_main'>
         <Header
           style={{
             padding: 0,

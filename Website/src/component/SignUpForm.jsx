@@ -1,4 +1,4 @@
-import { Button, Carousel , Form, Input, Steps, Typography, theme, message, DatePicker, Select} from 'antd';
+import { Button, Carousel , Form, Input, Steps, Typography, theme, message} from 'antd';
 import logo_login from '../assets/logo_login.png';
 import signup from '../assets/signup.png';
 import { useForm } from 'antd/es/form/Form';
@@ -6,9 +6,9 @@ import { LoginOutlined,LogoutOutlined, DoubleRightOutlined} from '@ant-design/ic
 import { useEffect, useState } from 'react';
 import cat_hello from '../assets/cat_hello.png';
 import { useNavigate, useParams } from 'react-router-dom';
-import { mailConfirm, signUp } from '../service/user';
-import { Cookies, useCookies } from 'react-cookie';
-import { url } from '../service/cattalk'
+import { mailConfirm, signUp, authEmail} from '../service/user';
+import { useCookies } from 'react-cookie';
+
 const SignUpForm = () => {
         const {
     token: { baseColor },
@@ -16,7 +16,7 @@ const SignUpForm = () => {
     const [form] = useForm()
     const navigate = useNavigate()
     const [count, setCount] = useState(60) 
-    const {step} = useParams()
+    const [step, setStep] = useState(1)
     const [cookies,setCookie] = useCookies(['token']);
     const [loading, setLoading] = useState(false)
 
@@ -27,6 +27,8 @@ const SignUpForm = () => {
             const res = await mailConfirm(value.email);
             if(res.data.status === 200){
                 message.success(res.data.message) 
+                setStep(2)
+                localStorage.setItem('email', value.email)
             }
             else{
                 message.error(res.data.message)
@@ -49,32 +51,6 @@ const SignUpForm = () => {
     }, [step]);
 
 
-    // useEffect(() => {
-    //     const queryParams = new URLSearchParams(window.location.search);
-    //     const token = queryParams.get('token');
-    //     setCookie('token', token, { path: '/' });
-    // }, [setCookie]);
-
-    useEffect(() =>{
-        if(step == 2){
-            const queryParams = new URLSearchParams(window.location.search);
-            const token = queryParams.get('token');
-            if(token){
-            const eventSource = new EventSource(`${url}/user/events?token=${token}`);
-            eventSource.onmessage = function (event) {
-                const newData = JSON.parse(event.data);
-                console.log(newData);
-                setCookie('token', event.data.token, { path: '/' });
-            };
-            }
-        }
-    }, [])
-
-    const handleNext = async() =>{
-        navigate('/signup/3')
-    }
-
-
     const handleSendInfoUser = async () => {
         setLoading(true);
         try {
@@ -82,8 +58,8 @@ const SignUpForm = () => {
             values['token'] = cookies.token;
             const res = await signUp(values);
             if (res.data.status == 200) {
+                setStep(4)
                 message.success(res.data.message)
-                navigate('/signup/4')
             }else if(res.data.status === 400){
                  res.data.message.map(item => ( message.warning(item)))
             }
@@ -96,6 +72,23 @@ const SignUpForm = () => {
             console.log("Error: ", error.message);
         }
     };
+
+    const handleAuthEmail = async() => {
+        try {   
+            let value = await form.validateFields();
+            value['email'] = localStorage.getItem('email');
+            const auth = await authEmail(value)
+            if(auth.data.status === 200){
+                setCookie('token', auth.data.token)
+                setStep(3)
+            }else {
+                message.error(auth.data.message)
+            }
+
+        }catch (error) {
+            console.log("Error: ", error.message);
+        }
+    }   
 
 
     return(
@@ -157,7 +150,28 @@ const SignUpForm = () => {
                 ) : step == 2 ? (
                     <div className='flex-column-center w-100 box_mail'>
                     <Typography.Paragraph>CATTALK has sent a verification link to your email, please verify your email to go to the next step.</Typography.Paragraph>
-                    <Button icon={<LogoutOutlined />} type='primary' onClick={handleNext}>Next</Button>
+                    <Form
+                        form={form}
+                        layout='vertical'
+                        className='w-100 flex-center'
+                    >
+                     <Form.Item
+                            name="otp"
+                            label="Your OTP you recieved in email"
+                            rules={[
+                            {
+                                required: true,
+                                message: 'OTP is required'
+                            },
+                            ]}
+                        >
+                            <Input 
+                                placeholder='Input your OTP'
+                                type='number'
+                            />
+                        </Form.Item>
+                </Form>
+                    <Button icon={<LogoutOutlined />} type='primary' onClick={handleAuthEmail}>Next</Button>
                     </div>
                 ) : step == 3 ? (
                     <div className='w-100 flex-column-center' style={{ marginTop: '1rem'}}>
