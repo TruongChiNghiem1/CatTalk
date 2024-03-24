@@ -375,6 +375,45 @@ const uploadAvatar = async (req, res) => {
     }
 }
 
+const uploadBackground = async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(" ")[1];
+        const decoded = jwt.verify(token, SECRET_CODE);
+        const username = decoded.username;
+
+        const avatar = req.file;
+        const filePath = avatar.originalname;
+        const paramsS3 = {
+            Bucket: process.env.BUCKET_NAME,
+            Key: filePath,
+            Body: req.file.buffer,
+            ContentType: req.file.mimetype,
+        }
+        s3.upload(paramsS3, async (err, data) => {
+            if (err) {
+                console.log("Upload fail", err);
+                return res.json({
+                    status: 500,
+                    message: 'Server cannot save your background, try again!',
+                })
+            } else {
+                const user = await User.findOneAndUpdate({ 'userName': username }, { background: data.Location })
+                return res.json({
+                    status: 200,
+                    message: 'Changed background successfully!',
+                    avatar: data.Location
+                })
+            }
+        })
+    } catch (error) {
+        console.log(error);
+        return res.json({
+            status: 500,
+            message: 'Opps, somthing went wrong!!!',
+        })
+    }
+}
+
 const updateAboutUs = async (req, res) => {
     try {
         const token = req.headers.authorization.split(" ")[1];
@@ -385,7 +424,7 @@ const updateAboutUs = async (req, res) => {
         await User.findOneAndUpdate({ 'userName': username }, { description: description, hobbies: hobbies })
         return res.json({
             status: 200,
-            message: 'Changed avatar successfully!',
+            message: 'Changed your infomation successfully!',
             description: description,
             hobbies: hobbies
         })
@@ -399,4 +438,4 @@ const updateAboutUs = async (req, res) => {
     }
 }
 
-module.exports = { signUp, mailConfirm, authEmail, signIn, editProfile, getFriends, uploadAvatar, updateAboutUs };
+module.exports = { signUp, mailConfirm, authEmail, signIn, editProfile, getFriends, uploadAvatar, updateAboutUs, uploadBackground};
