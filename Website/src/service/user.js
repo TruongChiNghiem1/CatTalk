@@ -33,6 +33,12 @@ export const uploadAvatar = async (avatar, token) => {
     });
 }
 
+export const uploadBackground = async (bg, token) => {
+    return await axios.post(`${url}/user/upload-background`, bg, {
+        headers: { authorization: `Bearer ${token}` }
+    });
+}
+
 export const updateAboutUs = async (data, token) => {
     return await axios.post(`${url}/user/update-about-us`, data, {
         headers: { authorization: `Bearer ${token}` }

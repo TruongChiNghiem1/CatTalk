@@ -1,13 +1,12 @@
-import { Image ,theme, Layout, Button, message, Menu, Modal,Slider, Typography} from 'antd';
+import { Image ,theme, Layout, Button, message, Menu, Modal,Slider, Typography, Spin} from 'antd';
 import { createRef, useContext, useState } from 'react';
 import { AppContext } from '../context/AppContext';
-import bg from '../assets/default_bg.jpg'
-import {EditOutlined, SwapLeftOutlined, SaveOutlined, UserOutlined,TeamOutlined, CoffeeOutlined,CameraOutlined} from '@ant-design/icons'
+import {EditOutlined, SwapLeftOutlined, SaveOutlined, UserOutlined,TeamOutlined, CoffeeOutlined,CameraOutlined, CloseCircleOutlined} from '@ant-design/icons'
 import qr from '../assets/qr_default.png'
 import FormInfo from '../component/profile/FormInfo';
 import ListFriend from '../component/profile/ListFriend';
 import AboutMe from '../component/profile/AboutMe';
-import { uploadAvatar } from '../service/user';
+import { uploadAvatar, uploadBackground} from '../service/user';
 import AvatarEditor from 'react-avatar-editor'
 const {Content } = Layout;
 
@@ -35,11 +34,20 @@ const Profile = () =>{
     const {user, setUser, cookies, setCookie} = useContext(AppContext)
     const [isEdit, setIsEdit] = useState(false)
     const [current, setCurrent] = useState('info');
+
     const [hasImage, setHasImage] = useState(false)
+    const [hasBg, setHasBg] = useState(false)
+
     const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedBg, setSelectedBg] = useState(null);
+
     const [scale, setScale] = useState(1);
+
     const [loading, setLoading] = useState(false);
+    const [bgLoad, setBgLoad] = useState(false);
+
     const editorRef = createRef();
+    const bgRef = createRef();
 
     const InfoContent = (current) =>{
     switch (current){
@@ -82,6 +90,29 @@ const Profile = () =>{
 
     }
 
+     const handleUploadBg = async () =>{
+        setBgLoad(true)
+        const formData = new FormData();
+        const imageToUpload = bgRef.current.getImage().toDataURL();
+        formData.append('background', dataURLtoFile(imageToUpload, `${user.userName}_${Date.now().toString()}_background.png`));
+        try {
+            const res = await uploadBackground(formData, cookies.loginToken);
+            if(res.data.status ===  200){
+                message.success(res.data.message);
+                setHasBg(false);
+                setUser({...user, background: res.data.background})
+                setCookie('user', JSON.stringify({ ...cookies.user, background: res.data.background }));
+                setBgLoad(false);
+            }else{
+                message.error(res.data.message);
+            }
+        } catch (e) {
+            console.log("Error: " + e.message);
+        }
+
+    }
+
+
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if(!['image/jpeg','image/pjpeg','image/png'].includes(file.type)){
@@ -92,6 +123,18 @@ const Profile = () =>{
             setHasImage(true)
         }
     };
+
+
+    const handleBgChange = (e) => {
+        const file = e.target.files[0];
+        if(!['image/jpeg','image/pjpeg','image/png'].includes(file.type)){
+            message.error('Image invalid')
+        }
+        else {
+            setSelectedBg(URL.createObjectURL(file));
+            setHasBg(true)
+        }
+    }
 
     const dataURLtoFile = (dataURL, filename) => {
         const arr = dataURL.split(',');
@@ -116,6 +159,12 @@ const Profile = () =>{
         });
     };
 
+
+    const cancelChangeBg = () => {
+        setHasBg(false)
+        setSelectedBg(null)
+    }
+
     
 
     return(
@@ -127,7 +176,49 @@ const Profile = () =>{
           }}
         >
         <div className='background_box'>
-            <Image src={bg} className='user_bg w-100'/>
+            {hasBg ? (
+                <div className='position-relative'>
+                    <AvatarEditor
+                        ref={bgRef}
+                        image={selectedBg}
+                        width={1500}
+                        height={260}
+                        borderRadius={0}
+                        border={0}
+                        color={[120, 199, 201, 0.26]} 
+                        scale={scale}
+                        rotate={0}
+                        className='canvas_bg'
+                    />
+                    {bgLoad && (
+                        <div className='load_bg_overlay'>
+                            <Spin/>
+                        </div>
+                    )}
+                    <div className='action_background'>
+                        <Button icon={<CloseCircleOutlined/>} onClick={cancelChangeBg}>Close</Button>
+                        <Button icon={<SaveOutlined/>} onClick={handleUploadBg}>Save</Button>
+                    </div>
+                </div>
+               
+            ) : (
+                <div className='w-100 position-relative'>
+                     <label htmlFor='bg' className='change_background'>
+                        <CameraOutlined style={{marginRight: '8px'}}/> 
+                        <span>Change background</span>
+                        <input 
+                            id='bg' 
+                            type='file' 
+                            hidden 
+                            className='w-100 h-100' 
+                            accept="image/jpeg,image/pjpeg,image/png"
+                            onChange={handleBgChange}/>
+                    </label>
+                    <Image src={user.background} className='user_bg w-100'/>
+                </div>
+                
+            )}
+
         </div>
     
         <div className='action_user'>
@@ -149,7 +240,7 @@ const Profile = () =>{
                 </label>
             </div>
            
-            <h2 className='userName'>superadmin123</h2>
+            <h2 className='userName'>{user.userName}</h2>
             <Typography.Paragraph className='mt-0'>{user.description}</Typography.Paragraph>
             <img src={qr} width={250}/>     
         </div>
@@ -176,7 +267,7 @@ const Profile = () =>{
                 width={250}
                 height={250}
                 borderRadius={250}
-                color={[142, 185, 101, 0.6]} 
+                color={[120, 199, 201, 0.26]} 
                 scale={scale}
                 rotate={0}
             />
