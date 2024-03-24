@@ -381,8 +381,8 @@ const uploadBackground = async (req, res) => {
         const decoded = jwt.verify(token, SECRET_CODE);
         const username = decoded.username;
 
-        const avatar = req.file;
-        const filePath = avatar.originalname;
+        const background = req.file;
+        const filePath = background.originalname;
         const paramsS3 = {
             Bucket: process.env.BUCKET_NAME,
             Key: filePath,
@@ -401,7 +401,7 @@ const uploadBackground = async (req, res) => {
                 return res.json({
                     status: 200,
                     message: 'Changed background successfully!',
-                    avatar: data.Location
+                    background: data.Location
                 })
             }
         })

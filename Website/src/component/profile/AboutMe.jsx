@@ -1,7 +1,7 @@
 import { useForm } from "antd/es/form/Form";
 import { Layout, Form, Input, Select, Tag, Switch, Button, message} from "antd";
 import { updateAboutUs } from "../../service/user";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { AppContext } from '../../context/AppContext';
 import {SaveOutlined} from '@ant-design/icons'
 const {Content} = Layout;
@@ -68,6 +68,13 @@ const AboutMe = (props) => {
       }
     } 
 
+    useEffect(() => {
+        form.setFieldsValue(
+            {description: props.user.description, 
+            hobbies: props.user.hobbies,
+        })
+    })
+
     return (
         <Content className='column-start'>
             <Form
@@ -78,6 +85,7 @@ const AboutMe = (props) => {
                 }}
             >
                 <Form.Item
+                    name='description'
                     label='Description'
                 >
                     <Input placeholder="Add your desciption..." value={props.user.description} readOnly={!props.isEdit}/>
@@ -85,6 +93,7 @@ const AboutMe = (props) => {
 
                 <Form.Item
                     label='Hobbies'
+                    name='hobbies'
                 >
                      <Select
                         disabled={!props.isEdit}
