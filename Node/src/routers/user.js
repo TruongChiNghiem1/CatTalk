@@ -1,5 +1,5 @@
 const express = require('express');
-const { signUp, mailConfirm, authEmail, signIn, editProfile, getFriends, uploadAvatar, updateAboutUs } = require('../controllers/UserController');
+const { signUp, mailConfirm, authEmail, signIn, editProfile, getFriends, uploadAvatar, updateAboutUs, testData } = require('../controllers/UserController');
 const checkLogin = require('../middlewares/auth');
 // const uploadImage = require('../middlewares/uploadImage')
 const app = express();
@@ -19,6 +19,7 @@ routerUser.post('/edit-profile', editProfile)
 routerUser.get('/get-friends', getFriends)
 routerUser.post('/upload-avatar', upload.single('avatar'), uploadAvatar)
 routerUser.post('/update-about-us', updateAboutUs)
-module.exports = routerUser;
+
+routerUser.get('/test-data', testData)
 
 module.exports = routerUser;
