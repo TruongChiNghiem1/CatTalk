@@ -524,4 +524,4 @@ const testData = async (req, res) => {
     }
 };
 
-module.exports = { signUp, mailConfirm, authEmail, signIn, editProfile, getFriends, uploadAvatar, updateAboutUs, uploadBackground};
+module.exports = { signUp, mailConfirm, authEmail, signIn, editProfile, getFriends, uploadAvatar, updateAboutUs, uploadBackground, testData};

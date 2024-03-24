@@ -1,5 +1,5 @@
 const express = require('express');
-const { signUp, mailConfirm, authEmail, signIn, editProfile, getFriends, uploadAvatar, updateAboutUs } = require('../controllers/UserController');
+const { signUp, mailConfirm, authEmail, signIn, editProfile, getFriends, uploadAvatar, updateAboutUs, testData } = require('../controllers/UserController');
 const checkLogin = require('../middlewares/auth');
 // const uploadImage = require('../middlewares/uploadImage')
 const app = express();
