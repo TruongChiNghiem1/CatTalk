@@ -20,5 +20,5 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/cattalk", router);
 
 app.listen(PORT, () => {
-    console.log(`Example app listening at http://localhost:${PORT}`);
-});
+    console.log(`Example app listening at http://localhost:${PORT}`)
+})
