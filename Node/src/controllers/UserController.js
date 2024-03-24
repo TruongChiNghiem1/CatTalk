@@ -4,7 +4,7 @@ const bcrypyjs = require("bcryptjs");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 const Mailgen = require('mailgen');
-const Token = require("../models/Token.js");
+const Token = require("../models/token.js");
 dotenv.config()
 const nodemailer = require("nodemailer");
 const s3 = require("../config/aws-helper.js");
@@ -438,4 +438,90 @@ const updateAboutUs = async (req, res) => {
     }
 }
 
-module.exports = { signUp, mailConfirm, authEmail, signIn, editProfile, getFriends, uploadAvatar, updateAboutUs, uploadBackground};
+const testData = async (req, res) => {
+    try {
+        const data = [
+            {
+                name: 'Trương Chí Nghiệm',
+                avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzVzoUQXLR61QEJa7ZlHUEVt1YtBkXc7wRhA&usqp=CAU',
+                notify: 2,
+                contentNew: 'Em ăn gì chưa?',
+            },
+            {
+                name: 'Nguyễn Uyển Quyên',
+                avatar: 'https://thoibaotaichinhvietnam.vn/stores/news_dataimages/thoibaotaichinhvietnamvn/122015/03/11/10-nguoi-quyen-luc-nhat-lang-cong-nghe-the-gioi-03-.8340.jpg',
+                notify: 2,
+                contentNew: 'Ủa em',
+            },
+            {
+                name: 'Vũ Đăng Khôi',
+                avatar: 'https://thoibaotaichinhvietnam.vn/stores/news_dataimages/thoibaotaichinhvietnamvn/122015/03/11/10-nguoi-quyen-luc-nhat-lang-cong-nghe-the-gioi-12-.0831.jpg',
+                notify: 2,
+                contentNew: 'Chổ đó hôm qua sao rồi',
+            },
+            {
+                name: 'Trần Văn Nam',
+                avatar: 'https://thoibaotaichinhvietnam.vn/stores/news_dataimages/thoibaotaichinhvietnamvn/122015/03/11/10-nguoi-quyen-luc-nhat-lang-cong-nghe-the-gioi-12-.2508.jpg',
+                notify: 2,
+                contentNew: 'T chuyển cho m rồi',
+            },
+            {
+                name: 'Nguyễn Đức Thịnh',
+                avatar: 'https://thoibaotaichinhvietnam.vn/stores/news_dataimages/thoibaotaichinhvietnamvn/122015/03/11/10-nguoi-quyen-luc-nhat-lang-cong-nghe-the-gioi-03-.9139.jpg',
+                notify: 2,
+                contentNew: 'Chết rồi, t quên mất tiêu',
+            },
+            {
+                name: 'Co be khoc nhe',
+                avatar: 'https://cafefcdn.com/2019/7/5/photo-1-15622920117161385854940.jpg',
+                notify: 2,
+                contentNew: 'Oki a',
+            },
+            {
+                name: 'Trần Văn Lục',
+                avatar: 'https://vtv1.mediacdn.vn/2017/photo-2-1484589031686.jpg',
+                notify: 2,
+                contentNew: 'Dạ đr a',
+            },
+            {
+                name: 'Nguyễn Lê Vi Thanh',
+                avatar: 'https://nld.mediacdn.vn/2019/6/6/photo-1-15598019716201065303494.jpg',
+                notify: 2,
+                contentNew: 'Oki tks u',
+            },
+            {
+                name: 'Trần Đỉnh Chi',
+                avatar: 'https://static.tuoitre.vn/tto/i/s626/2016/05/25/obama-hanoi5-4read-only-1464133884.jpg',
+                notify: 2,
+                contentNew: 'À vậy hả, tks ô nha',
+            },
+            {
+                name: 'Nguyễn Trấn Thành',
+                avatar: 'https://cafebiz.cafebizcdn.vn/2019/5/17/photo-2-15580579930601897948260.jpg',
+                notify: 2,
+                contentNew: 'Chết rồi, t quên mất tiêu',
+            },
+
+            {
+                name: 'Bill gate',
+                avatar: 'https://topviecit.vn/blog/wp-content/uploads/2023/01/review-nganh-cong-nghe-thong-tin-topcv1.jpg',
+                notify: 2,
+                contentNew: 'Hôm qua cô có giao bài tập gì hong',
+            },
+        ]
+
+        return res.json({
+            status: 200,
+            message: 'Data test message',
+            data: data,
+        })
+    } catch (error) {
+        console.log(error)
+        return res.json({
+            status: 500,
+            message: 'Opps, somthing went wrong!!!',
+        })
+    }
+};
+
+module.exports = { signUp, mailConfirm, authEmail, signIn, editProfile, getFriends, uploadAvatar, updateAboutUs, uploadBackground, testData};

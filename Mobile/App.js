@@ -23,6 +23,6 @@ import Home from './router/Home';
 // Actions.pop();
 export default class App extends React.Component {
   render() {
-    return <Home />;
+    return <Auth />;
   }
 }

@@ -12,6 +12,7 @@ import {faAddressBook} from '@fortawesome/free-solid-svg-icons/faAddressBook';
 import {faUser} from '@fortawesome/free-solid-svg-icons/faUser';
 import {faStar} from '@fortawesome/free-solid-svg-icons/faStar';
 import RenderProfile from '../profile/profile';
+import Setting from '../setting/setting';
 
 export default class BasicTabBarExample extends React.Component {
   constructor(props) {
@@ -19,6 +20,8 @@ export default class BasicTabBarExample extends React.Component {
     this.state = {
       selectedTab: 'blueTab',
     };
+    const {navigation} = props;
+    this.navigation = navigation
   }
 
   renderContent1(pageText) {
@@ -33,8 +36,8 @@ export default class BasicTabBarExample extends React.Component {
     return <Welcome></Welcome>;
   }
 
-  renderContent4(pageText) {
-    return <RenderProfile></RenderProfile>;
+  renderContent4(res) {
+    return <Setting res={res}></Setting>;
   }
 
   renderContent(pageText) {
@@ -84,7 +87,7 @@ export default class BasicTabBarExample extends React.Component {
           title="Cá nhân"
           selected={this.state.selectedTab === 'yellowTab'}
           onPress={() => this.onChangeTab('yellowTab')}>
-          {this.renderContent4('My Tab')}
+          {this.renderContent4(this.navigation)}
         </TabBar.Item>
       </TabBar>
     );
