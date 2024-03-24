@@ -1,10 +1,11 @@
 import { Alert, TextInput } from "react-native"
 function UIInput(prop){
-    var {placeholder, isPassword = false, width = 300, mt = 5, typePlacehoder = 1} = prop
+    var {placeholder, isPassword = false, width = 300, mt = 5, typePlacehoder = 1, name} = prop
     var colorPlacehlder = '#DBDBDB';
     typePlacehoder == 1 ?  colorPlacehlder = '#DBDBDB' : colorPlacehlder = '#44C1C6'
     return (
         <TextInput
+            name = {name}
             secureTextEntry={isPassword}
             placeholder={placeholder}
             placeholderTextColor={colorPlacehlder}

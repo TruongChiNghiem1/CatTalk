@@ -14,6 +14,14 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faArrowRightToBracket} from '@fortawesome/free-solid-svg-icons/faArrowRightToBracket';
 import {SvgUri} from 'react-native-svg';
 import {UIInput} from '../../../components';
+import {
+  Formik, Form,
+  Field, ErrorMessage
+} from "formik";
+import {
+  FormGroup,
+  FormControl, Button
+} from "react-bootstrap";
 // import { useNavigate } from 'react-router-native';
 
 const Login = (res) => {
@@ -73,51 +81,54 @@ const Login = (res) => {
               width: 200,
               height: 200,
             }}></Image>
-          <UIInput placeholder="email"></UIInput>
-          <UIInput placeholder="Password"></UIInput>
-          <View style={{width: 300, display: 'flex', alignItems: 'flex-end'}}>
-            <Text
-              onPress={() => Linking.openURL('')}
-              style={{
-                width: 95,
-                fontSize: fontSize.h5,
-                marginBottom: 20,
-                color: 'black',
-              }}>
-              Forgot password
-            </Text>
-          </View>
-          {/* // onPress={handleLogIn} */}
-          <TouchableOpacity
-            style={{
-              width: 65,
-              height: 65,
-              backgroundColor: colors.bgInput,
-              borderRadius: 100,
-            }}
-            title="Login">
-            <View
-              style={{
-                width: 63,
-                height: 65,
-                display: 'flex',
-                justifyContent: 'center',
-                alignContent: 'center',
-              }}>
+          <Form>
+            <UIInput placeholder="email" name="email"></UIInput>
+            <UIInput placeholder="Password" name="password"></UIInput>
+            <View style={{width: 300, display: 'flex', alignItems: 'flex-end'}}>
               <Text
+                onPress={() => Linking.openURL('')}
                 style={{
-                  textAlign: 'center',
+                  width: 95,
+                  fontSize: fontSize.h5,
+                  marginBottom: 20,
+                  color: 'black',
                 }}>
-                <FontAwesomeIcon
-                  style={{
-                    color: colors.textButton,
-                  }}
-                  icon={faArrowRightToBracket}
-                  size={22}
-                />
+                Forgot password
               </Text>
             </View>
-          </TouchableOpacity>
+            {/* // onPress={handleLogIn} */}
+            <TouchableOpacity
+              type="submit"
+              style={{
+                width: 65,
+                height: 65,
+                backgroundColor: colors.bgInput,
+                borderRadius: 100,
+              }}
+              title="Login">
+              <View
+                style={{
+                  width: 63,
+                  height: 65,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                }}>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                  }}>
+                  <FontAwesomeIcon
+                    style={{
+                      color: colors.textButton,
+                    }}
+                    icon={faArrowRightToBracket}
+                    size={22}
+                  />
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </Form>
           <View
             style={{
               marginTop: 30,
