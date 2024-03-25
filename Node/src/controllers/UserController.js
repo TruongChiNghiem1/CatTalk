@@ -30,7 +30,7 @@ const mailConfirm = async (req, res) => {
             })
         } else {
             let otp = Math.floor(1000 + Math.random() * 9000);
-            const token = await Token.findOneAndReplace({ email: email, otp: otp })
+            const token = await Token.findOneAndUpdate({email: email},{otp: otp },{upsert: true})
             var mailGenerator = new Mailgen({
                 theme: 'default',
                 product: {
@@ -87,6 +87,7 @@ const mailConfirm = async (req, res) => {
 const authEmail = async (req, res) => {
     try {
         const { email, otp } = req.body;
+
         const emailExists = await User.findOne({ email: email, otp: 1 })
         if (emailExists) {
             return res.json({
@@ -94,7 +95,6 @@ const authEmail = async (req, res) => {
                 message: "Email already used"
             });
         }
-
         const register = await Token.findOne({ email: email })
         if (!register) {
             return res.json({
@@ -226,7 +226,6 @@ const signIn = async (req, res) => {
             SECRET_CODE,
             { expiresIn: "1d" }
         )
-
         //  Return result:
         user.password = undefined
 

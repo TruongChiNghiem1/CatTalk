@@ -7,7 +7,7 @@ import RenderProfile from '../resource/Home/profile/profile';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import Login from '../resource/Auth/login/login';
-import SignUp from '../resource/Auth/SignUp/SignUp';
+import SignUp from '../resource/Auth/SignUp/SignUpEmail';
 import RenderViewChat from '../resource/Home/chat/viewChat';
 import Setting from '../resource/Home/setting/setting';
 
