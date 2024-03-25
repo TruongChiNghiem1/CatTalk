@@ -39,7 +39,9 @@ const AppLayout = (props) => {
 
 
   const logOut = () =>{
-    removeCookie(['loginToken', 'user'])
+    removeCookie('loginToken')
+    removeCookie('user');
+    localStorage.removeItem('user')
     navigate('/login')
   }
 

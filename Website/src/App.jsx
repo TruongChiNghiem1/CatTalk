@@ -11,6 +11,13 @@ import Profile from './page/Profile.jsx';
 import AppLayout from './page/Layout.jsx';
 import Redirect from './page/Redirect.jsx';
 import AppProvider from './context/AppContext.jsx';
+import PrivateWrapper from './page/PrivateWrapper.jsx';
+import { useCookies } from 'react-cookie';
+const PrivateRoute = ({children}) => {
+    const [cookies] = useCookies('loginToken');
+  return cookies.loginToken ? children : <Navigate to="/login" />;
+};
+
 function App() {
   const [currentTheme, setCurrentTheme] = useState('light')
 
@@ -63,17 +70,19 @@ function App() {
       <HappyProvider>
       <ConfigProvider theme={currentTheme === 'light' ? lightTheme : darkTheme}>
         <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup/:step" element={<SignUp />} />
-          <Route path="/" element={<AppLayout theme={setCurrentTheme}/> } >
-            <Route index element={<Navigate to="home" />} />
-            <Route path="home" element={<Home />} />
-            <Route path="redirect/:id" element={<Redirect/>} />
-            <Route path="profile" element={<Profile/>} />
+       <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup/:step" element={<SignUp />} />
+        <Route element={<PrivateWrapper/>}>
+          <Route path="/" element={<AppLayout theme={setCurrentTheme}/>}>
+            <Route index element={<PrivateRoute><Navigate to="home" /></PrivateRoute>} />
+            <Route path="home" element={<PrivateRoute><Home /></PrivateRoute>} />
+            <Route path="redirect/:id" element={<PrivateRoute><Redirect/></PrivateRoute>} />
+            <Route path="profile" element={<PrivateRoute><Profile/></PrivateRoute>} />
           </Route>
-          <Route path="*" element={<NotFound/>} />
-        </Routes>
+        </Route>  
+        <Route path="*" element={<NotFound/>} />
+      </Routes>
       </Router>
        </ConfigProvider>
     </HappyProvider>
