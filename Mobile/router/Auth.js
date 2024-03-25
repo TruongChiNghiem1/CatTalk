@@ -44,6 +44,8 @@ const Auth = () => {
         <Stack.Screen name="SignUpEmail" component={SignUpEmail} />
         <Stack.Screen name="SignUpOTP" component={SignUpOTP} />
         <Stack.Screen name="SignUpProfile" component={SignUpProfile} />
+        <Stack.Screen name="RenderViewChat" component={RenderViewChat} />
+        <Stack.Screen name="RenderProfile" component={RenderProfile} />
         <Stack.Screen
           name="BasicTabBarExample"
           component={BasicTabBarExample}

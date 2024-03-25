@@ -15,18 +15,15 @@ import {height} from '@fortawesome/free-solid-svg-icons/faMugSaucer';
 import {AppRegistry} from 'react-native';
 import {Button, Icon, WhiteSpace, WingBlank} from '@ant-design/react-native';
 import RenderViewChat from './viewChat';
-
-function renderContent1(pageText) {
-  return <RenderViewChat></RenderViewChat>;
-}
+import {DrawerActions, useNavigation} from '@react-navigation/native';
 
 function UserChatItem(props) {
   var {data} = props;
-  const {navigation} = props;
+  const navigation = useNavigation();
 
   return (
+    <TouchableOpacity onPress={() => navigation.navigate('RenderViewChat')}>
     <View
-      onPress={() => this.renderContent1('blueTab')}
       style={{
         margin: 15,
       }}>
@@ -66,6 +63,7 @@ function UserChatItem(props) {
         </View>
       </View>
     </View>
+    </TouchableOpacity>
   );
 }
 

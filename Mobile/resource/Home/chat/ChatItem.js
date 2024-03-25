@@ -16,6 +16,7 @@ import {AppRegistry} from 'react-native';
 import {Button, Icon, WhiteSpace, WingBlank} from '@ant-design/react-native';
 import UserChatItem from './userChatItem';
 import axios from 'axios';
+import {url} from '../../../service/cattalk';
 // import { DemoBlock } from './demo'
 
 const ChatItem = () => {
@@ -25,7 +26,7 @@ const ChatItem = () => {
     setLoading(true);
     try {
       const res = await axios.get(
-        'http://172.20.10.4:2080/cattalk/user/test-data',
+        `${url}/user/test-data`,
       );
       setData(res.data.data);
       setLoading(false);
