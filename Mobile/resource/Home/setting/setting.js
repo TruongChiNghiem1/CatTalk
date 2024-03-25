@@ -17,12 +17,12 @@ import {AppRegistry} from 'react-native';
 import {Button, Icon, WhiteSpace, WingBlank} from '@ant-design/react-native';
 import {faArrowRightToBracket} from '@fortawesome/free-solid-svg-icons/faArrowRightToBracket';
 import {faGear} from '@fortawesome/free-solid-svg-icons/faGear';
-
+import {DrawerActions, useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 // import { DemoBlock } from './demo'
 
 const Setting = (res) => {
-  const {navigation} = res;
+  const navigation = useNavigation();
   return (
     <View
       style={{
@@ -225,6 +225,7 @@ const Setting = (res) => {
 
             <View style={{}}>
               <TouchableOpacity
+                onPress={() => navigation.navigate('Login')}
                 style={{
                   width: 210,
                   height: 50,
