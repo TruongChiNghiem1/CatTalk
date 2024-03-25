@@ -23,6 +23,8 @@ import axios from 'axios';
 
 const Setting = (res) => {
   const navigation = useNavigation();
+  const {user} = res;
+  const fullname = user.firstName + ' ' + user.lastName
   return (
     <View
       style={{
@@ -106,7 +108,7 @@ const Setting = (res) => {
                       marginTop: 3,
                       fontWeight: 'bold',
                     }}>
-                    Trương Chí Nghiệm
+                    {fullname}
                   </Text>
                   <Text
                     style={{

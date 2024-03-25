@@ -22,6 +22,8 @@ import {faCommentDots} from '@fortawesome/free-solid-svg-icons/faCommentDots';
 import {faUserPlus} from '@fortawesome/free-solid-svg-icons/faUserPlus';
 import {AppRegistry} from 'react-native';
 import BasicTabBarExample from '../layout/footer';
+import {DrawerActions, useNavigation} from '@react-navigation/native';
+
 import {
   Button,
   Icon,
@@ -139,6 +141,8 @@ this.state = {
 };
 
 function RenderProfile(res) {
+  const navigation = useNavigation();
+
   return (
     <View
       style={{
@@ -167,12 +171,14 @@ function RenderProfile(res) {
                 left: 0,
               }}></Image>
             <View>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
               <FontAwesomeIcon
                 style={{marginTop: 15, marginLeft: 10}}
                 color={colors.primary}
                 size={20}
                 icon={faChevronLeft}
               />
+            </TouchableOpacity>
             </View>
             <ScrollView>{renderViewChatItem()}</ScrollView>
           </View>

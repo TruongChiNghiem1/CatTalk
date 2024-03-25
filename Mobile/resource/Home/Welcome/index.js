@@ -11,6 +11,8 @@ import { Button, Icon, WhiteSpace, WingBlank } from '@ant-design/react-native'
 
 // import { DemoBlock } from './demo'
 function Welcome(res) {
+  const {user} = res;
+  const fullname = user.firstName + ' ' + user.lastName
   return (
     <View
       style={{
@@ -91,7 +93,7 @@ function Welcome(res) {
                 fontSize: 26,
                 fontWeight: 'bold',
               }}>
-              User Admin
+              {fullname}
             </Text>
           </View>
           <Text
