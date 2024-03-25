@@ -524,4 +524,38 @@ const testData = async (req, res) => {
     }
 };
 
-module.exports = { signUp, mailConfirm, authEmail, signIn, editProfile, getFriends, uploadAvatar, updateAboutUs, uploadBackground, testData};
+const searchUser = async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(" ")[1];
+        const decoded = jwt.verify(token, SECRET_CODE)
+
+        const { search } = req.body;
+
+        const finds = await User.find({userName: search})
+
+        if(finds){
+            return res.json({
+                status: 200,
+                users: finds,
+            })
+        }else{
+            return res.json({
+                status: 201,
+                message: 'User not found!',
+            })
+        }
+
+
+
+    } catch (error) {
+        console.log(error);
+        return res.json({
+            status: 500,
+            message: 'Opps, somthing went wrong!!!',
+        })
+    }
+}
+
+
+
+module.exports = { signUp, mailConfirm, authEmail, signIn, editProfile, getFriends, uploadAvatar, updateAboutUs, uploadBackground, testData, searchUser };

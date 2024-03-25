@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { Avatar, Col, List, Skeleton, Typography } from 'antd';
+import { Avatar, Col, List, Skeleton, Typography, Button } from 'antd';
+import {PlusOutlined} from '@ant-design/icons'
 import { getAllChat } from '../../service/redirect';
 import { useCookies } from 'react-cookie';
+import { AppContext } from '../../context/AppContext';
 
 
 const ChatList = () => {
+    const {user} = useContext(AppContext);
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState([]);
     const [cookies, setCookies] = useCookies('loginToken');
@@ -35,9 +38,14 @@ const ChatList = () => {
         style={{
             height: '93%',
             overflow: 'auto',
+            paddingRight: '.5rem'
         }}
         >
-             <Typography.Title className='mt-0 title_feature'>Notify</Typography.Title>
+        <div className='w-100 flex-between'>
+                <Typography.Title className='mt-0 title_feature'>{user.userName}</Typography.Title>
+                <Button icon={<PlusOutlined />} type='primary'></Button>
+        </div>
+        <Typography.Text style={{fontSize: '18px', fontWeight: 'bold', marginTop: '1.5rem'}}>Messages</Typography.Text>
         <InfiniteScroll
             dataLength={data.length}
             next={() => {}}

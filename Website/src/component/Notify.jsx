@@ -17,8 +17,9 @@ const Notify = () => {
   const handleLoadNotification = async () => {
     try {
       const res = await getAllNotify(cookies.loginToken);
-      console.log(res);
-      setData(res.data.notifies);
+      if(res.data.status === 200){ 
+         setData(res.data.notifies);
+      }
       setLoading(false);
 
     }catch (err) {
@@ -47,7 +48,7 @@ const Notify = () => {
         >
         <Typography.Title className='mt-0 title_feature'>Notify</Typography.Title>
          <InfiniteScroll
-          dataLength={data.length}
+          dataLength={data.length ?? 0}
           next={loadMoreData}
           hasMore={hasMore}
           loader={
