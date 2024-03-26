@@ -36,11 +36,11 @@ const userSchema = new mongoose.Schema({
     },
     avatar: {
         type: String,
-        default: "https://cdn.vectorstock.com/i/1000x1000/09/81/cute-cat-face-feline-cartoon-animal-icon-vector-30080981.webpw"
+        default: "https://cattalkfile.s3.ap-southeast-1.amazonaws.com/cattalk_avatar_default.jpg"
     },
     background: {
         type: String,
-        default: "https://cdn.vectorstock.com/i/1000x1000/09/81/cute-cat-face-feline-cartoon-animal-icon-vector-30080981.webpw"
+        default: "https://cattalkfile.s3.ap-southeast-1.amazonaws.com/cattalk_default_background.png"
     },
     hobbies: {
         type: Array,
@@ -50,6 +50,12 @@ const userSchema = new mongoose.Schema({
         type: Array,
         default: []
     },
+    description: {
+        type: String,
+    },
+    nightMode: {
+        type: String,
+    }
 },
     {
         timestamps: true,

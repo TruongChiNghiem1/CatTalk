@@ -24,7 +24,8 @@
     "react-infinite-scroll-component": "^6.1.0",
     "react-input-emoji": "^5.6.6",
     "react-router-dom": "^6.21.2",
-    "react-spring": "^9.7.3"
+    "react-spring": "^9.7.3",
+    "swiper": "^11.0.7"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
