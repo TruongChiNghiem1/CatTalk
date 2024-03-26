@@ -33,6 +33,12 @@ export const uploadAvatar = async (avatar, token) => {
     });
 }
 
+export const uploadBackground = async (bg, token) => {
+    return await axios.post(`${url}/user/upload-background`, bg, {
+        headers: { authorization: `Bearer ${token}` }
+    });
+}
+
 export const updateAboutUs = async (data, token) => {
     return await axios.post(`${url}/user/update-about-us`, data, {
         headers: { authorization: `Bearer ${token}` }
@@ -41,6 +47,12 @@ export const updateAboutUs = async (data, token) => {
 
 export const getFriends = async (token) => {
     return await axios.get(`${url}/user/get-friends`, {
+        headers: { authorization: `Bearer ${token}` }
+    });
+}
+
+export const searchUser = async (token) => {
+    return await axios.get(`${url}/user/search`, {
         headers: { authorization: `Bearer ${token}` }
     });
 }
