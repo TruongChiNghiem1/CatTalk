@@ -56,3 +56,9 @@ export const searchUser = async (token, search) => {
         headers: { authorization: `Bearer ${token}` }
     });
 }
+
+export const changeTheme = async (token, theme) => {
+    return await axios.get(`${url}/user/change-theme?nightMode=${theme}`, {
+        headers: { authorization: `Bearer ${token}` }
+    });
+}

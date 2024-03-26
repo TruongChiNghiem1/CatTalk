@@ -9,7 +9,7 @@ import {
   LogoutOutlined,
   UserOutlined
 } from '@ant-design/icons';
-import { Layout, Menu, Button, theme, Switch } from 'antd';
+import { Layout, Menu, Button, theme, Switch, message } from 'antd';
 import logo from '../assets/logo.png';
 import logo_vertical from '../assets/logo_vertical.png';
 import admin from '../assets/admin.jpg';
@@ -18,7 +18,7 @@ import Search from '../component/Search';
 import Notify from '../component/Notify';
 import { AppContext } from '../context/AppContext';
 import { useCookies } from 'react-cookie';
-
+import { changeTheme } from '../service/user';
 const { Header, Sider} = Layout;
 const AppLayout = (props) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -27,8 +27,7 @@ const AppLayout = (props) => {
   const [cookies,setCookie, removeCookie] = useCookies(['loginToken', 'user']);
   const {activeMenu, setActiveMenu,
      openSearch, setOpenSearch,
-     openNofity, setOpenNotify, user} = useContext(AppContext)
-
+     openNofity, setOpenNotify, user, setUser} = useContext(AppContext)   
 
   const handleMenuSelect = ({ key }) => {
     setActiveMenu(key);
@@ -50,6 +49,22 @@ const AppLayout = (props) => {
       navigate('/login')
     }
   }, [user]) 
+
+  const handleChangeTheme = async (value) =>{
+    try {
+      const res = await changeTheme(cookies.loginToken, value ? 1 : 0)
+        if(res.data.status === 200){
+          props.theme(value ? 'dark' : 'light')
+            setUser({...user, nightMode: res.data.nightMode})
+            setCookie('user', JSON.stringify({ ...cookies.user, nightMode: res.data.nightMode}));
+          message.success(res.data.message)
+        }else{
+          message.error(res.data.message)
+        }
+    } catch (error) {
+      console.log('Error: ', error);
+    }
+  }
 
   return (
     <Layout className='main' style={{background: colorBgSecondary, padding: '12px',}}>
@@ -101,7 +116,8 @@ const AppLayout = (props) => {
                 key="6"
                 icon={<Switch 
                     className='switch'
-                    onChange={(value) => props.theme(value ? 'dark' : 'light')}
+                    defaultValue={cookies.user.nightMode}
+                    onChange={(value) => handleChangeTheme(value)}
                     />}
                 label="Night mode"
                 >

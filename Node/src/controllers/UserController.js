@@ -557,5 +557,45 @@ const searchUser = async (req, res) => {
 }
 
 
+const changeTheme = async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(" ")[1];
+        const decoded = jwt.verify(token, SECRET_CODE);
+        const username = decoded.username;
+        const { nightMode } = req.query;
+        // if(nightMode != 1 || nightMode != 0){
+        //     return res.json({
+        //         status: 201,
+        //         message: 'Opps, somthing went wrong!!!',
+        //     })
+        // }
+        const user = await User.findOneAndUpdate({ userName: username }, { nightMode: nightMode });
 
-module.exports = { signUp, mailConfirm, authEmail, signIn, editProfile, getFriends, uploadAvatar, updateAboutUs, uploadBackground, testData, searchUser };
+        if (user) {
+            return res.json({
+                status: 200,
+                message: 'Change theme successfully!',
+                nightMode: nightMode,
+            })
+        } else {
+            return res.json({
+                status: 201,
+                message: 'User not found!',
+            })
+        }
+
+    } catch (error) {
+        console.log(error);
+        return res.json({
+            status: 500,
+            message: 'Opps, somthing went wrong!!!',
+        })
+    }
+}
+
+
+
+module.exports = {
+    signUp, mailConfirm, authEmail, signIn, editProfile, getFriends,
+    uploadAvatar, updateAboutUs, uploadBackground, testData, searchUser, changeTheme
+};

@@ -50,6 +50,12 @@ const userSchema = new mongoose.Schema({
         type: Array,
         default: []
     },
+    description: {
+        type: String,
+    },
+    nightMode: {
+        type: String,
+    }
 },
     {
         timestamps: true,
