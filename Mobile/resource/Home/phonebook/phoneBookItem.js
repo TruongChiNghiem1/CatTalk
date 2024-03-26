@@ -18,11 +18,16 @@ import {Button, Icon, WhiteSpace, WingBlank} from '@ant-design/react-native';
 import ViewPhoneBookItem from './viewPhoneBookItem';
 import axios from 'axios';
 import {url} from '../../../service/cattalk';
+import {DrawerActions, useNavigation} from '@react-navigation/native';
+
 // import { DemoBlock } from './demo'
 
 const PhoneBookItem = () => {
+  const navigation = useNavigation();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [avatar, setAvatar] = useState('https://cafebiz.cafebizcdn.vn/2019/5/17/photo-2-15580579930601897948260.jpg')
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -31,6 +36,9 @@ const PhoneBookItem = () => {
       );
       setData(res.data.data);
       setLoading(false);
+      const userStorage = await AsyncStorage.getItem('user');
+      const user = JSON.parse(userStorage);
+      setAvatar(user.avatar)
     } catch (e) {
       console.log(e);
     }
@@ -66,7 +74,7 @@ const PhoneBookItem = () => {
               height: 40,
             }}></Image>
           <Image
-            source={images.avatar}
+            source={{ uri: avatar}}
             style={{
               marginRight: 10,
               width: 40,
@@ -92,6 +100,7 @@ const PhoneBookItem = () => {
             }}>
             <WhiteSpace />
             <Button
+              onPress={() => navigation.navigate('AddFriend')}
               style={{
                 marginTop: -10,
                 // backgroundColor: colors.colorHide,

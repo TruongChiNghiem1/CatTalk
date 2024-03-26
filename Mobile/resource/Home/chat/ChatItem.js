@@ -22,6 +22,8 @@ import {url} from '../../../service/cattalk';
 const ChatItem = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [avatar, setAvatar] = useState('https://cafebiz.cafebizcdn.vn/2019/5/17/photo-2-15580579930601897948260.jpg')
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -30,6 +32,10 @@ const ChatItem = () => {
       );
       setData(res.data.data);
       setLoading(false);
+
+      const userStorage = await AsyncStorage.getItem('user');
+      const user = JSON.parse(userStorage);
+      setAvatar(user.avatar)
     } catch (e) {
       console.log(e);
     }
@@ -65,7 +71,7 @@ const ChatItem = () => {
               height: 40,
             }}></Image>
           <Image
-            source={images.avatar}
+            source={{ uri: avatar}}
             style={{
               marginRight: 10,
               width: 40,

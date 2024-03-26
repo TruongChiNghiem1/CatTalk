@@ -13,6 +13,7 @@ import {faUser} from '@fortawesome/free-solid-svg-icons/faUser';
 import {faStar} from '@fortawesome/free-solid-svg-icons/faStar';
 import RenderProfile from '../profile/profile';
 import Setting from '../setting/setting';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default class BasicTabBarExample extends React.Component {
   constructor(props) {
@@ -25,7 +26,9 @@ export default class BasicTabBarExample extends React.Component {
     const {navigation} = props;
     this.navigation = navigation
     const { route } = props;
-    const { user, token } = route.params;
+    const token = AsyncStorage.setItem('token')
+    const user = AsyncStorage.setItem('user')
+
     this.state.user = user;
     this.state.token = token;
   }
