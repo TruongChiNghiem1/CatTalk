@@ -51,8 +51,8 @@ export const getFriends = async (token) => {
     });
 }
 
-export const searchUser = async (token) => {
-    return await axios.get(`${url}/user/search`, {
+export const searchUser = async (token, search) => {
+    return await axios.get(`${url}/user/search?search=${search}`, {
         headers: { authorization: `Bearer ${token}` }
     });
 }

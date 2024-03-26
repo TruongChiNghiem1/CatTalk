@@ -421,7 +421,7 @@ const updateAboutUs = async (req, res) => {
         const username = decoded.username;
 
         const { description, hobbies } = req.body;
-        await User.findOneAndUpdate({ 'userName': username }, { description: description, hobbies: hobbies })
+        await User.findOneAndUpdate({ userName: username }, { description: description, hobbies: hobbies })
         return res.json({
             status: 200,
             message: 'Changed your infomation successfully!',
@@ -526,26 +526,26 @@ const testData = async (req, res) => {
 
 const searchUser = async (req, res) => {
     try {
-        const token = req.headers.authorization.split(" ")[1];
-        const decoded = jwt.verify(token, SECRET_CODE)
-
-        const { search } = req.body;
-
-        const finds = await User.find({userName: search})
-
-        if(finds){
+        const { search } = req.query;
+        const searchRegex = new RegExp(search, 'i');
+        const finds = await User.find({
+            $or: [
+                { userName: searchRegex },
+                { firstName: searchRegex },
+                { lastName: searchRegex }
+            ]
+        }, { firstName: 1, lastName: 1, userName: 1, avatar: 1, _id: 0 })
+        if (finds) {
             return res.json({
                 status: 200,
                 users: finds,
             })
-        }else{
+        } else {
             return res.json({
                 status: 201,
                 message: 'User not found!',
             })
         }
-
-
 
     } catch (error) {
         console.log(error);

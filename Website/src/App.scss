@@ -422,5 +422,33 @@
     align-items: center;
   }
 
+}
+
+#search{
+  .recents_seach{
+    cursor: pointer;
+    padding-left: .7rem;
+    padding-right: .7rem;
+  }
   
+  .recents_seach:hover{
+    background-color: #f0f0f048;
+  }
+
+  .del_recent{
+    cursor: pointer;
+    color: #4ad1d6;
+    display: none;
+  }
+  .del_recent:hover {
+    color: #1e696b;
+  }
+
+  .recents_seach:hover .del_recent {
+    display: block;
+  }
+
+
+
+
 }

@@ -20,7 +20,7 @@ routerUser.get('/get-friends', getFriends)
 routerUser.post('/upload-avatar', upload.single('avatar'), uploadAvatar)
 routerUser.post('/upload-background', upload.single('background'), uploadBackground)
 routerUser.post('/update-about-us', updateAboutUs)
-// routerUser.post('/search', searchUser)
+routerUser.get('/search', searchUser)
 routerUser.get('/test-data', testData)
 
 module.exports = routerUser;
