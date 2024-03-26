@@ -304,8 +304,10 @@ const editProfile = async (req, res) => {
 
 const getFriends = async (req, res) => {
     try {
+        console.log(req.headers);
         const token = req.headers.authorization.split(" ")[1];
         const decoded = jwt.verify(token, SECRET_CODE);
+        console.log('day ne' , decoded);
         const username = decoded.username;
 
         const user = await User.findOne({ userName: username }); // Tìm người dùng dựa trên username của bạn

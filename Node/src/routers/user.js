@@ -16,11 +16,14 @@ routerUser.post('/auth-mail', authEmail)
 routerUser.post('/login', signIn)
 app.use(checkLogin)
 routerUser.post('/edit-profile', editProfile)
-routerUser.get('/get-friends', getFriends)
 routerUser.post('/upload-avatar', upload.single('avatar'), uploadAvatar)
 routerUser.post('/upload-background', upload.single('background'), uploadBackground)
 routerUser.post('/update-about-us', updateAboutUs)
 // routerUser.post('/search', searchUser)
 routerUser.get('/test-data', testData)
+
+//Add friend
+routerUser.get('/get-friends', getFriends)
+
 
 module.exports = routerUser;

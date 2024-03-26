@@ -1,5 +1,5 @@
 import axios from "axios";
-import { url } from "./cattalk";
+import {url} from '../service/cattalk';
 export const mailConfirm = async (mail) => {
     return await axios.post(`${url}/user/mail-confirm`, { email: mail });
 };
@@ -39,8 +39,8 @@ export const updateAboutUs = async (data, token) => {
     });
 }
 
-export const getFriends = async (token) => {
-    return await axios.get(`${url}/user/get-friends`, {
+export const getFriends = async (token, search) => {
+    return await axios.get(`${url}/user/get-friends?searh`, {
         headers: { authorization: `Bearer ${token}` }
     });
 }

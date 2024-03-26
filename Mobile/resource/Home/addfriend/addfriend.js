@@ -14,34 +14,37 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import {url} from '../../../service/cattalk';
-import ViewFriendItem from './viewFriendItem'
+import ViewFriendItem from './viewFriendItem';
+import { getFriends } from '../../../service/user';
 
 // import { DemoBlock } from './demo'
 function AddFriend(res) {
     const navigation = useNavigation();
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [search, setSearch] = useState('');
   
     const fetchData = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(
-                `${url}/user/test-data`,
-            );
-            setData(res.data.data);
+            const token = await AsyncStorage.getItem('token');
+            const items = await getFriends(token, search);
+
+            console.log(items.data.data);
+            setData(items.data.data);
             
             const userStorage = await AsyncStorage.getItem('user');
             const user = JSON.parse(userStorage);
 
             setLoading(false);
         } catch (e) {
-        console.log(e);
+            console.log(e);
         }
     };
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    // useEffect(() => {
+    //     fetchData();
+    // }, []);
 
     const searchFriend = () => {
 
@@ -96,9 +99,9 @@ function AddFriend(res) {
                         alignItems: 'center',
                         marginTop: 20,
                     }}>
-                    <UIInput placeholder="Nhập username hoặc email" width={340}></UIInput>
+                    <UIInput placeholder="Nhập username hoặc email" width={340} onChangeText={setSearch}></UIInput>
                     <TouchableOpacity
-                        onPress={searchFriend}
+                        onPress={fetchData}
                         title="Login">
                         <View
                             style={{
@@ -122,7 +125,7 @@ function AddFriend(res) {
                     <Text>loading....</Text>
                     ) : (
                     <ScrollView>
-                        {data.length ? (
+                        {data ? (
                         <>
                             {data.map(item => (
                             <ViewFriendItem data={item} />
