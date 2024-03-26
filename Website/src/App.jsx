@@ -19,8 +19,9 @@ const PrivateRoute = ({children}) => {
 };
 
 function App() {
-  const [currentTheme, setCurrentTheme] = useState('light')
-
+   const [cookies] = useCookies('user')
+  const [currentTheme, setCurrentTheme] = useState(cookies.user.nightMode)
+ 
   const lightTheme = {
      token: {
         colorPrimary: '#44bccc',
@@ -68,7 +69,7 @@ function App() {
   return (
     <AppProvider>
       <HappyProvider>
-      <ConfigProvider theme={currentTheme === 'light' ? lightTheme : darkTheme}>
+      <ConfigProvider theme={ currentTheme == 0 ? lightTheme : darkTheme}>
         <Router>
        <Routes>
         <Route path="/login" element={<Login />} />
