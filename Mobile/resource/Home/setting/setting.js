@@ -18,13 +18,32 @@ import {Button, Icon, WhiteSpace, WingBlank} from '@ant-design/react-native';
 import {faArrowRightToBracket} from '@fortawesome/free-solid-svg-icons/faArrowRightToBracket';
 import {faGear} from '@fortawesome/free-solid-svg-icons/faGear';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 // import { DemoBlock } from './demo'
 
-const Setting = (res) => {
+const Setting = res => {
   const navigation = useNavigation();
-  const {user} = res;
-  const fullname = user.firstName + ' ' + user.lastName
+  const [fullname, setFullname] = useState('')
+  const [avatar, setAvatar] = useState('https://cafebiz.cafebizcdn.vn/2019/5/17/photo-2-15580579930601897948260.jpg')
+  async function getData() {
+    const userStorage = await AsyncStorage.getItem('user');
+    const user = JSON.parse(userStorage);
+    setFullname(user.firstName + ' ' + user.lastName);
+    setAvatar(user.avatar)
+    console.log(user.avatar);
+  }
+  
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const logOut = () => {
+    AsyncStorage.setItem('token', '');
+    AsyncStorage.setItem('isLogin', JSON.stringify(false));
+    console.log('logout' , AsyncStorage.getItem('token'), AsyncStorage.getItem('user'));
+    navigation.navigate('Auth');
+  };
   return (
     <View
       style={{
@@ -92,7 +111,7 @@ const Setting = (res) => {
                   width: 370,
                 }}>
                 <Image
-                  source={images.avatar}
+                  source={{ uri: avatar}}
                   style={{
                     marginRight: 10,
                     width: 50,
@@ -227,7 +246,7 @@ const Setting = (res) => {
 
             <View style={{}}>
               <TouchableOpacity
-                onPress={() => navigation.navigate('Login')}
+                onPress={logOut}
                 style={{
                   width: 210,
                   height: 50,

@@ -7,9 +7,12 @@ import {
   TextInput,
   Linking,
   TouchableOpacity,
-  Alert, Modal, StyleSheet, Pressable
+  Alert,
+  Modal,
+  StyleSheet,
+  Pressable,
 } from 'react-native';
-import { NoticeBar, WhiteSpace } from '@ant-design/react-native'
+import {NoticeBar, WhiteSpace} from '@ant-design/react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import {images, fontSize, colors} from '../../../constant';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
@@ -19,32 +22,7 @@ import {UIInput} from '../../../components';
 import {url} from '../../../service/cattalk';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
 import axios from 'axios';
-
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// import { useNavigate } from 'react-router-native';
-
-const onLoggedIn = token => {
-  fetch(`${url}/private`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then(async res => {
-      try {
-        const jsonRes = await res.json();
-        if (res.status === 200) {
-          setMessage(jsonRes.message);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    })
-    .catch(err => {
-      console.log(err);
-    });
-};
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = res => {
   const navigation = useNavigation();
@@ -53,27 +31,30 @@ const Login = res => {
   const [isLogin, setIsLogin] = useState(true);
   const [isError, setIsError] = useState(false);
   const [message, setMessage] = useState([]);
-  const onSubmitHandler = async() => {
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const onSubmitHandler = async () => {
     try {
-      const res = await axios.post(`${url}/user/login`, { userName,password })
+      const res = await axios.post(`${url}/user/login`, {userName, password});
       console.log([res.data.status], res.data.message);
       if (res.data.status !== 200) {
         setIsError(true);
         setMessage(res.data.message);
-        setModalVisible(true)
+        setModalVisible(true);
       } else {
-        // onLoggedIn(jsonRes.token);
-        setIsError(false);
+        AsyncStorage.setItem('token', JSON.stringify(res.data.accessToken));
+        AsyncStorage.setItem('user', JSON.stringify(res.data.user));
+        AsyncStorage.setItem('isLogin', JSON.stringify(true));
+
         setMessage(res.data.message);
-        navigation.navigate('BasicTabBarExample', {user: res.data.user, token: res.data.accessToken});
+        navigation.navigate('Home');
       }
     } catch (error) {
-      setModalVisible(true)
+      setModalVisible(true);
       console.log(error);
     }
-  }
+  };
 
-  const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <View
@@ -81,7 +62,6 @@ const Login = res => {
         // backgroundColor: '#83FBFF',
         flex: 1,
       }}>
-
       <Modal
         animationType="slide"
         transparent={true}
@@ -92,10 +72,11 @@ const Login = res => {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            { Array.isArray(message) ?
-                message.map(mes => <Text style={styles.modalText}>{mes}</Text>) :
-                <Text style={styles.modalText}>{message}</Text>
-            }
+            {Array.isArray(message) ? (
+              message.map(mes => <Text style={styles.modalText}>{mes}</Text>)
+            ) : (
+              <Text style={styles.modalText}>{message}</Text>
+            )}
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => setModalVisible(!modalVisible)}>
@@ -126,7 +107,10 @@ const Login = res => {
               height: 200,
             }}></Image>
           <UIInput placeholder="Username" onChangeText={setEmail}></UIInput>
-          <UIInput placeholder="Password" isPassword={true} onChangeText={setPassword}></UIInput>
+          <UIInput
+            placeholder="Password"
+            isPassword={true}
+            onChangeText={setPassword}></UIInput>
           <View style={{width: 300, display: 'flex', alignItems: 'flex-end'}}>
             <Text
               onPress={() => Linking.openURL('')}

@@ -1,4 +1,4 @@
-import react from 'react';
+import react, {useState, useEffect} from 'react';
 import {ImageBackground, Text, View, TouchableOpacity} from 'react-native';
 import {images, colors, fontSize} from '../../../constant';
 import {Image} from 'react-native';
@@ -6,13 +6,25 @@ import {UIInput} from '../../../components';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faArrowRightToBracket} from '@fortawesome/free-solid-svg-icons/faArrowRightToBracket';
 import {height} from '@fortawesome/free-solid-svg-icons/faMugSaucer';
-import { AppRegistry } from 'react-native';
-import { Button, Icon, WhiteSpace, WingBlank } from '@ant-design/react-native'
+import {AppRegistry} from 'react-native';
+import {Button, Icon, WhiteSpace, WingBlank} from '@ant-design/react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // import { DemoBlock } from './demo'
 function Welcome(res) {
-  const {user} = res;
-  const fullname = user.firstName + ' ' + user.lastName
+  const [fullname, setFullname] = useState('')
+  const [avatar, setAvatar] = useState('https://cafebiz.cafebizcdn.vn/2019/5/17/photo-2-15580579930601897948260.jpg')
+
+  async function getData() {
+    const userStorage = await AsyncStorage.getItem('user');
+    const user = JSON.parse(userStorage);
+    setFullname(user.firstName + ' ' + user.lastName)
+    setAvatar(user.avatar)
+  }
+
+  useEffect(() => {
+    getData();
+  }, []);
   return (
     <View
       style={{
@@ -40,7 +52,7 @@ function Welcome(res) {
               height: 40,
             }}></Image>
           <Image
-            source={images.avatar}
+            source={{ uri: avatar}}
             style={{
               marginRight: 10,
               width: 40,
