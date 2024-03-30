@@ -57,9 +57,8 @@ export const addFriend = async (token, userNameAdd) => {
     });
 }
 
-export const getOneUser = async (token, userFindOne) => {
-    console.log('fdfasfa');
-    return await axios.post(`${url}/user/user-find-one`,{ userFindOne: userFindOne }, {
+export const getOneUser = async (token) => {
+    return await axios.post(`${url}/user/user-find-one`, {
         headers: { authorization: `Bearer ${token}`}
     });
 }
