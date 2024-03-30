@@ -41,6 +41,7 @@ const AppLayout = (props) => {
     removeCookie('loginToken')
     removeCookie('user');
     localStorage.removeItem('user')
+    localStorage.removeItem('search');
     navigate('/login')
   }
 
@@ -54,7 +55,7 @@ const AppLayout = (props) => {
     try {
       const res = await changeTheme(cookies.loginToken, value ? 1 : 0)
         if(res.data.status === 200){
-          props.theme(value ? 'dark' : 'light')
+            props.theme(res.data.nightMode)
             setUser({...user, nightMode: res.data.nightMode})
             setCookie('user', JSON.stringify({ ...cookies.user, nightMode: res.data.nightMode}));
           message.success(res.data.message)

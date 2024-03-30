@@ -5,7 +5,7 @@ import {PlusOutlined} from '@ant-design/icons'
 import { getAllChat } from '../../service/redirect';
 import { useCookies } from 'react-cookie';
 import { AppContext } from '../../context/AppContext';
-
+import CreateChat from './CreateChat';
 
 const ChatList = () => {
     const {user} = useContext(AppContext);
@@ -13,6 +13,7 @@ const ChatList = () => {
     const [data, setData] = useState([]);
     const [cookies, setCookies] = useCookies('loginToken');
     const [hasMore, setHasMore] = useState(false);
+    const [createChat, setCreateChat] = useState(false)
 
     const handleGetAllChat = async () => {
         try {
@@ -30,6 +31,10 @@ const ChatList = () => {
         handleGetAllChat()
     }, [])
 
+    const toggleOpenCreate = () => {
+        setCreateChat(!createChat)
+    }
+
 
     return (
     <Col
@@ -43,7 +48,7 @@ const ChatList = () => {
         >
         <div className='w-100 flex-between'>
                 <Typography.Title className='mt-0 title_feature'>{user.userName}</Typography.Title>
-                <Button icon={<PlusOutlined />} type='primary'></Button>
+                <Button icon={<PlusOutlined />} type='primary' onClick={toggleOpenCreate}></Button>
         </div>
         <Typography.Text style={{fontSize: '18px', fontWeight: 'bold', marginTop: '1.5rem'}}>Messages</Typography.Text>
         <InfiniteScroll
@@ -74,6 +79,7 @@ const ChatList = () => {
             )}
             />
         </InfiniteScroll>
+        {createChat && (<CreateChat handleClose={toggleOpenCreate}/>)}
         </Col>
     )
 }

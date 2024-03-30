@@ -28,7 +28,7 @@ const checkLogin = async (req, res, next) => {
     } catch (error) {
         console.log(error);
         return res.json({
-            status: 509,
+            status: 402,
             message: error.message || "You have no rights!"
         })
     }

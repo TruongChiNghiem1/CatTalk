@@ -1,4 +1,4 @@
-import { Layout, List, theme, Typography, Avatar, Divider, Skeleton  } from 'antd';
+import { Layout, List, theme, Typography, Avatar, Empty, Skeleton  } from 'antd';
 import { getAllNotify } from '../service/notify';
 import { useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -60,10 +60,17 @@ const Notify = () => {
               active
             />
           }
-          endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
           scrollableTarget="scrollableDiv"
       >
         <List
+        locale={{
+                    emptyText: (
+                      <Empty
+                        image={Empty.PRESENTED_IMAGE_SIMPLE}
+                        description="Nothing"
+                    />
+                    ),
+                  }}
           dataSource={data}
           renderItem={(item) => (
             <List.Item key={item._id}>

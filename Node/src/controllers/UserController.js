@@ -331,7 +331,7 @@ const getFriends = async (req, res) => {
             { userName: 1, friends: 1, firstName: 1, lastName: 1, avatar: 1, background: 1 }
         )
 
-        
+
         friends.forEach((userFind) => userFind.isFriend = 1)
 
         return res.json({
@@ -713,21 +713,12 @@ const getMyUser = async (req, res) => {
 
 const changeTheme = async (req, res) => {
     try {
-        const token = req.headers.authorization.split(' ')[1]
-        const decoded = jwt.verify(token, SECRET_CODE)
-        const username = decoded.username
-        const { nightMode } = req.query
-        // if(nightMode != 1 || nightMode != 0){
-        //     return res.json({
-        //         status: 201,
-        //         message: 'Opps, somthing went wrong!!!',
-        //     })
-        // }
-        const user = await User.findOneAndUpdate(
-            { userName: username },
-            { nightMode: nightMode }
-        )
+        const token = req.headers.authorization.split(" ")[1];
+        const decoded = jwt.verify(token, SECRET_CODE);
+        const username = decoded.username;
+        const { nightMode } = req.params;
 
+        const user = await User.findOneAndUpdate({ userName: username }, { nightMode: Number(nightMode) });
         if (user) {
             return res.json({
                 status: 200,
@@ -749,6 +740,20 @@ const changeTheme = async (req, res) => {
     }
 }
 
+
+const checkAuth = async (req, res) => {
+    try {
+        return res.json({
+            status: 200,
+        })
+    } catch (error) {
+        console.log(error);
+        return res.json({
+            status: 402,
+            message: 'Opps, somthing went wrong!!!',
+        })
+    }
+}
 module.exports = {
     signUp,
     mailConfirm,
@@ -764,5 +769,6 @@ module.exports = {
     changeTheme,
     addFriend,
     getMyUser,
-    deleteFriend
+    deleteFriend,
+    checkAuth
 }
