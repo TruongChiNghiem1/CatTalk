@@ -209,14 +209,38 @@ const PhoneBookItem = () => {
           <Text>loading....</Text>
         ) : (
           <ScrollView>
-            {data ? (
+            {data && data.length ? (
               <>
                 {data.map(item => (
                   <ViewPhoneBookItem data={item} />
                 ))}
               </>
             ) : (
-              <Text>Empty</Text>
+              <View style={{ 
+                width: 440,
+                opacity: 0.75,
+                height: 500,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+             }}>
+                <Image
+                  source={images.empty}
+                  style={{
+                      marginRight: 15,
+                      
+                      width: 120,
+                      height: 120,
+                      borderRadius: 100,
+                  }}></Image>
+                  <Text style={{ 
+                      color: colors.primary,
+                      fontWeight: 'bold',
+                      fontSize: 18,
+                  }}>
+                      No user found
+                  </Text>
+              </View>
             )}
           </ScrollView>
         )}

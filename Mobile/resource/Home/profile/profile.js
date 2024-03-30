@@ -5,27 +5,21 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
-  Alert, Modal, StyleSheet, Pressable
+  Alert,
+  Modal,
+  StyleSheet,
+  Pressable,
 } from 'react-native';
 import {images, colors, fontSize} from '../../../constant';
 import {Image} from 'react-native';
-import {UIInput} from '../../../components';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faChevronLeft} from '@fortawesome/free-solid-svg-icons/faChevronLeft';
-import {faVideo} from '@fortawesome/free-solid-svg-icons/faVideo';
-import {faEllipsisVertical} from '@fortawesome/free-solid-svg-icons/faEllipsisVertical';
-import {faPaperclip} from '@fortawesome/free-solid-svg-icons/faPaperclip';
-import {faFaceSmile} from '@fortawesome/free-solid-svg-icons/faFaceSmile';
-import {faImage} from '@fortawesome/free-solid-svg-icons/faImage';
-import {faTrashCan} from '@fortawesome/free-solid-svg-icons/faTrashCan';
+import {faUserXmark} from '@fortawesome/free-solid-svg-icons/faUserXmark';
 import {faCommentDots} from '@fortawesome/free-solid-svg-icons/faCommentDots';
 import {faUserPlus} from '@fortawesome/free-solid-svg-icons/faUserPlus';
-import {AppRegistry} from 'react-native';
-import BasicTabBarExample from '../layout/footer';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { addFriend, getOneUser } from '../../../service/user';
-
+import {addFriend, deleteFriend} from '../../../service/user';
 
 import {
   Button,
@@ -44,18 +38,32 @@ import {
 function renderViewChatItem(prop) {
   const [message, setMessage] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [isFriendNow, setIsFriendNow] = useState(prop.isFriend)
-  const pressAddFriend = async (userNameAdd) => {
+  const [pressDeleteFriendUser, setPressDeleteFriendUser] = useState(false);
+  const [modalVisibleDelete, setModalVisibleDelete] = useState(false);
+  const [isFriendNow, setIsFriendNow] = useState(prop.isFriend);
+  const pressAddFriend = async userNameAdd => {
     try {
       const token = await AsyncStorage.getItem('token');
-      
+
       const items = await addFriend(token, userNameAdd);
       setMessage(items.data.message);
-      setModalVisible(true)
+      setModalVisible(true);
+      setIsFriendNow(1);
     } catch (error) {
       console.error(error);
     }
-  }
+  };
+
+  const pressDeleteFriend = async userNameDelete => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const items = await deleteFriend(token, userNameDelete);
+      setMessage(items.data.message);
+      setModalVisible(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   let chatItem = (
     <View
@@ -66,8 +74,7 @@ function renderViewChatItem(prop) {
         flexDirection: 'row',
         justifyContent: 'center',
       }}>
-
-    <Modal
+      <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
@@ -77,18 +84,54 @@ function renderViewChatItem(prop) {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            { Array.isArray(message) ?
-                message.map(mes => <Text style={styles.modalText}>{mes}</Text>) :
-                <Text style={styles.modalText}>{message}</Text>
-            }
+            {Array.isArray(message) ? (
+              message.map(mes => <Text style={styles.modalText}>{mes}</Text>)
+            ) : (
+              <Text style={styles.modalText}>{message}</Text>
+            )}
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
-                setIsFriendNow(1)
-                setModalVisible(!modalVisible)
-                }}>
+                setModalVisible(!modalVisible);
+              }}>
               <Text style={styles.textStyle}>OK</Text>
             </Pressable>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisibleDelete}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisibleDelete(!modalVisibleDelete);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Are you sure you want to delete this friend?</Text>
+            <View style={{ 
+              display: 'flex',
+              flexDirection: 'row',
+             }}>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => {
+                  setIsFriendNow(0)
+                  pressDeleteFriend(pressDeleteFriendUser);
+                  setModalVisibleDelete(!modalVisibleDelete);
+                }}>
+                <Text style={styles.textStyle}>Yes</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.button, styles.buttonOpen]}
+                onPress={() => {
+                  setModalVisibleDelete(!modalVisibleDelete);
+                }}>
+                <Text style={styles.textStyle}>Cancel</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       </Modal>
@@ -102,7 +145,7 @@ function renderViewChatItem(prop) {
         }}>
         <View>
           <Image
-            source={{ uri: prop.avatar }}
+            source={{uri: prop.avatar}}
             style={{
               width: 130,
               height: 130,
@@ -122,57 +165,89 @@ function renderViewChatItem(prop) {
             borderRadius: 30,
             position: 'relative',
           }}>
-            <View style={{ 
-                marginTop: 40,
-             }}>
-                <Text style={{ color: 'black', fontWeight: 'bold', fontSize: fontSize.h1 }}>{prop.firstName + ' ' + prop.lastName}</Text>
-            </View>
-            <View 
-                style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    marginTop: 20,
+          <View
+            style={{
+              marginTop: 40,
             }}>
-              {!isFriendNow ? 
-                <TouchableOpacity
-                    onPress={() => pressAddFriend(prop.userName)}
-                    style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    padding: 10,
-                    borderRadius: 20,
-                    backgroundColor: colors.colorBgButton,
-                    marginRight: 20,
-                    marginBottom: 50,
-                    }}>
-                      <FontAwesomeIcon
-                      style={{marginRight: 7}}
-                      color="white"
-                      icon={faUserPlus}
-                      />
-                      <Text style={{fontWeight: 'bold', color: 'white'}}>Add friend</Text>
-                </TouchableOpacity>
-                :
-                <></>
-                }
-                <TouchableOpacity
-                    style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    padding: 10,
-                    borderRadius: 20,
-                    backgroundColor: colors.colorBgButton,
-                    marginBottom: 50,
-                    }}>
-                    <FontAwesomeIcon
-                    style={{marginRight: 7}}
-                    color="white"
-                    icon={faCommentDots}
-                    />
-                    <Text style={{fontWeight: 'bold', color: 'white'}}>Chat</Text>
-                </TouchableOpacity>
-            </View>
+            <Text
+              style={{
+                color: 'black',
+                fontWeight: 'bold',
+                fontSize: fontSize.h1,
+              }}>
+              {prop.firstName + ' ' + prop.lastName}
+            </Text>
+          </View>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'center',
+              marginTop: 20,
+            }}>
+            {!isFriendNow ? (
+              <TouchableOpacity
+                onPress={() => pressAddFriend(prop.userName)}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  padding: 10,
+                  borderRadius: 20,
+                  backgroundColor: colors.colorBgButton,
+                  marginRight: 20,
+                  marginBottom: 50,
+                }}>
+                <FontAwesomeIcon
+                  style={{marginRight: 7}}
+                  color="white"
+                  icon={faUserPlus}
+                />
+                <Text style={{fontWeight: 'bold', color: 'white'}}>
+                  Add friend
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                onPress={() => {
+                  setModalVisibleDelete(true) 
+                  setPressDeleteFriendUser(prop.userName)
+                }}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  padding: 10,
+                  borderRadius: 20,
+                  backgroundColor: colors.colorBgButton,
+                  marginRight: 20,
+                  marginBottom: 50,
+                }}>
+                <FontAwesomeIcon
+                  style={{marginRight: 7}}
+                  color="white"
+                  icon={faUserXmark}
+                />
+                <Text style={{fontWeight: 'bold', color: 'white'}}>
+                  Delete friend
+                </Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                padding: 10,
+                borderRadius: 20,
+                backgroundColor: colors.colorBgButton,
+                marginBottom: 50,
+              }}>
+              <FontAwesomeIcon
+                style={{marginRight: 7}}
+                color="white"
+                icon={faCommentDots}
+              />
+              <Text style={{fontWeight: 'bold', color: 'white'}}>Chat</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </View>
@@ -193,7 +268,7 @@ this.state = {
 function RenderProfile(res) {
   const navigation = useNavigation();
   const {route} = res;
-  const data = route.params.data
+  const data = route.params.data;
   return (
     <View
       style={{
@@ -213,7 +288,7 @@ function RenderProfile(res) {
               height: 200,
             }}>
             <Image
-              source={{ uri: data.background }}
+              source={{uri: data.background}}
               style={{
                 width: 420,
                 height: 250,
@@ -222,14 +297,14 @@ function RenderProfile(res) {
                 left: 0,
               }}></Image>
             <View>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <FontAwesomeIcon
-                style={{marginTop: 15, marginLeft: 10}}
-                color={colors.primary}
-                size={20}
-                icon={faChevronLeft}
-              />
-            </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <FontAwesomeIcon
+                  style={{marginTop: 15, marginLeft: 10}}
+                  color={colors.primary}
+                  size={20}
+                  icon={faChevronLeft}
+                />
+              </TouchableOpacity>
             </View>
             <ScrollView>{renderViewChatItem(data)}</ScrollView>
           </View>
@@ -264,15 +339,19 @@ const styles = StyleSheet.create({
   },
   button: {
     borderRadius: 20,
-    padding: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
     marginTop: 15,
+    marginHorizontal: 5,
     elevation: 2,
   },
   buttonOpen: {
-    backgroundColor: '#F194FF',
+    backgroundColor: colors.colorHide,
   },
   buttonClose: {
     backgroundColor: '#2196F3',
+    borderColor: 'black',
+    border: '1px solid',
   },
   textStyle: {
     color: 'white',
@@ -280,7 +359,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modalText: {
-    marginBottom: 10,
     color: colors.textButton,
     textAlign: 'center',
   },
