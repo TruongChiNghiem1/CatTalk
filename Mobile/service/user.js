@@ -57,6 +57,12 @@ export const addFriend = async (token, userNameAdd) => {
     });
 }
 
+export const deleteFriend = async (token, userNameDelete) => {
+    return await axios.post(`${url}/user/delete-friend`,{ userNameDelete: userNameDelete }, {
+        headers: { authorization: `Bearer ${token}`}
+    });
+}
+
 export const getOneUser = async (token) => {
     return await axios.post(`${url}/user/user-find-one`, {
         headers: { authorization: `Bearer ${token}`}
