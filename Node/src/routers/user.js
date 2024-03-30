@@ -1,6 +1,6 @@
 const express = require('express');
 const { signUp, mailConfirm, authEmail, signIn, editProfile, getFriends, uploadAvatar, 
-    updateAboutUs, uploadBackground, searchUser, testData, changeTheme, addFriend, getOneUser } = require('../controllers/UserController');
+    updateAboutUs, uploadBackground, searchUser, testData, changeTheme, addFriend, getMyUser } = require('../controllers/UserController');
 const checkLogin = require('../middlewares/auth');
 // const uploadImage = require('../middlewares/uploadImage')
 const app = express();
@@ -27,7 +27,7 @@ routerUser.get('/test-data', testData)
 routerUser.get('/get-friends', getFriends)
 routerUser.get('/search', searchUser)
 routerUser.post('/add-friend', addFriend)
-routerUser.post('/user-find-one', getOneUser)
+routerUser.post('/user-find-one', getMyUser)
 
 
 module.exports = routerUser;

@@ -643,24 +643,14 @@ const addFriend = async (req, res) => {
     }
 }
 
-const getOneUser = async (req, res) => {
+const getMyUser = async (req, res) => {
     try {
-        const { userFindOne } = req.query
-        const finds = await User.find(
-            { userName: userFindOne },
-            {
-                firstName: 1,
-                friends: 1,
-                lastName: 1,
-                userName: 1,
-                avatar: 1,
-                _id: 0,
-            }
-        )
-        if (finds) {
+        const user = await User.findOne({ userName: username })
+
+        if (user) {
             return res.json({
                 status: 200,
-                users: finds,
+                users: user,
             })
         } else {
             return res.json({
@@ -729,5 +719,5 @@ module.exports = {
     searchUser,
     changeTheme,
     addFriend,
-    getOneUser,
+    getMyUser,
 }

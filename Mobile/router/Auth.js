@@ -10,6 +10,7 @@ import Test from '../resource/Home/test/test';
 import RenderViewChat from '../resource/Home/chat/viewChat';
 import AddFriend from '../resource/Home/addfriend/addfriend';
 import RenderProfile from '../resource/Home/profile/profile';
+import RenderMyProfile from '../resource/Home/profile/myProfile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
@@ -68,6 +69,7 @@ const App = () => {
         />
         <Stack.Screen name="RenderViewChat" component={RenderViewChat} />
         <Stack.Screen name="RenderProfile" component={RenderProfile} />
+        <Stack.Screen name="RenderMyProfile" component={RenderMyProfile} />
         <Stack.Screen name="AddFriend" component={AddFriend} />
         <Stack.Screen name="Auth" component={Auth} />
       </Stack.Navigator>

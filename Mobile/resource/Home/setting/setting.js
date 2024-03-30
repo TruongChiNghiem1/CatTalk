@@ -87,7 +87,7 @@ const Setting = res => {
             }}>
             <WhiteSpace />
             <Button
-              onPress={() => navigation.navigate('RenderProfile')}
+              onPress={() => navigation.navigate('RenderMyProfile')}
               style={{
                 backgroundColor: colors.colorHide,
                 border: 'none',
