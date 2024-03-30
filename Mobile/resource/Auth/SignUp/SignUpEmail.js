@@ -16,7 +16,6 @@ const SignUpEmail = res => {
   const onSubmitHandler = async() => {
     try {
       const res = await axios.post(`${url}/user/mail-confirm`, { email })
-      console.log([res.data.status], res.data.message);
       if (res.data.status !== 200) {
         setMessage(res.data.message);
         setModalVisible(true)

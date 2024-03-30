@@ -31,7 +31,6 @@ const Setting = res => {
     const user = JSON.parse(userStorage);
     setFullname(user.firstName + ' ' + user.lastName);
     setAvatar(user.avatar)
-    console.log(user.avatar);
   }
   
   useEffect(() => {
@@ -41,7 +40,6 @@ const Setting = res => {
   const logOut = () => {
     AsyncStorage.setItem('token', '');
     AsyncStorage.setItem('isLogin', JSON.stringify(false));
-    console.log('logout' , AsyncStorage.getItem('token'), AsyncStorage.getItem('user'));
     navigation.navigate('Auth');
   };
   return (

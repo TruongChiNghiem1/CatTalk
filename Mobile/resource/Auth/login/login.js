@@ -36,13 +36,12 @@ const Login = res => {
   const onSubmitHandler = async () => {
     try {
       const res = await axios.post(`${url}/user/login`, {userName, password});
-      console.log([res.data.status], res.data.message);
       if (res.data.status !== 200) {
         setIsError(true);
         setMessage(res.data.message);
         setModalVisible(true);
       } else {
-        AsyncStorage.setItem('token', JSON.stringify(res.data.accessToken));
+        AsyncStorage.setItem('token', res.data.accessToken);
         AsyncStorage.setItem('user', JSON.stringify(res.data.user));
         AsyncStorage.setItem('isLogin', JSON.stringify(true));
 

@@ -1,11 +1,11 @@
-import react from 'react';
+import react, {useState} from 'react';
 import {
   ImageBackground,
   Text,
   View,
   TouchableOpacity,
   ScrollView,
-  Alert,
+  Alert, Modal, StyleSheet, Pressable
 } from 'react-native';
 import {images, colors, fontSize} from '../../../constant';
 import {Image} from 'react-native';
@@ -23,6 +23,9 @@ import {faUserPlus} from '@fortawesome/free-solid-svg-icons/faUserPlus';
 import {AppRegistry} from 'react-native';
 import BasicTabBarExample from '../layout/footer';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { addFriend, getOneUser } from '../../../service/user';
+
 
 import {
   Button,
@@ -38,7 +41,22 @@ import {
 } from '@ant-design/react-native';
 
 // import { DemoBlock } from './demo'
-function renderViewChatItem() {
+function renderViewChatItem(prop) {
+  const [message, setMessage] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [isFriendNow, setIsFriendNow] = useState(prop.isFriend)
+  const pressAddFriend = async (userNameAdd) => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      
+      const items = await addFriend(token, userNameAdd);
+      setMessage(items.data.message);
+      setModalVisible(true)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   let chatItem = (
     <View
       style={{
@@ -48,6 +66,33 @@ function renderViewChatItem() {
         flexDirection: 'row',
         justifyContent: 'center',
       }}>
+
+    <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            { Array.isArray(message) ?
+                message.map(mes => <Text style={styles.modalText}>{mes}</Text>) :
+                <Text style={styles.modalText}>{message}</Text>
+            }
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => {
+                setIsFriendNow(1)
+                setModalVisible(!modalVisible)
+                }}>
+              <Text style={styles.textStyle}>OK</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+
       <View
         style={{
           marginTop: 140,
@@ -57,7 +102,7 @@ function renderViewChatItem() {
         }}>
         <View>
           <Image
-            source={images.avatar}
+            source={{ uri: prop.avatar }}
             style={{
               width: 130,
               height: 130,
@@ -80,7 +125,7 @@ function renderViewChatItem() {
             <View style={{ 
                 marginTop: 40,
              }}>
-                <Text style={{ color: 'black', fontWeight: 'bold', fontSize: fontSize.h1 }}>Trương Chí Nghiệm</Text>
+                <Text style={{ color: 'black', fontWeight: 'bold', fontSize: fontSize.h1 }}>{prop.firstName + ' ' + prop.lastName}</Text>
             </View>
             <View 
                 style={{
@@ -89,7 +134,9 @@ function renderViewChatItem() {
                     justifyContent: 'center',
                     marginTop: 20,
             }}>
-                <View
+              {!isFriendNow ? 
+                <TouchableOpacity
+                    onPress={() => pressAddFriend(prop.userName)}
                     style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -99,14 +146,17 @@ function renderViewChatItem() {
                     marginRight: 20,
                     marginBottom: 50,
                     }}>
-                    <FontAwesomeIcon
-                    style={{marginRight: 7}}
-                    color="white"
-                    icon={faUserPlus}
-                    />
-                    <Text style={{fontWeight: 'bold', color: 'white'}}>Add friend</Text>
-                </View>
-                <View
+                      <FontAwesomeIcon
+                      style={{marginRight: 7}}
+                      color="white"
+                      icon={faUserPlus}
+                      />
+                      <Text style={{fontWeight: 'bold', color: 'white'}}>Add friend</Text>
+                </TouchableOpacity>
+                :
+                <></>
+                }
+                <TouchableOpacity
                     style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -121,7 +171,7 @@ function renderViewChatItem() {
                     icon={faCommentDots}
                     />
                     <Text style={{fontWeight: 'bold', color: 'white'}}>Chat</Text>
-                </View>
+                </TouchableOpacity>
             </View>
         </View>
       </View>
@@ -142,7 +192,8 @@ this.state = {
 
 function RenderProfile(res) {
   const navigation = useNavigation();
-
+  const {route} = res;
+  const data = route.params.data
   return (
     <View
       style={{
@@ -162,7 +213,7 @@ function RenderProfile(res) {
               height: 200,
             }}>
             <Image
-              source={images.backgroundProfile}
+              source={{ uri: data.background }}
               style={{
                 width: 420,
                 height: 250,
@@ -180,12 +231,59 @@ function RenderProfile(res) {
               />
             </TouchableOpacity>
             </View>
-            <ScrollView>{renderViewChatItem()}</ScrollView>
+            <ScrollView>{renderViewChatItem(data)}</ScrollView>
           </View>
         </ImageBackground>
       </Provider>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    paddingBottom: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    marginTop: 15,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 10,
+    color: colors.textButton,
+    textAlign: 'center',
+  },
+});
 
 export default RenderProfile;
