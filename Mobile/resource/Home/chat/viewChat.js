@@ -21,6 +21,8 @@ import {faTrashCan} from '@fortawesome/free-solid-svg-icons/faTrashCan';
 import {height} from '@fortawesome/free-solid-svg-icons/faMugSaucer';
 import {AppRegistry} from 'react-native';
 import BasicTabBarExample from '../layout/footer';
+import {DrawerActions, useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Button,
   Icon,
@@ -36,6 +38,7 @@ import {
 
 // import { DemoBlock } from './demo'
 function renderViewChatItem() {
+  
   let chatItem = (
     <View style={{marginBottom: 10}}>
       <View
@@ -250,6 +253,8 @@ const showActionSheet = () => {
 };
 
 function RenderViewChat(res) {
+  const navigation = useNavigation();
+
   return (
     <View
       style={{
@@ -277,12 +282,14 @@ function RenderViewChat(res) {
                 alignItems: 'center',
                 marginHorizontal: 10,
               }}>
+              <TouchableOpacity onPress={() => navigation.navigate('BasicTabBarExample')}>
               <FontAwesomeIcon
                 style={{marginRight: 10}}
                 color={colors.primary}
                 size={20}
                 icon={faChevronLeft}
               />
+              </TouchableOpacity>
               <Image
                 source={images.avatar}
                 style={{

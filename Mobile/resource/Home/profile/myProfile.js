@@ -1,4 +1,4 @@
-import react, {useState} from 'react';
+import react, {useState,useEffect} from 'react';
 import {
   ImageBackground,
   Text,
@@ -9,22 +9,13 @@ import {
 } from 'react-native';
 import {images, colors, fontSize} from '../../../constant';
 import {Image} from 'react-native';
-import {UIInput} from '../../../components';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faChevronLeft} from '@fortawesome/free-solid-svg-icons/faChevronLeft';
-import {faVideo} from '@fortawesome/free-solid-svg-icons/faVideo';
-import {faEllipsisVertical} from '@fortawesome/free-solid-svg-icons/faEllipsisVertical';
-import {faPaperclip} from '@fortawesome/free-solid-svg-icons/faPaperclip';
-import {faFaceSmile} from '@fortawesome/free-solid-svg-icons/faFaceSmile';
-import {faImage} from '@fortawesome/free-solid-svg-icons/faImage';
-import {faTrashCan} from '@fortawesome/free-solid-svg-icons/faTrashCan';
 import {faCommentDots} from '@fortawesome/free-solid-svg-icons/faCommentDots';
 import {faUserPlus} from '@fortawesome/free-solid-svg-icons/faUserPlus';
-import {AppRegistry} from 'react-native';
-import BasicTabBarExample from '../layout/footer';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { addFriend, getOneUser } from '../../../service/user';
+import { getOneUser } from '../../../service/user';
 
 
 import {
@@ -42,21 +33,8 @@ import {
 
 // import { DemoBlock } from './demo'
 function renderViewChatItem(prop) {
-  const [message, setMessage] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [isFriendNow, setIsFriendNow] = useState(prop.isFriend)
-  const pressAddFriend = async (userNameAdd) => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      
-      const items = await addFriend(token, userNameAdd);
-      setMessage(items.data.message);
-      setModalVisible(true)
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
+  // const [avatar, setAvatar] = useState('');
+  // setAvatar(prop.avatar)
   let chatItem = (
     <View
       style={{
@@ -66,33 +44,6 @@ function renderViewChatItem(prop) {
         flexDirection: 'row',
         justifyContent: 'center',
       }}>
-
-    <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            { Array.isArray(message) ?
-                message.map(mes => <Text style={styles.modalText}>{mes}</Text>) :
-                <Text style={styles.modalText}>{message}</Text>
-            }
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => {
-                setIsFriendNow(1)
-                setModalVisible(!modalVisible)
-                }}>
-              <Text style={styles.textStyle}>OK</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
-
       <View
         style={{
           marginTop: 140,
@@ -134,44 +85,6 @@ function renderViewChatItem(prop) {
                     justifyContent: 'center',
                     marginTop: 20,
             }}>
-              {!isFriendNow ? 
-                <TouchableOpacity
-                    onPress={() => pressAddFriend(prop.userName)}
-                    style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    padding: 10,
-                    borderRadius: 20,
-                    backgroundColor: colors.colorBgButton,
-                    marginRight: 20,
-                    marginBottom: 50,
-                    }}>
-                      <FontAwesomeIcon
-                      style={{marginRight: 7}}
-                      color="white"
-                      icon={faUserPlus}
-                      />
-                      <Text style={{fontWeight: 'bold', color: 'white'}}>Add friend</Text>
-                </TouchableOpacity>
-                :
-                <></>
-                }
-                <TouchableOpacity
-                    style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    padding: 10,
-                    borderRadius: 20,
-                    backgroundColor: colors.colorBgButton,
-                    marginBottom: 50,
-                    }}>
-                    <FontAwesomeIcon
-                    style={{marginRight: 7}}
-                    color="white"
-                    icon={faCommentDots}
-                    />
-                    <Text style={{fontWeight: 'bold', color: 'white'}}>Chat</Text>
-                </TouchableOpacity>
             </View>
         </View>
       </View>
@@ -190,10 +103,29 @@ this.state = {
   text: '',
 };
 
-function RenderProfile(res) {
+function RenderMyProfile(res) {
   const navigation = useNavigation();
-  const {route} = res;
-  const data = route.params.data
+  const [data, setData] = useState([]);
+  const [background, setBackground] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const user = await AsyncStorage.getItem('user');
+      setData(JSON.parse(user));
+      
+      setBackground(data.background)
+      setLoading(false);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <View
       style={{
@@ -286,4 +218,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RenderProfile;
+export default RenderMyProfile;

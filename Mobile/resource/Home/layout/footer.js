@@ -13,31 +13,40 @@ import {faUser} from '@fortawesome/free-solid-svg-icons/faUser';
 import {faStar} from '@fortawesome/free-solid-svg-icons/faStar';
 import RenderProfile from '../profile/profile';
 import Setting from '../setting/setting';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default class BasicTabBarExample extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedTab: 'blueTab',
+      selectedTab: 'greenTab',
+      user: null,
+      token: null,
     };
     const {navigation} = props;
     this.navigation = navigation
+    const { route } = props;
+    const token = AsyncStorage.setItem('token')
+    const user = AsyncStorage.setItem('user')
+
+    this.state.user = user;
+    this.state.token = token;
   }
 
   renderContent1(pageText) {
-    return <Chat></Chat>;
+    return <Chat user={this.state.user}></Chat>;
   }
 
   renderContent2(pageText) {
-    return <PhoneBookItem></PhoneBookItem>;
+    return <PhoneBookItem user={this.state.user}></PhoneBookItem>;
   }
 
   renderContent3(pageText) {
-    return <Welcome></Welcome>;
+    return <Welcome user={this.state.user}></Welcome>;
   }
 
   renderContent4(res) {
-    return <Setting res={res}></Setting>;
+    return <Setting  user={this.state.user}></Setting>;
   }
 
   renderContent(pageText) {

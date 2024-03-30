@@ -15,15 +15,16 @@ import {AppRegistry} from 'react-native';
 import {Button, Icon, WhiteSpace, WingBlank} from '@ant-design/react-native';
 import {faPhone} from '@fortawesome/free-solid-svg-icons/faPhone';
 import {faVideo} from '@fortawesome/free-solid-svg-icons/faVideo';
+import {DrawerActions, useNavigation} from '@react-navigation/native';
 
 
 function ViewPhoneBookItem(props) {
   var {data} = props;
-  const {navigation} = props;
+  const navigation = useNavigation();
 
   return (
-    <View
-      onPress={() => this.renderContent1('blueTab')}
+    <TouchableOpacity
+      onPress={() => navigation.navigate('RenderProfile', {data: data })}
       style={{
         margin: 15,
       }}>
@@ -55,7 +56,7 @@ function ViewPhoneBookItem(props) {
               fontWeight: 'bold',
               fontSize: fontSize.h3,
             }}>
-            {data.name}
+            {data.firstName + ' ' + data.lastName}
           </Text>
         </View>
         <View 
@@ -78,7 +79,7 @@ function ViewPhoneBookItem(props) {
           />
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 

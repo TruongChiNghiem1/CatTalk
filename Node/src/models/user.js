@@ -56,6 +56,9 @@ const userSchema = new mongoose.Schema({
     nightMode: {
         type: Number,
         default: 0
+    },
+    isFriend: {
+        type: Number,
     }
 },
     {
