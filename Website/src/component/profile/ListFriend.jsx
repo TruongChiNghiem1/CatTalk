@@ -20,9 +20,7 @@ const ListFriend = () => {
     const [cookies] = useCookies('loginToken')
     const [listFriend, setListFriend] = useState([])
 
-    const {
-    token: { colorBoldSecondary },
-  } = theme.useToken();
+    const { token: { colorBoldSecondary }, } = theme.useToken();
     const handelLoadFriend = async () => {
         try {
             const items = await getFriends(cookies.loginToken);

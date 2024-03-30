@@ -19,6 +19,8 @@ import ViewPhoneBookItem from './viewPhoneBookItem';
 import axios from 'axios';
 import {url} from '../../../service/cattalk';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
+import { getFriends } from '../../../service/user';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // import { DemoBlock } from './demo'
 
@@ -31,9 +33,8 @@ const PhoneBookItem = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(
-        `${url}/user/test-data`,
-      );
+      const token = await AsyncStorage.getItem('token');
+      const res = await getFriends(token)
       setData(res.data.data);
       setLoading(false);
       const userStorage = await AsyncStorage.getItem('user');
@@ -208,7 +209,7 @@ const PhoneBookItem = () => {
           <Text>loading....</Text>
         ) : (
           <ScrollView>
-            {data.length ? (
+            {data ? (
               <>
                 {data.map(item => (
                   <ViewPhoneBookItem data={item} />

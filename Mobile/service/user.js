@@ -1,5 +1,5 @@
 import axios from "axios";
-import { url } from "./cattalk";
+import {url} from '../service/cattalk';
 export const mailConfirm = async (mail) => {
     return await axios.post(`${url}/user/mail-confirm`, { email: mail });
 };
@@ -41,6 +41,31 @@ export const updateAboutUs = async (data, token) => {
 
 export const getFriends = async (token) => {
     return await axios.get(`${url}/user/get-friends`, {
+        headers: { authorization: `Bearer ${token}` }
+    });
+}
+
+export const searchUser = async (token, search) => {
+    return await axios.get(`${url}/user/search?search=${search}`, {
+        headers: { authorization: `Bearer ${token}` }
+    });
+}
+
+export const addFriend = async (token, userNameAdd) => {
+    return await axios.post(`${url}/user/add-friend`,{ userNameAdd: userNameAdd }, {
+        headers: { authorization: `Bearer ${token}`}
+    });
+}
+
+export const getOneUser = async (token, userFindOne) => {
+    console.log('fdfasfa');
+    return await axios.post(`${url}/user/user-find-one`,{ userFindOne: userFindOne }, {
+        headers: { authorization: `Bearer ${token}`}
+    });
+}
+
+export const changeTheme = async (token, theme) => {
+    return await axios.get(`${url}/user/change-theme?nightMode=${theme}`, {
         headers: { authorization: `Bearer ${token}` }
     });
 }

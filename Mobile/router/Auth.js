@@ -78,7 +78,6 @@ const Router = () => {
   const [isLogin, setIsLogin] = useState(false);
   const getData = async () => {
     const data = await AsyncStorage.getItem('isLogin');
-    console.log(data);
     setIsLogin(data);
   };
 

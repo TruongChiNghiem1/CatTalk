@@ -14,34 +14,38 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import {url} from '../../../service/cattalk';
-import ViewFriendItem from './viewFriendItem'
+import ViewFriendItem from './viewFriendItem';
+import { searchUser } from '../../../service/user';
+import {faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons/faMagnifyingGlass';
 
 // import { DemoBlock } from './demo'
 function AddFriend(res) {
     const navigation = useNavigation();
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [search, setSearch] = useState('');
+    // const [user, setUser] = useState('');
   
     const fetchData = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(
-                `${url}/user/test-data`,
-            );
-            setData(res.data.data);
+            const token = await AsyncStorage.getItem('token');
+            const items = await searchUser(token, search);
+
+            setData(items.data.users);
             
-            const userStorage = await AsyncStorage.getItem('user');
-            const user = JSON.parse(userStorage);
+            // const userStorage = await AsyncStorage.getItem('user');
+            // setUser(JSON.parse(userStorage));
 
             setLoading(false);
         } catch (e) {
-        console.log(e);
+            console.log(e);
         }
     };
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    // useEffect(() => {
+    //     fetchData();
+    // }, []);
 
     const searchFriend = () => {
 
@@ -94,11 +98,11 @@ function AddFriend(res) {
                         flexDirection: 'row',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        marginTop: 20,
+                        marginTop: 10,
                     }}>
-                    <UIInput placeholder="Nhập username hoặc email" width={340}></UIInput>
+                    <UIInput placeholder="Nhập username hoặc email" width={340} onChangeText={setSearch}></UIInput>
                     <TouchableOpacity
-                        onPress={searchFriend}
+                        onPress={fetchData}
                         title="Login">
                         <View
                             style={{
@@ -113,7 +117,7 @@ function AddFriend(res) {
                                 justifyContent: 'center',
                                 alignItems: 'center',
                             }}>
-                            <FontAwesomeIcon icon={faUserPlus} color={colors.colorBgButton} />
+                            <FontAwesomeIcon icon={faMagnifyingGlass} color={colors.colorBgButton} />
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -121,11 +125,13 @@ function AddFriend(res) {
                 {loading ? (
                     <Text>loading....</Text>
                     ) : (
-                    <ScrollView>
-                        {data.length ? (
+                    <ScrollView style={{ 
+                        marginVertical: 15
+                     }}>
+                        {data ? (
                         <>
                             {data.map(item => (
-                            <ViewFriendItem data={item} />
+                                <ViewFriendItem data={item}/>
                             ))}
                         </>
                         ) : (
