@@ -21,6 +21,12 @@ export const logIn = async (user) => {
     return await axios.post(`${url}/user/login`, user);
 }
 
+export const checkAuthentication = async (token) => {
+    return await axios.get(`${url}/user/check-auth`, {
+        headers: { authorization: `Bearer ${token}` }
+    })
+}
+
 export const editProfile = async (data, token) => {
     return await axios.post(`${url}/user/edit-profile`, data, {
         headers: { authorization: `Bearer ${token}` }
@@ -58,7 +64,7 @@ export const searchUser = async (token, search) => {
 }
 
 export const changeTheme = async (token, theme) => {
-    return await axios.get(`${url}/user/change-theme?nightMode=${theme}`, {
+    return await axios.get(`${url}/user/change-theme/${theme}`, {
         headers: { authorization: `Bearer ${token}` }
     });
 }

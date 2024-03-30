@@ -562,15 +562,9 @@ const changeTheme = async (req, res) => {
         const token = req.headers.authorization.split(" ")[1];
         const decoded = jwt.verify(token, SECRET_CODE);
         const username = decoded.username;
-        const { nightMode } = req.query;
-        // if(nightMode != 1 || nightMode != 0){
-        //     return res.json({
-        //         status: 201,
-        //         message: 'Opps, somthing went wrong!!!',
-        //     })
-        // }
-        const user = await User.findOneAndUpdate({ userName: username }, { nightMode: nightMode });
+        const { nightMode } = req.params;
 
+        const user = await User.findOneAndUpdate({ userName: username }, { nightMode: Number(nightMode) });
         if (user) {
             return res.json({
                 status: 200,
@@ -593,9 +587,22 @@ const changeTheme = async (req, res) => {
     }
 }
 
+const checkAuth = async (req, res) => {
+    try {
+        return res.json({
+            status: 200,
+        })
+    } catch (error) {
+        console.log(error);
+        return res.json({
+            status: 402,
+            message: 'Opps, somthing went wrong!!!',
+        })
+    }
+}
 
 
 module.exports = {
     signUp, mailConfirm, authEmail, signIn, editProfile, getFriends,
-    uploadAvatar, updateAboutUs, uploadBackground, testData, searchUser, changeTheme
+    uploadAvatar, updateAboutUs, uploadBackground, testData, searchUser, changeTheme, checkAuth
 };
