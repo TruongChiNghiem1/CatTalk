@@ -331,7 +331,7 @@ const getFriends = async (req, res) => {
             { userName: 1, friends: 1, firstName: 1, lastName: 1, avatar: 1, background: 1 }
         )
 
-        
+
         friends.forEach((userFind) => userFind.isFriend = 1)
 
         return res.json({
@@ -643,6 +643,50 @@ const addFriend = async (req, res) => {
     }
 }
 
+const deleteFriend = async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1]
+        const decoded = jwt.verify(token, SECRET_CODE)
+        const username = decoded.username
+
+        const { userNameDelete } = req.body
+
+        const user = await User.findOne({ userName: username })
+        if (!user) {
+            return res.json({
+                status: 400,
+                message: 'User not found',
+            })
+        }
+
+        const dataUpdate = await User.findOneAndUpdate(
+            { userName: username },
+            { $pull: { friends: userNameDelete } },
+            { new: false }
+        )
+        const dataUpdateFriend = await User.findOneAndUpdate(
+            { userName: userNameDelete },
+            { $pull: { friends: username } },
+            { new: false }
+        )
+        if (!dataUpdate && !dataUpdateFriend) {
+            return res.json({
+                status: 500,
+                message: "Can't delete friends, please try again",
+            })
+        }
+        return res.json({
+            status: 200,
+            message: 'Delete successful friends',
+        })
+    } catch (error) {
+        return res.json({
+            status: 500,
+            message: 'Opps, somthing went wrong!!!',
+        })
+    }
+}
+
 const getMyUser = async (req, res) => {
     try {
         const user = await User.findOne({ userName: username })
@@ -696,6 +740,7 @@ const changeTheme = async (req, res) => {
     }
 }
 
+
 const checkAuth = async (req, res) => {
     try {
         return res.json({
@@ -709,9 +754,21 @@ const checkAuth = async (req, res) => {
         })
     }
 }
-
-
 module.exports = {
-    signUp, mailConfirm, authEmail, signIn, editProfile, getFriends,
-    uploadAvatar, updateAboutUs, uploadBackground, testData, searchUser, changeTheme, checkAuth
-};
+    signUp,
+    mailConfirm,
+    authEmail,
+    signIn,
+    editProfile,
+    getFriends,
+    uploadAvatar,
+    updateAboutUs,
+    uploadBackground,
+    testData,
+    searchUser,
+    changeTheme,
+    addFriend,
+    getMyUser,
+    deleteFriend,
+    checkAuth
+}

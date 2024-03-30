@@ -7,4 +7,5 @@ export default {
   backgroundProfile: require('../assets/img/Background.jpg'),
   testImg: require('../assets/img/TestImg.jpg'),
   testImg2: require('../assets/img/TestImg2.jpg'),
+  empty: require('../assets/img/empty.png'),
 };
