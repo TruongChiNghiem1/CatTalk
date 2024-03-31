@@ -1,1 +1,1 @@
-export const url = 'http://172.20.51.135:2080/cattalk';
+export const url = 'http://192.168.1.7:2080/cattalk';
