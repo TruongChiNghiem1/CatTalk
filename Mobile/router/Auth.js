@@ -81,7 +81,9 @@ const Router = () => {
   const getData = async () => {
     const data = await AsyncStorage.getItem('isLogin');
     const token = await AsyncStorage.getItem('token');
-    setIsLogin(data && !empty(token));
+    // const loginWhat = data && !token;
+    const loginWhat = data;
+    setIsLogin(loginWhat);
   };
 
   useEffect(() => {

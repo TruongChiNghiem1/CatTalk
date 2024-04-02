@@ -1,38 +1,59 @@
-const dotenv = require("dotenv");
-const jwt = require("jsonwebtoken");
-const Chat = require("../models/chat");
+const dotenv = require('dotenv')
+const jwt = require('jsonwebtoken')
+const User = require('../models/user.js')
+const Chat = require('../models/chat.js')
+const Member = require('../models/member.js')
+const Message = require('../models/message.js')
 
-const { SECRET_CODE } = process.env;
+const { SECRET_CODE } = process.env
 const getAllChat = async (req, res) => {
     try {
-        const token = req.headers.authorization.split(" ")[1];
-        const decoded = jwt.verify(token, SECRET_CODE);
-        const username = decoded.username;
-        const makeChat = {
-            chatType: 'multi',
-            groupName: 'GROUP CHAT 01',
-            lead: 'adminQuyen',
-            avatar: 'https://p1.hiclipart.com/preview/927/112/893/group-of-people-business-company-team-management-customer-project-stakeholder-teamwork-png-clipart.jpg',
-            createdBy: 'adminQuyen'
-        }
+        console.log('dsf');
+        const token = req.headers.authorization.split(' ')[1]
+        const decoded = jwt.verify(token, SECRET_CODE)
+        const username = decoded.username
 
-        const chats = await Chat.find()
+        const member = await Member.find({ userName: username })
+
+        let chats = []
+        for (const mem of member) {
+            const chat = await Chat.findOne({ _id: mem.chatId })
+            const message = await Message.findOne(
+                {chatId: chat._id}
+            ).sort({ createdAt: -1 })
+            if (mem.chatType === 'single') {
+                const userChat = await User.findOne(
+                    {userName: mem.createdBy}
+                )
+                const newChat = {
+                    member: mem,
+                    objectChat: userChat,
+                    newMessage: message
+                }
+                chats.push(newChat)
+            } else {
+                const newChat = {
+                    member: mem,
+                    objectChat: chat,
+                    newMessage: message
+                }
+                chats.push(newChat)
+            }
+        }
 
         if (chats) {
             return res.json({
                 status: 200,
-                chat: chats
+                chat: chats,
             })
         }
-
     } catch (error) {
-        console.log(error);
+        console.log(error)
         return res.json({
             status: 500,
             message: error,
         })
     }
 }
-
 
 module.exports = { getAllChat }
