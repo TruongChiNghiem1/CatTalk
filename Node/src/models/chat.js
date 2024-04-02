@@ -1,13 +1,16 @@
 const mongoose = require('mongoose');
 
 const chatSchema = new mongoose.Schema({
+    /**
+     * single
+     * multi
+     */
     chatType: {
         type: String,
         required: true,
     },
     groupName: {
         type: String,
-        required: true,
     },
     lead: {
         type: String,
@@ -18,7 +21,6 @@ const chatSchema = new mongoose.Schema({
     },
     createdBy: {
         type: String,
-        required: true,
     }
 },
     {

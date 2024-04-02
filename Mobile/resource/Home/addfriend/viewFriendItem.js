@@ -28,7 +28,7 @@ function ViewFriendItem(props) {
   const {data} = props;
   const [isFriendNow, setIsFriendNow] = useState(data.isFriend)
   // const [friend, setfriend] = useState();
-  const avatar = data.avatar ?? 'https://cafebiz.cafebizcdn.vn/2019/5/17/photo-2-15580579930601897948260.jpg';
+  const avatar = data.avatar ?? 'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg';
 
   const getData = async () => {
     setLoading(true);

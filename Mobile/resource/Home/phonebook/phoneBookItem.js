@@ -19,7 +19,7 @@ import ViewPhoneBookItem from './viewPhoneBookItem';
 import axios from 'axios';
 import {url} from '../../../service/cattalk';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
-import { getFriends } from '../../../service/user';
+import {getFriends} from '../../../service/user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // import { DemoBlock } from './demo'
@@ -28,18 +28,20 @@ const PhoneBookItem = () => {
   const navigation = useNavigation();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [avatar, setAvatar] = useState('https://cafebiz.cafebizcdn.vn/2019/5/17/photo-2-15580579930601897948260.jpg')
+  const [avatar, setAvatar] = useState(
+    'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
+  );
 
   const fetchData = async () => {
     setLoading(true);
     try {
       const token = await AsyncStorage.getItem('token');
-      const res = await getFriends(token)
+      const res = await getFriends(token);
       setData(res.data.data);
       setLoading(false);
       const userStorage = await AsyncStorage.getItem('user');
       const user = JSON.parse(userStorage);
-      setAvatar(user.avatar)
+      setAvatar(user.avatar);
     } catch (e) {
       console.log(e);
     }
@@ -75,7 +77,7 @@ const PhoneBookItem = () => {
               height: 40,
             }}></Image>
           <Image
-            source={{ uri: avatar}}
+            source={{uri: avatar}}
             style={{
               marginRight: 10,
               width: 40,
@@ -216,30 +218,32 @@ const PhoneBookItem = () => {
                 ))}
               </>
             ) : (
-              <View style={{ 
-                width: 440,
-                opacity: 0.75,
-                height: 500,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-             }}>
+              <View
+                style={{
+                  width: 440,
+                  opacity: 0.75,
+                  height: 500,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
                 <Image
                   source={images.empty}
                   style={{
-                      marginRight: 15,
-                      
-                      width: 120,
-                      height: 120,
-                      borderRadius: 100,
+                    marginRight: 15,
+
+                    width: 120,
+                    height: 120,
+                    borderRadius: 100,
                   }}></Image>
-                  <Text style={{ 
-                      color: colors.primary,
-                      fontWeight: 'bold',
-                      fontSize: 18,
+                <Text
+                  style={{
+                    color: colors.primary,
+                    fontWeight: 'bold',
+                    fontSize: 18,
                   }}>
-                      No user found
-                  </Text>
+                  No user found
+                </Text>
               </View>
             )}
           </ScrollView>
