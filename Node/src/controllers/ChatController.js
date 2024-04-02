@@ -8,7 +8,6 @@ const Message = require('../models/message.js')
 const { SECRET_CODE } = process.env
 const getAllChat = async (req, res) => {
     try {
-        console.log('dsf');
         const token = req.headers.authorization.split(' ')[1]
         const decoded = jwt.verify(token, SECRET_CODE)
         const username = decoded.username

@@ -24,6 +24,8 @@ import {DrawerActions, useNavigation} from '@react-navigation/native';
 function ViewFriendItem(props) {
   const navigation = useNavigation();
   const [message, setMessage] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const [modalVisible, setModalVisible] = useState(false);
   const {data} = props;
   const [isFriendNow, setIsFriendNow] = useState(data.isFriend)
