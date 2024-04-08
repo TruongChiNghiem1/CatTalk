@@ -82,7 +82,6 @@ const showActionSheet = () => {
 };
 
 function RenderViewChat(res) {
-  console.log('ggfgggggggggggg');
   const navigation = useNavigation();
   var {dataChat} = res.route.params;
 
@@ -100,32 +99,23 @@ function RenderViewChat(res) {
   //Socket
   const route = useRoute();
   
-
-  const [socket, setSocket] = useState(null)
-  useEffect(() => {
-    setSocket(io.connect('http://192.168.1.22:2090'))
-
-    socket.on('connect', () => {
-      console.log('Connected to the Socket.IO server');
-    });
-    socket.emit('join_room', chatId);
-    const onSubmitNewSendMessage = async (senderId, receiverId) => {
-      socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
-      setNewMessageSend('')
-  
-      // call the fetchMessages() function to see the UI update
-      // setTimeout(() => {
-      //   fetchMessages();
-      // }, 200);
-    };
-
-    
-  }, [socket])
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.22:2090'))
 
   
+  socket.emit('join_room', myUserName);
+  const onSubmitNewSendMessage = async (senderId, receiverId) => {
+    socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
+    setNewMessageSend('')
+
+    // call the fetchMessages() function to see the UI update
+    setTimeout(() => {
+      fetchMessages();
+    }, 200);
+  };
 
   const fetchMessages = async () => {
     try {
+      
       // const senderId = route?.params?.senderId;
       // const receiverId = route?.params?.receiverId;
 
@@ -156,6 +146,20 @@ function RenderViewChat(res) {
       console.log('Error fetching the messages', error);
     }
   };
+
+  useEffect(() => {
+    socket.on('connection', () => {
+        console.log('Connected to the Socket.IO server');
+      });
+  }, []);
+
+  useEffect(() => {
+    socket.on('receiveMessage', newMessage => {
+      console.log('new Message', newMessage);
+      //update the state to include new message
+      setData(prevMessages => [...prevMessages, newMessage]);
+    });
+  }, []);
 
 
   useEffect(() => {
