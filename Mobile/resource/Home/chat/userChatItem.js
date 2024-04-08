@@ -18,7 +18,7 @@ import RenderViewChat from './viewChat';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
 
 function UserChatItem(props) {
-  const {data} = props;
+  var {data} = props;
   const navigation = useNavigation();
   const [avatarChat, setAvatarChat] = useState(
     'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
@@ -26,13 +26,16 @@ function UserChatItem(props) {
   const [nameChat, setNameChat] = useState('');
   const [newMessage, setNewMessage] = useState('');
   const fetchDataChatItem = async () => {
+
     try {
-      if (data.member.chatType === 'single') {
-        setNameChat(data.objectChat.firstName + ' ' + data.objectChat.lastName);
+      if (data.objectChat.chatType === 'single') {
+        setNameChat(data.userChat.firstName + ' ' + data.userChat.lastName);
+        setAvatarChat(data.userChat.avatar);
       } else {
         setNameChat(data.objectChat.groupName);
+        setAvatarChat(data.objectChat.avatar);
       }
-      setAvatarChat(data.objectChat.avatar);
+      
       setNewMessage(data.newMessage.content);
     } catch (e) {
       console.log(e);
@@ -42,9 +45,8 @@ function UserChatItem(props) {
   useEffect(() => {
     fetchDataChatItem();
   }, []);
-
   return (
-    <TouchableOpacity onPress={() => navigation.navigate('RenderViewChat')}>
+    <TouchableOpacity onPress={() => navigation.navigate('RenderViewChat', {dataChat: data})}>
       <View
         style={{
           margin: 15,

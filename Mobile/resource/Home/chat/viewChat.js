@@ -1,4 +1,4 @@
-import react from 'react';
+import react, {useEffect, useState} from 'react';
 import {
   ImageBackground,
   Text,
@@ -18,11 +18,20 @@ import {faPaperclip} from '@fortawesome/free-solid-svg-icons/faPaperclip';
 import {faFaceSmile} from '@fortawesome/free-solid-svg-icons/faFaceSmile';
 import {faImage} from '@fortawesome/free-solid-svg-icons/faImage';
 import {faTrashCan} from '@fortawesome/free-solid-svg-icons/faTrashCan';
+import {faPaperPlane} from '@fortawesome/free-solid-svg-icons/faPaperPlane';
 import {height} from '@fortawesome/free-solid-svg-icons/faMugSaucer';
 import {AppRegistry} from 'react-native';
 import BasicTabBarExample from '../layout/footer';
-import {DrawerActions, useNavigation} from '@react-navigation/native';
+import {useRoute, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {getMessage} from '../../../service/chat';
+import RenderMyViewChatItem from './myViewChatItem';
+import RenderSystemViewChatItem from './systemViewChatItem';
+import RenderViewChatItem from './userViewChatItem';
+import {socket} from '../../../service/cattalk';
+import {io} from 'socket.io-client';
+import axios from 'axios';
+
 import {
   Button,
   Icon,
@@ -36,200 +45,20 @@ import {
   Switch,
 } from '@ant-design/react-native';
 
-// import { DemoBlock } from './demo'
-function renderViewChatItem() {
-  
-  let chatItem = (
-    <View style={{marginBottom: 10}}>
-      <View
-        style={{
-          marginHorizontal: 10,
-          marginTop: 10,
-        }}>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-          }}>
-          <Image
-            source={images.avatar}
-            style={{
-              marginRight: 10,
-              width: 30,
-              height: 30,
-              borderRadius: 100,
-            }}></Image>
-          <View
-            style={{
-              display: 'flex',
-              justifyContent: 'space-around',
-              width: 250,
-              borderWidth: 0,
-              paddingVertical: 11,
-              paddingLeft: 12,
-              paddingRight: 10,
-              borderRadius: 20,
-              backgroundColor: colors.colorFooterMenu,
-            }}>
-            <Text
-              style={{
-                color: 'black',
-                fontSize: fontSize.h4,
-              }}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
-            </Text>
-            <Text
-              style={{
-                color: '#b4b4b4c7',
-                marginTop: 5,
-                fontSize: fontSize.h5,
-              }}>
-              12:34
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      <View
-        style={{
-          marginHorizontal: 10,
-          marginTop: 10,
-          display: 'flex',
-          alignItems: 'flex-end',
-        }}>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-          }}>
-          <View
-            style={{
-              display: 'flex',
-              justifyContent: 'space-around',
-              width: 250,
-              borderWidth: 0,
-              paddingVertical: 11,
-              paddingLeft: 12,
-              paddingRight: 10,
-              borderRadius: 20,
-              backgroundColor: '#FFEFD8',
-            }}>
-            <Text
-              style={{
-                color: 'black',
-                fontSize: fontSize.h4,
-              }}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            </Text>
-            <Text
-              style={{
-                color: '#b4b4b4c7',
-                marginTop: 5,
-                fontSize: fontSize.h5,
-              }}>
-              16:04
-            </Text>
-          </View>
-        </View>
-        <Image
-          source={images.testImg}
-          style={{
-            marginTop: 7,
-            width: 250,
-            height: 150,
-            borderRadius: 20,
-          }}></Image>
-      </View>
-
-      <View
-        style={{
-          marginHorizontal: 10,
-          marginTop: 10,
-        }}>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-          }}>
-          <Image
-            source={images.avatar}
-            style={{
-              marginRight: 10,
-              width: 30,
-              height: 30,
-              borderRadius: 100,
-            }}></Image>
-          <View>
-            <View
-              style={{
-                display: 'flex',
-                justifyContent: 'space-around',
-                width: 250,
-                borderWidth: 0,
-                paddingVertical: 11,
-                paddingLeft: 12,
-                paddingRight: 10,
-                borderRadius: 20,
-                backgroundColor: colors.colorFooterMenu,
-              }}>
-              <Text
-                style={{
-                  color: 'black',
-                  fontSize: fontSize.h4,
-                }}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-                in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-                nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                sunt in culpa qui officia deserunt mollit anim id est laborum.
-              </Text>
-              <Text
-                style={{
-                  color: '#b4b4b4c7',
-                  marginTop: 5,
-                  fontSize: fontSize.h5,
-                }}>
-                17:20
-              </Text>
-            </View>
-            <Image
-              source={images.testImg2}
-              style={{
-                marginTop: 7,
-                width: 250,
-                height: 150,
-                borderRadius: 20,
-              }}></Image>
-          </View>
-        </View>
-      </View>
-    </View>
-  );
-
-  //   let chatItems = [];
-  //   for (let i = 0; i < 12; i++) {
-  //     chatItems.push(chatItem);
-  //   }
-  return <>{chatItem}</>;
-}
 this.state = {
   value: '',
   clicked: 'none',
   text: '',
 };
+
 const showActionSheet = () => {
   const BUTTONS = [
-    <View style={{ width: 400 }}>
+    <View style={{width: 400}}>
       <List.Item extra={<Switch />}>Mute message</List.Item>
     </View>,
-    <View style={{  }}>
-      <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+    <View style={{}}>
+      <View
+        style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
         <FontAwesomeIcon
           style={{color: 'red', marginRight: 8}}
           icon={faTrashCan}
@@ -253,7 +82,85 @@ const showActionSheet = () => {
 };
 
 function RenderViewChat(res) {
+  console.log('ggfgggggggggggg');
   const navigation = useNavigation();
+  var {dataChat} = res.route.params;
+
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState([]);
+  const [myUserName, setMyUserName] = useState('');
+  const [userNameChat, setUserNameChat] = useState('');
+  const [newMessageSend, setNewMessageSend] = useState('');
+  const [nameUserChat, setNameUserChat] = useState('');
+  const [chatId, setChatId] = useState(dataChat.objectChat._id);
+  const [allChatMessage, setAllChatMessage] = useState('');
+  const [avatar, setAvatar] = useState(
+    'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
+  );
+  //Socket
+  const route = useRoute();
+  
+
+  const [socket, setSocket] = useState(null)
+  useEffect(() => {
+    setSocket(io.connect('http://192.168.1.22:2090'))
+
+    socket.on('connect', () => {
+      console.log('Connected to the Socket.IO server');
+    });
+    socket.emit('join_room', chatId);
+    const onSubmitNewSendMessage = async (senderId, receiverId) => {
+      socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
+      setNewMessageSend('')
+  
+      // call the fetchMessages() function to see the UI update
+      // setTimeout(() => {
+      //   fetchMessages();
+      // }, 200);
+    };
+
+    
+  }, [socket])
+
+  
+
+  const fetchMessages = async () => {
+    try {
+      // const senderId = route?.params?.senderId;
+      // const receiverId = route?.params?.receiverId;
+
+      const userStorage = await AsyncStorage.getItem('user');
+      const user = JSON.parse(userStorage);
+      setMyUserName(user.userName);
+
+      setUserNameChat(dataChat.userChat.userName);
+      setAvatar(dataChat.userChat.avatar);
+      setNameUserChat(
+        dataChat.userChat.firstName + ' ' + dataChat.userChat.lastName,
+      );
+      setChatId(dataChat.objectChat._id);
+
+      const token = await AsyncStorage.getItem('token');
+      const response = await axios.post('http://192.168.1.22:2080/messages',
+      {
+        senderId: user.userName,
+        receiverId: dataChat.userChat.userName,
+      } 
+      ,{
+        headers: {authorization: `Bearer ${token}`},
+
+      });
+      // console.log(response.data.messages);
+      setData(response.data.messages)
+    } catch (error) {
+      console.log('Error fetching the messages', error);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchMessages();
+  }, []);
 
   return (
     <View
@@ -282,16 +189,17 @@ function RenderViewChat(res) {
                 alignItems: 'center',
                 marginHorizontal: 10,
               }}>
-              <TouchableOpacity onPress={() => navigation.navigate('BasicTabBarExample')}>
-              <FontAwesomeIcon
-                style={{marginRight: 10}}
-                color={colors.primary}
-                size={20}
-                icon={faChevronLeft}
-              />
+              <TouchableOpacity
+                onPress={() => navigation.navigate('BasicTabBarExample')}>
+                <FontAwesomeIcon
+                  style={{marginRight: 10}}
+                  color={colors.primary}
+                  size={20}
+                  icon={faChevronLeft}
+                />
               </TouchableOpacity>
               <Image
-                source={images.avatar}
+                source={{uri: avatar}}
                 style={{
                   marginRight: 10,
                   width: 40,
@@ -304,7 +212,7 @@ function RenderViewChat(res) {
                   fontWeight: 'bold',
                   fontSize: fontSize.h3,
                 }}>
-                Trương Chí Nghiệm
+                {nameUserChat}
               </Text>
             </View>
             <View
@@ -338,7 +246,30 @@ function RenderViewChat(res) {
               </Button>
             </View>
           </View>
-          <ScrollView>{renderViewChatItem()}</ScrollView>
+          <ScrollView>
+            {data ? (
+              data.map((messageItem, index) =>
+                messageItem.typeMessage == 0 ? (
+                  <RenderSystemViewChatItem
+                    key={`system_${messageItem._id}_${index}`}
+                    data={messageItem}
+                  />
+                ) : messageItem.createdBy === myUserName ? (
+                  <RenderMyViewChatItem
+                  key={`my_${messageItem._id}_${index}`}
+                    data={messageItem}
+                  />
+                ) : (
+                  <RenderViewChatItem
+                  key={`view_${messageItem._id}_${index}`}
+                    data={messageItem}
+                  />
+                ),
+              )
+            ) : (
+              <></>
+            )}
+          </ScrollView>
           <View
             style={{
               display: 'flex',
@@ -377,12 +308,13 @@ function RenderViewChat(res) {
               placeholder="Tin nhắn">
             </InputItem> */}
               <TextareaItem
+                onChangeText={setNewMessageSend}
                 rows={1}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   color: 'black',
-                  width: 270,
+                  width: 230,
                   backgroundColor: colors.colorFooterMenu,
                 }}
                 placeholderTextColor={'#959595'}
@@ -400,6 +332,25 @@ function RenderViewChat(res) {
                 size={20}
                 icon={faImage}
               />
+              <TouchableOpacity
+                onPress={() => onSubmitNewSendMessage(myUserName, userNameChat)}
+                style={{
+                  width: 30,
+                  height: 30,
+                  marginRight: 10,
+                  borderRadius: 100,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  textAlign: 'center',
+                }}
+                title="Login">
+                <FontAwesomeIcon
+                  icon={faPaperPlane}
+                  color={colors.primary}
+                  size={20}
+                />
+              </TouchableOpacity>
             </View>
           </View>
         </ImageBackground>
