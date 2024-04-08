@@ -11,9 +11,6 @@ const CreateChat = (props) => {
     const {token: { colorBoldSecondary }} = theme.useToken();
 
     const [selectedUsers, setSelectedUsers] = useState([])
-    
-
-
     const handelLoadFriend = async () => {
         try {
             const items = await getFriends(cookies.loginToken);
@@ -35,12 +32,10 @@ const CreateChat = (props) => {
     const handleCheckboxChange = (userName) => {
   const selectedIndex = selectedUsers.findIndex((selectedItem) => selectedItem === userName);
   if (selectedIndex > -1) {
-    // Nếu item đã được chọn trước đó, hãy xóa nó khỏi danh sách
     const updatedItems = [...selectedUsers];
     updatedItems.splice(selectedIndex, 1);
     setSelectedUsers(updatedItems);
   } else {
-    // Nếu item chưa được chọn trước đó, hãy thêm nó vào đầu danh sách
     setSelectedUsers([userName, ...selectedUsers]);
   }
 };

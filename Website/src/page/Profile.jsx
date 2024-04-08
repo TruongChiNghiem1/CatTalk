@@ -1,13 +1,14 @@
 import { Image ,theme, Layout, Button, message, Menu, Modal,Slider, Typography, Spin} from 'antd';
 import { createRef, useContext, useState } from 'react';
 import { AppContext } from '../context/AppContext';
-import {EditOutlined, SwapLeftOutlined, SaveOutlined, UserOutlined,TeamOutlined, CoffeeOutlined,CameraOutlined, CloseCircleOutlined} from '@ant-design/icons'
+import {EditOutlined, SwapLeftOutlined, SaveOutlined, UserOutlined,TeamOutlined, CoffeeOutlined,CameraOutlined, CloseCircleOutlined, SettingOutlined} from '@ant-design/icons'
 import qr from '../assets/qr_default.png'
 import FormInfo from '../component/profile/FormInfo';
 import ListFriend from '../component/profile/ListFriend';
 import AboutMe from '../component/profile/AboutMe';
 import { uploadAvatar, uploadBackground} from '../service/user';
 import AvatarEditor from 'react-avatar-editor'
+import Account from '../component/profile/Account';
 const {Content } = Layout;
 
 const items = [
@@ -25,6 +26,11 @@ const items = [
         label: 'Friends',
         key: 'friends',
         icon: <TeamOutlined />,
+    },
+    {
+        label: 'Account',
+        key: 'account',
+        icon: <SettingOutlined />,
     },
 ]
 
@@ -56,7 +62,9 @@ const Profile = () =>{
     case 'about':
         return <AboutMe isEdit={isEdit} setEdit={setIsEdit} user={user}/>;
         case 'friends':
-        return <ListFriend />;    
+        return <ListFriend />;
+    case 'account': 
+        return <Account/>         
     default:
         return null;
     }

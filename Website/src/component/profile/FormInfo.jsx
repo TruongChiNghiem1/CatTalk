@@ -145,9 +145,8 @@ const FormInfo = (props) => {
                         name="password"
                         label="Password"
                         style={{width: '49%'}}
-                
                     >
-                        <Input placeholder='Password'/>
+                        <Input.Password placeholder='Password'/>
                     </Form.Item>
                     </div>
                     )}
