@@ -37,6 +37,7 @@ const ChatItem = () => {
       // );
       const token = await AsyncStorage.getItem('token');
       const res = await getAllChat(token);
+    
       setData(res.data.chat);
       setLoading(false);
 
@@ -93,11 +94,37 @@ const ChatItem = () => {
             {data && data.length ? (
               <>
                 {data.map(item => (
-                  <UserChatItem data={item} />
+                  <UserChatItem key={item.objectChat._id} data={item} />
                 ))}
               </>
             ) : (
-              <Text>Empty</Text>
+              <View
+                style={{
+                  width: 440,
+                  opacity: 0.75,
+                  height: 500,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Image
+                  source={images.empty}
+                  style={{
+                    marginRight: 15,
+
+                    width: 120,
+                    height: 120,
+                    borderRadius: 100,
+                  }}></Image>
+                <Text
+                  style={{
+                    color: colors.primary,
+                    fontWeight: 'bold',
+                    fontSize: 18,
+                  }}>
+                  No message chat
+                </Text>
+              </View>
             )}
           </ScrollView>
         )}

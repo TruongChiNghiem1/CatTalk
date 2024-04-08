@@ -8,36 +8,43 @@ const Message = require('../models/message.js')
 const { SECRET_CODE } = process.env
 const getAllChat = async (req, res) => {
     try {
-        console.log('dsf');
         const token = req.headers.authorization.split(' ')[1]
         const decoded = jwt.verify(token, SECRET_CODE)
         const username = decoded.username
 
-        const member = await Member.find({ userName: username })
-
+        
+        const chatss = await Chat.find()
         let chats = []
-        for (const mem of member) {
-            const chat = await Chat.findOne({ _id: mem.chatId })
-            const message = await Message.findOne(
-                {chatId: chat._id}
-            ).sort({ createdAt: -1 })
-            if (mem.chatType === 'single') {
-                const userChat = await User.findOne(
-                    {userName: mem.createdBy}
-                )
-                const newChat = {
-                    member: mem,
-                    objectChat: userChat,
-                    newMessage: message
+        for (const chat of chatss) {
+            const member = await Member.find({ userName: username, chatId: chat._id })
+            if(member){
+                const message = await Message.findOne(
+                    {chatId: chat._id}
+                ).sort({ createdAt: -1 })
+                if (chat.chatType === 'single') {
+                    for(const mem of member){
+                        if(mem.createdBy !== username){
+                            const userChat = await User.findOne(
+                                {userName: mem.createdBy}
+                            )
+                            const newChat = {
+                                member: member,
+                                userChat: userChat,
+                                objectChat: chat,
+                                newMessage: message
+                            }
+                            chats.push(newChat)
+                        }
+                    }
+                } else {
+                    const newChat = {
+                        member: member,
+                        userChat: [],
+                        objectChat: chat,
+                        newMessage: message
+                    }
+                    chats.push(newChat)
                 }
-                chats.push(newChat)
-            } else {
-                const newChat = {
-                    member: mem,
-                    objectChat: chat,
-                    newMessage: message
-                }
-                chats.push(newChat)
             }
         }
 
@@ -56,4 +63,31 @@ const getAllChat = async (req, res) => {
     }
 }
 
-module.exports = { getAllChat }
+const getMessage = async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1]
+        const decoded = jwt.verify(token, SECRET_CODE)
+        const username = decoded.username
+
+        const member = await Member.find({ userName: username })
+        const {objectChat} = req.query
+
+        const message = await Message.find({chatId: objectChat})
+        .sort({createdAt: -1});
+console.log('a');
+        if (message) {
+            return res.json({
+                status: 200,
+                message: message,
+            })
+        }
+    } catch (error) {
+        console.log(error)
+        return res.json({
+            status: 500,
+            message: error,
+        })
+    }
+}
+
+module.exports = { getAllChat, getMessage }

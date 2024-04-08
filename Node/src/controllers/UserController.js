@@ -707,7 +707,7 @@ const createChat11 = async (username, userNameAdd) => {
         const nameUser = await User.findOne({userName: username})
         const nameUserAdd = await User.findOne({userName: userNameAdd})
 
-        const fullNameUser = nameUser.lastNamefirstName + ' ' + nameUser.lastName
+        const fullNameUser = nameUser.firstName + ' ' + nameUser.lastName
         const fullNameUserAdd = nameUserAdd.firstName + ' ' + nameUserAdd.lastName
 
         const newMessage = [
