@@ -33,12 +33,16 @@ const io = new Server(http, {
         methods: ['GET', 'POST'],
     },
 })
-
+let activeUsers = [];
 io.on('connection', (socket) => {
     console.log(`a user is connected ${socket.id}`)
 
     socket.on('join_room', (data) => {
-        socket.join(data)
+        // socket.join(data)
+        if (!activeUsers.some((user) => user.userId === data)) {
+            activeUsers.push({ userId: data, socketId: socket.id });
+            console.log("New User Connected", activeUsers);
+          }
     })
 
     socket.on('message', async (data) => {
@@ -51,13 +55,22 @@ io.on('connection', (socket) => {
                 content: newMessageSend,
             })
 
+            const datasend = { chatId: chatId, createdBy: senderId, userName: receiverId,content: newMessageSend };
             //emit the message to the receiver
-            socket.to(chatId).emit('receiveMessage', newMessage)
+            // socket.to(chatId).emit('receiveMessage', newMessage)
+            const user = activeUsers.find((user) => user.userId === receiverId);
+            console.log("Sending from socket to :", receiverId)
+            console.log("Data: ", datasend)
+            if (user) {
+                io.to(user.socketId).emit("receiveMessage", datasend);
+            }
         } catch (error) {
             console.log(error)
             console.log('Error handling the messages')
         }
         socket.on('disconnect', () => {
+            activeUsers.push({ userId: senderId, socketId: socket.id });
+            console.log("New User Connected", activeUsers);
             console.log('user disconnected')
         })
     })
