@@ -80,7 +80,10 @@ const Router = () => {
   const [isLogin, setIsLogin] = useState(false);
   const getData = async () => {
     const data = await AsyncStorage.getItem('isLogin');
-    setIsLogin(data);
+    const token = await AsyncStorage.getItem('token');
+    // const loginWhat = data && !token;
+    const loginWhat = data;
+    setIsLogin(loginWhat);
   };
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import react from 'react';
+import react, {useState, useEffect} from 'react';
 import {
   ImageBackground,
   Text,
@@ -20,49 +20,74 @@ import {DrawerActions, useNavigation} from '@react-navigation/native';
 function UserChatItem(props) {
   var {data} = props;
   const navigation = useNavigation();
+  const [avatarChat, setAvatarChat] = useState(
+    'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
+  );
+  const [nameChat, setNameChat] = useState('');
+  const [newMessage, setNewMessage] = useState('');
+  const fetchDataChatItem = async () => {
 
+    try {
+      if (data.objectChat.chatType === 'single') {
+        setNameChat(data.userChat.firstName + ' ' + data.userChat.lastName);
+        setAvatarChat(data.userChat.avatar);
+      } else {
+        setNameChat(data.objectChat.groupName);
+        setAvatarChat(data.objectChat.avatar);
+      }
+      
+      setNewMessage(data.newMessage.content);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    fetchDataChatItem();
+  }, []);
   return (
-    <TouchableOpacity onPress={() => navigation.navigate('RenderViewChat')}>
-    <View
-      style={{
-        margin: 15,
-      }}>
+    <TouchableOpacity onPress={() => navigation.navigate('RenderViewChat', {dataChat: data})}>
       <View
         style={{
-          display: 'flex',
-          flexDirection: 'row',
+          margin: 15,
         }}>
-        <Image
-          source={{uri: data.avatar}}
-          style={{
-            marginRight: 15,
-            width: 50,
-            height: 50,
-            borderRadius: 100,
-          }}></Image>
         <View
           style={{
             display: 'flex',
-            justifyContent: 'space-around',
+            flexDirection: 'row',
           }}>
-          <Text
+          <Image
+            source={{uri: avatarChat}}
             style={{
-              color: 'black',
-              fontWeight: 'bold',
-              fontSize: fontSize.h3,
-            }}>
-            {data.name}
-          </Text>
-          <Text
+              marginRight: 15,
+              width: 50,
+              height: 50,
+              borderRadius: 100,
+            }}></Image>
+          <View
             style={{
-              color: 'black',
-              fontSize: fontSize.h4,
+              display: 'flex',
+              justifyContent: 'space-around',
             }}>
-            {data.contentNew}
-          </Text>
+            <Text
+              style={{
+                color: 'black',
+                fontWeight: 'bold',
+                fontSize: fontSize.h3,
+              }}>
+              {nameChat}
+            </Text>
+            <Text
+              style={{
+                color: 'black',
+                fontSize: fontSize.h4,
+                width: 310,
+              }}>
+              {newMessage}
+            </Text>
+          </View>
         </View>
       </View>
-    </View>
     </TouchableOpacity>
   );
 }

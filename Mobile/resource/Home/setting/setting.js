@@ -25,7 +25,7 @@ import axios from 'axios';
 const Setting = res => {
   const navigation = useNavigation();
   const [fullname, setFullname] = useState('')
-  const [avatar, setAvatar] = useState('https://cafebiz.cafebizcdn.vn/2019/5/17/photo-2-15580579930601897948260.jpg')
+  const [avatar, setAvatar] = useState('https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg')
   async function getData() {
     const userStorage = await AsyncStorage.getItem('user');
     const user = JSON.parse(userStorage);

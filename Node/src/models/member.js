@@ -7,26 +7,23 @@ const chatSchema = new mongoose.Schema({
     },
     userName: {
         type: String,
-    },
-    /**
-     * 0. Hệ thống
-     * 1. tin nhắn text
-     * 2. image
-     * 3. video
-     * 4. url
-     * 5. sticker
-     * 6. voice
-     */
-    typeMessage: {
-        type: mongoose.Schema.Types.Number,
-    },
-    content: {
-        type: mongoose.Schema.Types.String,
         required: true,
     },
-    messageRecovery: {
+    /**
+     * 0. Tắt thông báo
+     * 1. Bật thông báo
+     */
+    notifyType: {
         type: mongoose.Schema.Types.Number,
     },
+    /**
+     * single
+     * multi
+     */
+    chatType: {
+        type: String,
+    },
+    // để biết được ai thêm user này vào group
     createdBy: {
         type: String,
     }
@@ -37,6 +34,6 @@ const chatSchema = new mongoose.Schema({
     }
 );
 
-const Message = mongoose.model("Message", chatSchema);
+const Chat = mongoose.model("Member", chatSchema);
 
-module.exports = Message; 
+module.exports = Chat; 

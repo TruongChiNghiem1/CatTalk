@@ -17,25 +17,33 @@ import {Button, Icon, WhiteSpace, WingBlank} from '@ant-design/react-native';
 import UserChatItem from './userChatItem';
 import axios from 'axios';
 import {url} from '../../../service/cattalk';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {getAllChat} from '../../../service/chat';
+
 // import { DemoBlock } from './demo'
 
 const ChatItem = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [avatar, setAvatar] = useState('https://cafebiz.cafebizcdn.vn/2019/5/17/photo-2-15580579930601897948260.jpg')
+  const [avatar, setAvatar] = useState(
+    'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
+  );
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(
-        `${url}/user/test-data`,
-      );
-      setData(res.data.data);
+      // const res = await axios.get(
+      //   `${url}/user/test-data`,
+      // );
+      const token = await AsyncStorage.getItem('token');
+      const res = await getAllChat(token);
+    
+      setData(res.data.chat);
       setLoading(false);
 
       const userStorage = await AsyncStorage.getItem('user');
       const user = JSON.parse(userStorage);
-      setAvatar(user.avatar)
+      setAvatar(user.avatar);
     } catch (e) {
       console.log(e);
     }
@@ -71,7 +79,7 @@ const ChatItem = () => {
               height: 40,
             }}></Image>
           <Image
-            source={{ uri: avatar}}
+            source={{uri: avatar}}
             style={{
               marginRight: 10,
               width: 40,
@@ -83,14 +91,40 @@ const ChatItem = () => {
           <Text>loading....</Text>
         ) : (
           <ScrollView>
-            {data.length ? (
+            {data && data.length ? (
               <>
                 {data.map(item => (
-                  <UserChatItem data={item} />
+                  <UserChatItem key={item.objectChat._id} data={item} />
                 ))}
               </>
             ) : (
-              <Text>Empty</Text>
+              <View
+                style={{
+                  width: 440,
+                  opacity: 0.75,
+                  height: 500,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Image
+                  source={images.empty}
+                  style={{
+                    marginRight: 15,
+
+                    width: 120,
+                    height: 120,
+                    borderRadius: 100,
+                  }}></Image>
+                <Text
+                  style={{
+                    color: colors.primary,
+                    fontWeight: 'bold',
+                    fontSize: 18,
+                  }}>
+                  No message chat
+                </Text>
+              </View>
             )}
           </ScrollView>
         )}

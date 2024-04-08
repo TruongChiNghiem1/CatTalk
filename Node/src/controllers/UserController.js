@@ -1,4 +1,7 @@
 const User = require('../models/user.js')
+const Chat = require('../models/chat.js')
+const Member = require('../models/member.js')
+const Message = require('../models/message.js')
 const {
     signUpValid,
     signInValid,
@@ -330,11 +333,17 @@ const getFriends = async (req, res) => {
         const friendUsernames = user.friends
         const friends = await User.find(
             { userName: { $in: friendUsernames } },
-            { userName: 1, friends: 1, firstName: 1, lastName: 1, avatar: 1, background: 1 }
+            {
+                userName: 1,
+                friends: 1,
+                firstName: 1,
+                lastName: 1,
+                avatar: 1,
+                background: 1,
+            }
         )
 
-
-        friends.forEach((userFind) => userFind.isFriend = 1)
+        friends.forEach((userFind) => (userFind.isFriend = 1))
 
         return res.json({
             status: 200,
@@ -633,16 +642,107 @@ const addFriend = async (req, res) => {
                 message: "Can't add friends, please try again",
             })
         }
+
+        createChat11(username, userNameAdd)
+
         return res.json({
             status: 200,
             message: 'Add successful friends',
         })
     } catch (error) {
+        console.error(error)
         return res.json({
             status: 500,
             message: 'Opps, somthing went wrong!!!',
         })
     }
+}
+
+const createChat11 = async (username, userNameAdd) => {
+    //Tạo chat
+    const findChat = await Member.find({
+        chatType: 'single',
+        userName: username,
+        createdBy: userNameAdd,
+    })
+    if (!(findChat && findChat.length)) {
+        const newChat = {
+            chatType: 'single',
+            createdBy: username,
+        }
+
+        const chat = await Chat.create(newChat)
+
+        if (!chat) {
+            return res.json({
+                status: 500,
+                message: "Can't create chat, please try again",
+            })
+        }
+
+        const newMember = [
+            {
+                chatId: chat._id,
+                userName: username,
+                notifyType: 1,
+                chatType: 'single',
+                createdBy: userNameAdd,
+            },
+            {
+                chatId: chat._id,
+                userName: userNameAdd,
+                notifyType: 1,
+                chatType: 'single',
+                createdBy: username,
+            }
+        ]
+
+        const member = await Member.create(newMember)
+
+        if (!member) {
+            return res.json({
+                status: 500,
+                message: "Can't create chat, please try again",
+            })
+        }
+
+        const nameUser = await User.findOne({userName: username})
+        const nameUserAdd = await User.findOne({userName: userNameAdd})
+
+        const fullNameUser = nameUser.firstName + ' ' + nameUser.lastName
+        const fullNameUserAdd = nameUserAdd.firstName + ' ' + nameUserAdd.lastName
+
+        const newMessage = [
+            {
+                chatId: chat._id,
+                userName: username,
+                typeMessage: 0,
+                content: `You and ${fullNameUserAdd} have just become friends`,
+                createdBy: userNameAdd,
+            },
+            {
+                chatId: chat._id,
+                userName: userNameAdd,
+                typeMessage: 0,
+                content: `You and ${fullNameUser} have just become friends`,
+                createdBy: username,
+            }
+        ]
+
+        const message = await Message.create(newMessage)
+
+        if (!message) {
+            return res.json({
+                status: 500,
+                message: "Can't create chat, please try again",
+            })
+        }
+    }
+}
+
+const getUser = async (username) => {
+    const user = await User.find({userName: username})
+    return user
 }
 
 const deleteFriend = async (req, res) => {
@@ -715,12 +815,15 @@ const getMyUser = async (req, res) => {
 
 const changeTheme = async (req, res) => {
     try {
-        const token = req.headers.authorization.split(" ")[1];
-        const decoded = jwt.verify(token, SECRET_CODE);
-        const username = decoded.username;
-        const { nightMode } = req.params;
+        const token = req.headers.authorization.split(' ')[1]
+        const decoded = jwt.verify(token, SECRET_CODE)
+        const username = decoded.username
+        const { nightMode } = req.params
 
-        const user = await User.findOneAndUpdate({ userName: username }, { nightMode: Number(nightMode) });
+        const user = await User.findOneAndUpdate(
+            { userName: username },
+            { nightMode: Number(nightMode) }
+        )
         if (user) {
             return res.json({
                 status: 200,
@@ -742,14 +845,13 @@ const changeTheme = async (req, res) => {
     }
 }
 
-
 const checkAuth = async (req, res) => {
     try {
         return res.json({
             status: 200,
         })
     } catch (error) {
-        console.log(error);
+        console.log(error)
         return res.json({
             status: 402,
             message: 'Opps, somthing went wrong!!!',
