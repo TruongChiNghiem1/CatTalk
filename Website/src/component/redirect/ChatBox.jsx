@@ -44,6 +44,12 @@ const ChatBox = (props) => {
         }, 200);
     }
 
+    useEffect(() => {
+        socket.on('receiveMessage', newMessage => {
+        setMessages(prevMessages => [...prevMessages, newMessage]);
+        });
+    }, []);
+
 
     useEffect(()=> {
         setUserChat(props.user)
@@ -107,7 +113,7 @@ const ChatBox = (props) => {
                     onEnter={() => handleSendMessage(user.userName, props.user.userName)}
                     placeholder="Type a message"
                     />
-                    <Button type="primary" icon={<SendOutlined/>}></Button>
+                    <Button type="primary" icon={<SendOutlined/>} onClick={() => handleSendMessage(user.userName, props.user.userName)}></Button>
             </div>
                 </>
             ) : ( <div className="chat_box">
