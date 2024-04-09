@@ -102,7 +102,7 @@ const SignUpForm = () => {
                 <div className='flex-column-center w-100'>
                     <img width={200} src={logo_login}/>
                     <Steps
-                        current={step}
+                        current={step - 1}
                         percent={60}
                         items={[
                         {

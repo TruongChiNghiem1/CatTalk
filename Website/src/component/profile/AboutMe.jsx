@@ -59,6 +59,7 @@ const AboutMe = (props) => {
                 setUser({...user, description: res.data.description, hobbies: res.data.hobbies})
                 setCookie('user', JSON.stringify({ ...cookies.user, description: res.data.description, hobbies: res.data.hobbies}));
                 setLoading(false);
+                props.setEdit(false)
             }else{
                 message.error(res.data.message);
             }

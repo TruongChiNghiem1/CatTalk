@@ -178,7 +178,7 @@ const signUp = async (req, res) => {
 
         // Hash password
         const hashedPassword = await bcrypyjs.hash(password, 10)
-        console.log(email)
+
         const user = await User.create({
             userName,
             firstName,
@@ -293,6 +293,8 @@ const editProfile = async (req, res) => {
             profile,
             { new: false }
         )
+
+        const userNew = await User.findOne({ userName: username })
         if (!dataUpdate) {
             return res.json({
                 status: 500,
@@ -302,7 +304,7 @@ const editProfile = async (req, res) => {
         return res.json({
             status: 200,
             message: 'Your information has been successfully updated',
-            user: dataUpdate,
+            user: userNew,
         })
     } catch (e) {
         console.log(e)
@@ -856,6 +858,52 @@ const checkAuth = async (req, res) => {
         })
     }
 }
+
+const changePassword = async (req, res) => {
+    try {
+        const { currentpass, newpass, repass } = req.body;
+        const token = req.headers.authorization.split(" ")[1];
+        const decoded = jwt.verify(token, SECRET_CODE);
+        const username = decoded.username;
+        // Check email
+        const user = await User.findOne({ userName: username })
+        if (!user) {
+            return res.json({
+                status: 400,
+                message: 'User not found',
+            })
+        }
+
+        const isMatch = await bcrypyjs.compare(currentpass, user.password)
+        if (!isMatch) {
+            return res.json({
+                status: 400,
+                message: 'Invalid credentials',
+            })
+        }
+
+        const hashedPassword = await bcrypyjs.hash(newpass, 10)
+        if (newpass == repass) {
+            const user = await User.findOneAndUpdate({ userName: username }, { password: hashedPassword });
+        } else {
+            return res.json({
+                status: 500,
+                message: 'Invalid Repeat password'
+            })
+        }
+
+        return res.json({
+            status: 200,
+            message: 'Change passwords successfully'
+        })
+    } catch (error) {
+        console.log(error);
+        return res.json({
+            status: 402,
+            message: 'Opps, somthing went wrong!!!',
+        })
+    }
+}
 module.exports = {
     signUp,
     mailConfirm,
@@ -873,4 +921,5 @@ module.exports = {
     getMyUser,
     deleteFriend,
     checkAuth,
+    changePassword
 }

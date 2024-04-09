@@ -68,3 +68,9 @@ export const changeTheme = async (token, theme) => {
         headers: { authorization: `Bearer ${token}` }
     });
 }
+
+export const changePassword = async (data, token) => {
+    return await axios.post(`${url}/user/change-password`, data, {
+        headers: { authorization: `Bearer ${token}` }
+    });
+}

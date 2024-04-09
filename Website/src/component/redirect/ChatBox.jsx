@@ -1,27 +1,65 @@
-import React, { useState } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { Button, Col, Typography } from "antd";
 import {VideoCameraOutlined, MoreOutlined, SendOutlined,PaperClipOutlined} from '@ant-design/icons';
 import InputEmoji from "react-input-emoji";
-const ChatBox = () => {
+import getChatTime from "../../helper/getChatTime";
+import {io} from 'socket.io-client';
+import { AppContext } from "../../context/AppContext";
+import { getMessage } from "../../service/redirect";
+import img from '../../assets/cat_1.png'
+const ChatBox = (props) => {
+    const {user, cookies} = useContext(AppContext)
     const [loading, setLoading] = useState(true);
-    const [messages, setMessages] = useState([]);
-    const [text, setText] = useState('');
+    const [messages, setMessages] = useState([...props.messages]);
+    const [userChat, setUserChat] = useState(props.user)
+    const [chatId, setChatId] = useState(props.chat._id)
+    const [newMessageSend, setText] = useState('');
+    const chatRef = useRef(null);
+    const [socket, setSocket] = useState(io.connect('http://localhost:2090'))
+
+
+    socket.emit('join_room', cookies.user.userName);
+    useEffect(() => {
+        const chatElement = chatRef.current;
+        chatElement.scrollTop = chatElement.scrollHeight;
+     }, [messages]);
 
     const handelGetMessages = async() => {
-
+    try {
+        const chat = await getMessage(cookies.loginToken, { receiverId: user.userName , senderId: userChat.userName})
+        .then(res => {
+            setMessages(res.data.messages)
+        })
+    } catch (error) {
+        console.log(error);
+    }
     }
 
-    const handleOnEnter = () => {
+    const handleSendMessage= (senderId, receiverId) => {
+        socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
+        setText('')
 
+        setTimeout(() => {
+            handelGetMessages();
+        }, 200);
     }
+
+
+    useEffect(()=> {
+        setUserChat(props.user)
+        setChatId(props.chat._id)
+        setMessages(props.messages)
+    }, [props.user, props.chat, props.messages])
     
     return (
         <Col xl={16} id="box_chat" className="d-flex">
-            <div className="chat_box_header">
+            {userChat && chatId ? (
+                <>
+                <div className="chat_box_header">
                 <div className="left_info">
-                    <img src='https://i.pinimg.com/564x/18/65/40/186540b269b05cce2125a9221883320f.jpg' className="avt_chat"/>
+                    <img src={props.user.avatar} className="avt_chat"/>
                     <div className="flex-column-start">
-                        <h3 className="m-0 primary">Nguyễn Uyển Quyên</h3>
+                        <h3 className="m-0 primary">{props.user.firstName} {props.user.lastName}</h3>
                         <Typography.Text className="m-0">Active</Typography.Text>
                     </div>  
                 
@@ -31,6 +69,34 @@ const ChatBox = () => {
                     <Button className="ml-1" type="primary" size="large" icon={<MoreOutlined />}></Button>
                 </div>
             </div>
+            <div className="chat_box_main">
+                <div id="chat"  ref={chatRef}>
+                    {messages.map(item =>{
+                   if(item.createdBy === user.userName){
+                        return (
+                            <div key={item._id} className="myChatBox">
+                                <div className="myChat">
+                                    <span>{item.content}</span>
+                                 <div className="flex-end time">{getChatTime(item.createdAt)}</div>
+                                </div>
+                               
+                            </div>
+                        )
+                   }else{
+                     return (
+                        <div key={item._id} className="sendChatBox">
+                            <div className="sendChat">
+                               <span> {item.content}</span>
+                                    <div className="flex-end time">{getChatTime(item.createdAt)}</div>
+                                </div>
+                            
+                        </div>
+                        )
+                   }
+                
+                })}
+                </div>
+            </div>
 
             <div className="chat_action">
                 <input id='attachment' hidden type="file"/>
@@ -38,11 +104,20 @@ const ChatBox = () => {
                 <InputEmoji
                     onChange={setText}
                     cleanOnEnter
-                    onEnter={handleOnEnter}
+                    onEnter={() => handleSendMessage(user.userName, props.user.userName)}
                     placeholder="Type a message"
                     />
                     <Button type="primary" icon={<SendOutlined/>}></Button>
             </div>
+                </>
+            ) : ( <div className="chat_box">
+                <div id="chat"ref={chatRef}>
+                    <div className="h-100 w-100 flex-center">
+                        <img style={{width: '20rem'}} src={img}/>
+                        <Typography.Title>Let's start</Typography.Title>
+                    </div>
+                </div>
+            </div>)}
         </Col>
     )
 }
