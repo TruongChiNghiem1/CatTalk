@@ -155,3 +155,7 @@ body {
  .container{
   padding-top: 0 !important;
  }
+
+ .cursor-pointer{
+  cursor: pointer;
+ }
