@@ -1,4 +1,4 @@
-import react, {useEffect, useState} from 'react';
+import react, {useEffect, useState, useRef } from 'react';
 import {
   ImageBackground,
   Text,
@@ -56,7 +56,7 @@ const showActionSheet = () => {
     <View style={{width: 400}}>
       <List.Item extra={<Switch />}>Mute message</List.Item>
     </View>,
-    <View style={{}}>
+    <Toch style={{}}>
       <View
         style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
         <FontAwesomeIcon
@@ -65,7 +65,7 @@ const showActionSheet = () => {
         />
         <Text style={{color: 'red', fontSize: fontSize.h3}}>Delete chat </Text>
       </View>
-    </View>,
+    </Toch>,
   ];
   ActionSheet.showActionSheetWithOptions(
     {
@@ -93,6 +93,7 @@ function RenderViewChat(res) {
   const [nameUserChat, setNameUserChat] = useState('');
   const [chatId, setChatId] = useState(dataChat.objectChat._id);
   const [allChatMessage, setAllChatMessage] = useState('');
+  const scrollViewRef = useRef();
   const [avatar, setAvatar] = useState(
     'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
   );
@@ -101,17 +102,24 @@ function RenderViewChat(res) {
   
   const [socket, setSocket] = useState(io.connect('http://192.168.1.22:2090'))
 
-  
   socket.emit('join_room', myUserName);
+  
   const onSubmitNewSendMessage = async (senderId, receiverId) => {
     socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
     setNewMessageSend('')
-
     // call the fetchMessages() function to see the UI update
     setTimeout(() => {
       fetchMessages();
     }, 200);
   };
+
+  const scrollToBottom = async () => {
+    await scrollViewRef.current.scrollToEnd({ animated: true });
+  };
+
+  const backDisconnect = async () => {
+      navigation.navigate('BasicTabBarExample')
+  }
 
   const fetchMessages = async () => {
     try {
@@ -142,6 +150,9 @@ function RenderViewChat(res) {
       });
       // console.log(response.data.messages);
       setData(response.data.messages)
+      setTimeout(() => {
+        scrollToBottom()
+      }, 200);
     } catch (error) {
       console.log('Error fetching the messages', error);
     }
@@ -158,6 +169,9 @@ function RenderViewChat(res) {
       console.log('new Message', newMessage);
       //update the state to include new message
       setData(prevMessages => [...prevMessages, newMessage]);
+      setTimeout(() => {
+        scrollToBottom()
+      }, 200);
     });
   }, []);
 
@@ -194,7 +208,7 @@ function RenderViewChat(res) {
                 marginHorizontal: 10,
               }}>
               <TouchableOpacity
-                onPress={() => navigation.navigate('BasicTabBarExample')}>
+                onPress={backDisconnect}>
                 <FontAwesomeIcon
                   style={{marginRight: 10}}
                   color={colors.primary}
@@ -250,7 +264,7 @@ function RenderViewChat(res) {
               </Button>
             </View>
           </View>
-          <ScrollView>
+          <ScrollView  ref={scrollViewRef}>
             {data ? (
               data.map((messageItem, index) =>
                 messageItem.typeMessage == 0 ? (
@@ -313,6 +327,7 @@ function RenderViewChat(res) {
             </InputItem> */}
               <TextareaItem
                 onChangeText={setNewMessageSend}
+                value={newMessageSend}
                 rows={1}
                 style={{
                   display: 'flex',

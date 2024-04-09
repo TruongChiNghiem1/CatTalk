@@ -1,4 +1,4 @@
-import react from 'react';
+import react, {useState, useEffect} from 'react';
 import {
   ImageBackground,
   Text,
@@ -16,12 +16,18 @@ import {Button, Icon, WhiteSpace, WingBlank} from '@ant-design/react-native';
 import {faPhone} from '@fortawesome/free-solid-svg-icons/faPhone';
 import {faVideo} from '@fortawesome/free-solid-svg-icons/faVideo';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
-
+import {io} from 'socket.io-client';
 
 function ViewPhoneBookItem(props) {
   var {data} = props;
   const navigation = useNavigation();
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.22:2090'))
 
+  useEffect(() => {
+    socket.on('connection', () => {
+        console.log('Connected to the Socket.IO server');
+      });
+  }, []);
   return (
     <TouchableOpacity
       onPress={() => navigation.navigate('RenderProfile', {data: data })}

@@ -21,10 +21,17 @@ import {url} from '../../../service/cattalk';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
 import {getFriends} from '../../../service/user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import {io} from 'socket.io-client';
 // import { DemoBlock } from './demo'
 
 const PhoneBookItem = () => {
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.22:2090'))
+
+  useEffect(() => {
+    socket.on('connection', () => {
+        console.log('Connected to the Socket.IO server');
+      });
+  }, []);
   const navigation = useNavigation();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);

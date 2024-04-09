@@ -30,6 +30,7 @@ const http = require('http').createServer(app)
 const io = new Server(http, {
     cors: {
         origin: `http://localhost:${PORT_SOCKET}`,
+        origin: `http://localhost:2080`,
         methods: ['GET', 'POST'],
     },
 })
@@ -39,7 +40,7 @@ io.on('connection', (socket) => {
 
     socket.on('join_room', (data) => {
         // socket.join(data)
-        if (!activeUsers.some((user) => user.userId === data)) {
+        if (data && !activeUsers.some((user) => user.userId === data)) {
             activeUsers.push({ userId: data, socketId: socket.id });
             console.log("New User Connected", activeUsers);
           }
@@ -69,11 +70,12 @@ io.on('connection', (socket) => {
             console.log('Error handling the messages')
         }
         socket.on('disconnect', () => {
-            activeUsers.push({ userId: senderId, socketId: socket.id });
-            console.log("New User Connected", activeUsers);
-            console.log('user disconnected')
+            console.log(activeUsers);
+            activeUsers = activeUsers.filter((user) => user.socketId !== socket.id);
+            console.log("User Disconnected", activeUsers);
         })
     })
+    console.log(activeUsers);
 })
 
 http.listen(PORT_SOCKET, () => {

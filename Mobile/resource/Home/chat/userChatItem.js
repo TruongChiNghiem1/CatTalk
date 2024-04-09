@@ -16,8 +16,17 @@ import {AppRegistry} from 'react-native';
 import {Button, Icon, WhiteSpace, WingBlank} from '@ant-design/react-native';
 import RenderViewChat from './viewChat';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
+import {io} from 'socket.io-client';
 
 function UserChatItem(props) {
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.22:2090'))
+
+  useEffect(() => {
+    socket.on('connection', () => {
+        console.log('Connected to the Socket.IO server');
+      });
+  }, []);
+  
   var {data} = props;
   const navigation = useNavigation();
   const [avatarChat, setAvatarChat] = useState(
