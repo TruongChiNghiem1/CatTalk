@@ -13,14 +13,15 @@ const URI_DB = process.env.URI_DB
 const Message = require('./models/message')
 const { Server } = require("socket.io");
 connect(URI_DB)
-app.use(cors())
+
+app.use(cors({ credentials: true }))
 
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
-app.use('/cattalk', router)
+app.use('/', router)
 
 app.listen(PORT, () => {
     console.log(`Example app listening at http://localhost:${PORT}`)
@@ -30,32 +31,32 @@ const http = require('http').createServer(app)
 const io = new Server(http, {
     cors: {
         origin: `http://localhost:${PORT_SOCKET}`,
+        origin: `http://localhost:5173`,
         methods: ['GET', 'POST'],
     },
 })
 let activeUsers = [];
 io.on('connection', (socket) => {
-    console.log(`a user is connected ${socket.id}`)
-
     socket.on('join_room', (data) => {
         // socket.join(data)
-        if (!activeUsers.some((user) => user.userId === data)) {
+        if (data && !activeUsers.some((user) => user.userId === data)) {
             activeUsers.push({ userId: data, socketId: socket.id });
             console.log("New User Connected", activeUsers);
-          }
+        }
     })
 
     socket.on('message', async (data) => {
         try {
             const { chatId, senderId, receiverId, newMessageSend } = data
+            console.log(chatId, senderId, receiverId, newMessageSend);
             const newMessage = await Message.create({
                 chatId: chatId,
                 createdBy: senderId,
                 userName: receiverId,
-                content: newMessageSend,
+                content: newMessageSend
             })
 
-            const datasend = { chatId: chatId, createdBy: senderId, userName: receiverId,content: newMessageSend };
+            const datasend = { chatId: chatId, createdBy: senderId, userName: receiverId, content: newMessageSend };
             //emit the message to the receiver
             // socket.to(chatId).emit('receiveMessage', newMessage)
             const user = activeUsers.find((user) => user.userId === receiverId);
@@ -69,9 +70,8 @@ io.on('connection', (socket) => {
             console.log('Error handling the messages')
         }
         socket.on('disconnect', () => {
-            activeUsers.push({ userId: senderId, socketId: socket.id });
-            console.log("New User Connected", activeUsers);
-            console.log('user disconnected')
+            activeUsers = activeUsers.filter((user) => user.socketId !== socket.id);
+            console.log("User Disconnected", activeUsers);
         })
     })
 })
@@ -83,17 +83,16 @@ http.listen(PORT_SOCKET, () => {
 app.post('/messages', async (req, res) => {
     try {
         const { senderId, receiverId } = req.body
-        console.log(senderId, receiverId);
         const messages = await Message.find({
             $or: [
                 { createdBy: senderId, userName: receiverId },
                 { createdBy: receiverId, userName: senderId },
             ],
         })
-        // .populate('senderId', '_id name')
-        res.status(200).json({messages: messages})
+
+        res.status(200).json({ messages: messages })
     } catch (error) {
         console.log(error);
-        res.status(200).json({error: error})
+        res.status(200).json({ error: error })
     }
 })

@@ -1,1 +1,1 @@
-export const url = 'http://localhost:2080/cattalk';
+export const url = 'http://localhost:2080';

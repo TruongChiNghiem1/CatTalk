@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { Avatar, Col, List, Skeleton, Typography, Button } from 'antd';
+import { Avatar, Col, List, Skeleton, Typography, Button, Spin } from 'antd';
 import {PlusOutlined} from '@ant-design/icons'
 import { getAllChat } from '../../service/redirect';
 import { useCookies } from 'react-cookie';
 import { AppContext } from '../../context/AppContext';
 import CreateChat from './CreateChat';
+import getHumanReadableDate from '../../helper/getHumanReadableDate';
 
-const ChatList = () => {
+const ChatList = (props) => {
     const {user} = useContext(AppContext);
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState([]);
@@ -35,11 +36,20 @@ const ChatList = () => {
         setCreateChat(!createChat)
     }
 
+    const handleSwitchChat = (reciverId, senderId) => {
+        data.map(chat => {
+            if(chat.userChat.userName == reciverId){
+                props.setUser(chat.userChat)
+                props.setChat(chat.objectChat)
+            }
+        })
+          props.switchChat(reciverId, senderId)
+    }
 
     return (
     <Col
         xl={8}
-        id="scrollableDiv"
+        id="chatList"
         style={{
             height: '93%',
             overflow: 'auto',
@@ -64,20 +74,31 @@ const ChatList = () => {
                 active
             />
             }
-            scrollableTarget="scrollableDiv"
+            scrollableTarget="chatList"
         >
-            <List
-            dataSource={data}
-            renderItem={(item) => (
-                <List.Item key={item.groupName}>
-                <List.Item.Meta
-                    avatar={<Avatar src={item.avatar} />}
-                    title={<a href="https://ant.design">{item.groupName}</a>}
-                    // description={item.email}
+            {loading ? (
+                <div className='w-100 text-center'><Spin/></div>
+            ) : (
+                <List
+                dataSource={data}
+                renderItem={(item) => (
+                    <List.Item 
+                    className='chat_list_item'
+                    onClick={() => handleSwitchChat(item.userChat.userName, item.member[0].userName)}
+                    >
+                        <List.Item.Meta
+                            avatar={<Avatar src={item.userChat.avatar} size='large'/>}
+                            title={`${item.userChat.firstName} ${item.userChat.lastName}`}
+                            description={
+                            <div className='w-100 flex-between'>
+                                <span style={{fontSize: '14px'}}>{item.newMessage ? item.newMessage.content : ''}</span>
+                                <span style={{fontSize: '12px'}}>{item.newMessage ? getHumanReadableDate(new Date(item.newMessage.updatedAt)): null}</span>
+                            </div>}
+                        />
+                    </List.Item>
+                )}
                 />
-                </List.Item>
             )}
-            />
         </InfiniteScroll>
         {createChat && (<CreateChat handleClose={toggleOpenCreate}/>)}
         </Col>

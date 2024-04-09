@@ -8,8 +8,8 @@ export const getAllChat = async (token) => {
 };
 
 
-export const getMessage = async (token, groupID) => {
-    return await axios.get(`${url}/chat/get-message/${groupID}`, {
+export const getMessage = async (token, data) => {
+    return await axios.post(`${url}/messages`, data, {
         headers: { authorization: `Bearer ${token}` }
     });
 }
