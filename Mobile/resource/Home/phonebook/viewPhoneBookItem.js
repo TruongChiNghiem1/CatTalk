@@ -21,16 +21,16 @@ import {io} from 'socket.io-client';
 function ViewPhoneBookItem(props) {
   var {data} = props;
   const navigation = useNavigation();
-  const [socket, setSocket] = useState(io.connect('http://192.168.1.22:2090'))
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.170:2090'));
 
   useEffect(() => {
     socket.on('connection', () => {
-        console.log('Connected to the Socket.IO server');
-      });
+      console.log('Connected to the Socket.IO server');
+    });
   }, []);
   return (
     <TouchableOpacity
-      onPress={() => navigation.navigate('RenderProfile', {data: data })}
+      onPress={() => navigation.navigate('RenderProfile', {data: data})}
       style={{
         margin: 15,
       }}>
@@ -49,13 +49,13 @@ function ViewPhoneBookItem(props) {
             alignItems: 'center',
           }}>
           <Image
-          source={{uri: data.avatar}}
-          style={{
-            marginRight: 15,
-            width: 50,
-            height: 50,
-            borderRadius: 100,
-          }}></Image>
+            source={{uri: data.avatar}}
+            style={{
+              marginRight: 15,
+              width: 50,
+              height: 50,
+              borderRadius: 100,
+            }}></Image>
           <Text
             style={{
               color: 'black',
@@ -65,7 +65,7 @@ function ViewPhoneBookItem(props) {
             {data.firstName + ' ' + data.lastName}
           </Text>
         </View>
-        <View 
+        <View
           style={{
             display: 'flex',
             flexDirection: 'row',
@@ -89,4 +89,4 @@ function ViewPhoneBookItem(props) {
   );
 }
 
-export default ViewPhoneBookItem
+export default ViewPhoneBookItem;

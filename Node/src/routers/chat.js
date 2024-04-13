@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllChat, getMessage} = require('../controllers/ChatController')
+const { getAllChat, getMessage, createThisGroup} = require('../controllers/ChatController')
 const checkLogin = require('../middlewares/auth');
 const app = express();
 const routerChat = express.Router();
@@ -7,5 +7,6 @@ const routerChat = express.Router();
 app.use(checkLogin)
 routerChat.get('/all-chat', getAllChat)
 routerChat.get('/get-message', getMessage)
+routerChat.post('/create-this-group', createThisGroup)
 
 module.exports = routerChat;

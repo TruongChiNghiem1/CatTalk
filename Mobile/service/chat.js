@@ -12,3 +12,10 @@ export const getMessage = async (token,objectChat) => {
         headers: { authorization: `Bearer ${token}`}
     });
 }
+
+export const createThisGroup = async (token,dataAddGroup) => {
+    return await axios.post(`${url}/chat/create-this-group`,dataAddGroup, {
+        headers: { authorization: `Bearer ${token}`},
+        
+    });
+}

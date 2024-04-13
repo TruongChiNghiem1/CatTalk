@@ -10,13 +10,12 @@ import img from '../../assets/cat_1.png'
 const ChatBox = (props) => {
     const {user, cookies} = useContext(AppContext)
     const [loading, setLoading] = useState(true);
-    const [messages, setMessages] = useState([...props.messages]);
+    const [messages, setMessages] = useState();
     const [userChat, setUserChat] = useState(props.user)
     const [chatId, setChatId] = useState(props.chat._id)
     const [newMessageSend, setText] = useState('');
     const chatRef = useRef(null);
     const [socket, setSocket] = useState(io.connect('http://localhost:2090'))
-
 
     socket.emit('join_room', cookies.user.userName);
     useEffect(() => {
@@ -45,8 +44,21 @@ const ChatBox = (props) => {
     }
 
     useEffect(() => {
+        socket.on('connection', () => {
+          console.log('Connected to the Socket.IO server');
+        });
+      }, []);
+
+    // useEffect(() => {
+        // socket.on('receiveMessage', newMessage => {
+        // setMessages(prevMessages => [...prevMessages, newMessage]);
+        // });
+    // }, []);
+    useEffect(() => {
         socket.on('receiveMessage', newMessage => {
-        setMessages(prevMessages => [...prevMessages, newMessage]);
+          console.log('new Message', newMessage);
+          //update the state to include new message
+          setMessages(prevMessages => [...prevMessages, newMessage]);
         });
     }, []);
 

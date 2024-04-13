@@ -12,7 +12,7 @@ import {UIInput} from '../../../components';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faUserPlus} from '@fortawesome/free-solid-svg-icons/faUserPlus';
 import {faUserGroup} from '@fortawesome/free-solid-svg-icons/faUserGroup';
-import {height} from '@fortawesome/free-solid-svg-icons/faMugSaucer';
+import {faUsers} from '@fortawesome/free-solid-svg-icons/faUsers';
 import {AppRegistry} from 'react-native';
 import {Button, Icon, WhiteSpace, WingBlank} from '@ant-design/react-native';
 import ViewPhoneBookItem from './viewPhoneBookItem';
@@ -25,12 +25,12 @@ import {io} from 'socket.io-client';
 // import { DemoBlock } from './demo'
 
 const PhoneBookItem = () => {
-  const [socket, setSocket] = useState(io.connect('http://192.168.1.22:2090'))
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.170:2090'));
 
   useEffect(() => {
     socket.on('connection', () => {
-        console.log('Connected to the Socket.IO server');
-      });
+      console.log('Connected to the Socket.IO server');
+    });
   }, []);
   const navigation = useNavigation();
   const [data, setData] = useState([]);
@@ -187,6 +187,47 @@ const PhoneBookItem = () => {
                 </Text>
               </View>
             </Button>
+
+            <Button
+              onPress={() => navigation.navigate('CreateGroup')}
+              style={{
+                marginTop: 0,
+                // backgroundColor: colors.colorHide,
+                border: 'none',
+                borderColor: colors.colorHide,
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                width: 420,
+                height: 55,
+              }}>
+              <View
+                style={{
+                  // backgroundColor: colors.colorHide,
+                  border: 'none',
+                  borderColor: colors.colorHide,
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  width: 360,
+                }}>
+                <FontAwesomeIcon
+                  size={25}
+                  icon={faUsers}
+                  color={colors.colorBgButton}
+                />
+                <Text
+                  style={{
+                    fontSize: 19,
+                    color: 'black',
+                    marginLeft: 20,
+                    marginTop: 3,
+                  }}>
+                  Tạo nhóm mới
+                </Text>
+              </View>
+            </Button>
+
             <WhiteSpace />
           </WingBlank>
         </View>
@@ -221,7 +262,7 @@ const PhoneBookItem = () => {
             {data && data.length ? (
               <>
                 {data.map(item => (
-                  <ViewPhoneBookItem data={item} />
+                  <ViewPhoneBookItem key={item._id} data={item} />
                 ))}
               </>
             ) : (

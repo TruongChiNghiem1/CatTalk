@@ -19,14 +19,14 @@ import {DrawerActions, useNavigation} from '@react-navigation/native';
 import {io} from 'socket.io-client';
 
 function UserChatItem(props) {
-  const [socket, setSocket] = useState(io.connect('http://192.168.1.22:2090'))
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.170:2090'));
 
   useEffect(() => {
     socket.on('connection', () => {
-        console.log('Connected to the Socket.IO server');
-      });
+      console.log('Connected to the Socket.IO server');
+    });
   }, []);
-  
+
   var {data} = props;
   const navigation = useNavigation();
   const [avatarChat, setAvatarChat] = useState(
@@ -35,7 +35,6 @@ function UserChatItem(props) {
   const [nameChat, setNameChat] = useState('');
   const [newMessage, setNewMessage] = useState('');
   const fetchDataChatItem = async () => {
-
     try {
       if (data.objectChat.chatType === 'single') {
         setNameChat(data.userChat.firstName + ' ' + data.userChat.lastName);
@@ -44,7 +43,7 @@ function UserChatItem(props) {
         setNameChat(data.objectChat.groupName);
         setAvatarChat(data.objectChat.avatar);
       }
-      
+
       setNewMessage(data.newMessage.content);
     } catch (e) {
       console.log(e);
@@ -55,7 +54,8 @@ function UserChatItem(props) {
     fetchDataChatItem();
   }, []);
   return (
-    <TouchableOpacity onPress={() => navigation.navigate('RenderViewChat', {dataChat: data})}>
+    <TouchableOpacity
+      onPress={() => navigation.navigate('RenderViewChat', {dataChat: data})}>
       <View
         style={{
           margin: 15,
