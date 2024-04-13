@@ -1,6 +1,7 @@
 const express = require('express');
 const { signUp, mailConfirm, authEmail, signIn, editProfile, getFriends, uploadAvatar,
-    updateAboutUs, uploadBackground, searchUser, testData, changeTheme, addFriend, getMyUser, checkAuth, deleteFriend, changePassword } = require('../controllers/UserController');
+    updateAboutUs, uploadBackground, searchUser, testData, changeTheme, addFriend, getMyUser, 
+    checkAuth, deleteFriend, changePassword, searchFriend } = require('../controllers/UserController');
 const checkLogin = require('../middlewares/auth');
 // const uploadImage = require('../middlewares/uploadImage')
 const app = express();
@@ -28,6 +29,7 @@ routerUser.post('/change-password', changePassword)
 
 //Add friend
 routerUser.get('/get-friends', getFriends)
+routerUser.get('/search-friend', searchFriend)
 routerUser.get('/search', searchUser)
 routerUser.post('/add-friend', addFriend)
 routerUser.post('/delete-friend', deleteFriend)
