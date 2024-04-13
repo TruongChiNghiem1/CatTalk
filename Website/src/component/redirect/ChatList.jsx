@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { Avatar, Col, List, Skeleton, Typography, Button, Spin } from 'antd';
-import {PlusOutlined} from '@ant-design/icons'
+import { Avatar, Col, List, Skeleton, Typography, Button, Dropdown} from 'antd';
+import {PlusOutlined, MoreOutlined ,PushpinOutlined,DeleteOutlined} from '@ant-design/icons'
 import { getAllChat } from '../../service/redirect';
 import { useCookies } from 'react-cookie';
 import { AppContext } from '../../context/AppContext';
 import CreateChat from './CreateChat';
 import getHumanReadableDate from '../../helper/getHumanReadableDate';
-
+import { useSearchParams } from "react-router-dom";
+import { MuteIcon } from '../../helper/CustomIcon';
 const ChatList = (props) => {
     const {user} = useContext(AppContext);
     const [loading, setLoading] = useState(true);
@@ -15,6 +16,25 @@ const ChatList = (props) => {
     const [cookies, setCookies] = useCookies('loginToken');
     const [hasMore, setHasMore] = useState(false);
     const [createChat, setCreateChat] = useState(false)
+    let [searchParams, setSearchParams] = useSearchParams();
+
+    const items = [
+        {
+            label: 'Add favourite',
+            icon: <PushpinOutlined />,
+            key: '1',
+        },
+        {
+            label: 'Unmute chat',
+            icon: <MuteIcon/>,
+            key: '2',
+        },
+        {
+            label: 'Delete chat',
+            icon: <DeleteOutlined />,
+            key: '3',
+        },
+    ];
 
     const handleGetAllChat = async () => {
         try {
@@ -41,19 +61,21 @@ const ChatList = (props) => {
             if(chat.userChat.userName == reciverId){
                 props.setUser(chat.userChat)
                 props.setChat(chat.objectChat)
-            }
+                props.setMember(chat.member)
+                console.log(chat.member);
+            }   
         })
-          props.switchChat(reciverId, senderId)
+        props.switchChat(reciverId, senderId)
     }
 
     return (
     <Col
-        xl={8}
+        xl={6}
         id="chatList"
         style={{
             height: '93%',
             overflow: 'auto',
-            paddingRight: '.5rem'
+            paddingRight: '1rem'
         }}
         >
         <div className='w-100 flex-between'>
@@ -77,7 +99,22 @@ const ChatList = (props) => {
             scrollableTarget="chatList"
         >
             {loading ? (
-                <div className='w-100 text-center'><Spin/></div>
+                <div className='w-100'>
+                    {
+                        [1,2,3,4,5,6,7,8].map((item, key) => {
+                            return(
+                                 <Skeleton
+                                    key={key}
+                                    avatar
+                                    paragraph={{
+                                    rows: 1,
+                                    }}
+                                    active
+                                 />
+                            )
+                        })
+                        }
+                </div>
             ) : (
                 <List
                 dataSource={data}
@@ -88,10 +125,25 @@ const ChatList = (props) => {
                     >
                         <List.Item.Meta
                             avatar={<Avatar src={item.userChat.avatar} size='large'/>}
-                            title={`${item.userChat.firstName} ${item.userChat.lastName}`}
+                            title={
+                                <div className='w-100 flex-between'>
+                                    <span>{item.userChat.firstName} {item.userChat.lastName}</span>
+                                     <Dropdown
+                                        menu={{items}}
+                                        trigger={['click']}    
+                                        className='more_action_chat_list'
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <a onClick={(e) => e.preventDefault()}>
+                                        <MoreOutlined/>
+                                        </a>
+                                    </Dropdown>
+                                   
+                                </div>
+                            }
                             description={
                             <div className='w-100 flex-between'>
-                                <span style={{fontSize: '14px'}}>{item.newMessage ? item.newMessage.content : ''}</span>
+                                <span style={{fontSize: '14px'}} className='new_message'>{item.newMessage ? item.newMessage.content : ''}</span>
                                 <span style={{fontSize: '12px'}}>{item.newMessage ? getHumanReadableDate(new Date(item.newMessage.updatedAt)): null}</span>
                             </div>}
                         />
