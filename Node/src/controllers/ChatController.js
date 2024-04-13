@@ -11,49 +11,60 @@ const getAllChat = async (req, res) => {
         const token = req.headers.authorization.split(' ')[1]
         const decoded = jwt.verify(token, SECRET_CODE)
         const username = decoded.username
-
         
-        const chatss = await Chat.find()
-        let chats = []
-        for (const chat of chatss) {
-            let member = await Member.find({ userName: username, chatId: chat._id })
-           
-            if(member){
-                const message = await Message.findOne(
-                    {chatId: chat._id}
-                ).sort({ createdAt: -1 })
-                if (chat.chatType === 'single') {
-                    for(const mem of member){
-                        const detailMember = await User.findOne({ userName: mem.userName })
-                        mem.firstName = detailMember.firstName;
-                        mem.lastName = detailMember.lastName
-                        mem.avatar = detailMember.avatar
-
-                        if(mem.createdBy !== username){
-                            const userChat = await User.findOne(
-                                {userName: mem.createdBy}
-                            )
-                            const newChat = {
-                                member: member,
-                                userChat: userChat,
-                                objectChat: chat,
-                                newMessage: message
-                            }
-                            chats.push(newChat)
-                        }
-                    }
-                } else {
-                    const newChat = {
-                        member: member,
-                        userChat: [],
-                        objectChat: chat,
-                        newMessage: message
-                    }
-                    chats.push(newChat)
+        const chatss = await Chat.aggregate([
+            {
+                $lookup: {
+                    from: 'members',
+                    localField: '_id',
+                    foreignField: 'chatId',
+                    as: 'members'
+                }
+            }, {
+                $match: {
+                    'members.userName': username
                 }
             }
-        }
+        ])
+        let chats = []
+        for (var chat of chatss) {
+            let memberChat = await Member.aggregate([
+                {$match: {chatId: chat._id, userName: {$ne: username}}},
+                {$lookup: {
+                    from: 'users',
+                    localField: 'userName',
+                    foreignField: 'userName',
+                    as: 'user'
+                }},
+                {$project: {
+                    userName: 1,
+                    createdBy: 1,
+                    notifyType: 1,
+                    chatType: 1,
+                    chatId: 1,
+                    firstName: { $arrayElemAt: ['$user.firstName', 0]},
+                    lastName: { $arrayElemAt: ['$user.lastName', 0]},
+                    avatar: { $arrayElemAt: ['$user.avatar', 0]},
+                    friends: { $arrayElemAt: ['$user.friends', 0]}
+                }}
+            ])
 
+            const message = await Message.findOne(
+                {chatId: chat._id}
+            ).sort({ createdAt: -1 })
+
+            if(message){
+                const newChat = {
+                    member: memberChat,
+                    objectChat: chat,
+                    newMessage: message,
+                    createdAtMessage: message.createdAt
+                }
+                chats.push(newChat)
+            }
+        }
+        chats.sort((createdAtA, createdAtB) => createdAtB.createdAtMessage - createdAtA.createdAtMessage)
+        console.log(chats);
         if (chats) {
             return res.json({
                 status: 200,
