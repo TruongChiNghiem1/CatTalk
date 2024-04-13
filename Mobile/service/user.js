@@ -39,9 +39,10 @@ export const updateAboutUs = async (data, token) => {
     });
 }
 
-export const getFriends = async (token) => {
+export const getFriends = async (token, search) => {
     return await axios.get(`${url}/user/get-friends`, {
-        headers: { authorization: `Bearer ${token}` }
+        headers: { authorization: `Bearer ${token}` },
+        search: search
     });
 }
 

@@ -9,6 +9,7 @@ import BasicTabBarExample from '../resource/Home/layout/footer';
 import Test from '../resource/Home/test/test';
 import RenderViewChat from '../resource/Home/chat/viewChat';
 import AddFriend from '../resource/Home/addfriend/addfriend';
+import CreateGroup from '../resource/Home/group/createGroup';
 import RenderProfile from '../resource/Home/profile/profile';
 import RenderMyProfile from '../resource/Home/profile/myProfile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -71,6 +72,7 @@ const App = () => {
         <Stack.Screen name="RenderProfile" component={RenderProfile} />
         <Stack.Screen name="RenderMyProfile" component={RenderMyProfile} />
         <Stack.Screen name="AddFriend" component={AddFriend} />
+        <Stack.Screen name="CreateGroup" component={CreateGroup} />
         <Stack.Screen name="Auth" component={Auth} />
       </Stack.Navigator>
   );
