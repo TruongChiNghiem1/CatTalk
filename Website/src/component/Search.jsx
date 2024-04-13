@@ -93,7 +93,7 @@ const Search = () => {
     };
 
   return (
-        <Content id='search' style={{background: colorBgContainer}}>
+        <Content id='search' style={{background: colorBgContainer, position: 'absolute', zIndex: 2, left: 0, width: '25%'}} >
           <animated.div style={animationProps}>
             <div className='flex-between'>
               <Typography.Title className='mt-0 title_feature'>Search</Typography.Title>

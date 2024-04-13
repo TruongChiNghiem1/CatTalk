@@ -16,13 +16,19 @@ const getAllChat = async (req, res) => {
         const chatss = await Chat.find()
         let chats = []
         for (const chat of chatss) {
-            const member = await Member.find({ userName: username, chatId: chat._id })
+            let member = await Member.find({ userName: username, chatId: chat._id })
+           
             if(member){
                 const message = await Message.findOne(
                     {chatId: chat._id}
                 ).sort({ createdAt: -1 })
                 if (chat.chatType === 'single') {
                     for(const mem of member){
+                        const detailMember = await User.findOne({ userName: mem.userName })
+                        mem.firstName = detailMember.firstName;
+                        mem.lastName = detailMember.lastName
+                        mem.avatar = detailMember.avatar
+
                         if(mem.createdBy !== username){
                             const userChat = await User.findOne(
                                 {userName: mem.createdBy}

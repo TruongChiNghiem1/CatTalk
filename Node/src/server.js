@@ -57,7 +57,7 @@ io.on('connection', (socket) => {
                 content: newMessageSend
             })
 
-            const datasend = { chatId: chatId, createdBy: senderId, userName: receiverId, content: newMessageSend };
+            const datasend = { chatId: chatId, createdBy: senderId, userName: receiverId, content: newMessageSend, createdAt: newMessage.createdAt };
             //emit the message to the receiver
             // socket.to(chatId).emit('receiveMessage', newMessage)
             const user = activeUsers.find((user) => user.userId == receiverId);
@@ -65,7 +65,6 @@ io.on('connection', (socket) => {
             console.log("Data: ", datasend)
             console.log('aaaaaa', activeUsers, receiverId);
             if (user) {
-                console.log('gui rooi');
                 io.to(user.socketId).emit("receiveMessage", datasend);
             }
         } catch (error) {

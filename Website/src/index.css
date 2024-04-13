@@ -85,6 +85,11 @@ body {
   justify-content: start;
   align-items: center;
 }
+
+.p-2{
+  padding: 0.125rem !important;
+}
+
 .m-0{
   margin: 0 !important;
 }
@@ -110,6 +115,10 @@ body {
 }
 .mt-0{
   margin-top: 0 !important;
+}
+
+.mb-1{
+  margin-bottom: 1rem !important;
 }
 
 .ml-2{
@@ -158,4 +167,8 @@ body {
 
  .cursor-pointer{
   cursor: pointer;
+ }
+
+ .title_feature{
+  font-size: 22px !important;
  }

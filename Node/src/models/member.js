@@ -26,6 +26,17 @@ const chatSchema = new mongoose.Schema({
     // để biết được ai thêm user này vào group
     createdBy: {
         type: String,
+    },
+    avatar: {
+        type: String,
+        default: 'https://cattalkfile.s3.ap-southeast-1.amazonaws.com/cattalk_avatar_default.jpg'
+    },
+    firstName: {
+        type: String,
+    },
+    
+    lastName: {
+        type: String
     }
 },
     {
