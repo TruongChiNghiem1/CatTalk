@@ -167,7 +167,12 @@ const ChatBox = (props) => {
                 </div>
             </div>)}
         </Col>
-          {openMenu && (<ChatMenu user={props.user} member={props.member}/>)}
+          {openMenu && (
+            <ChatMenu 
+                user={props.user} 
+                member={props.member}
+                chat={props.chat}
+                />)}
         </>
     )
 }
