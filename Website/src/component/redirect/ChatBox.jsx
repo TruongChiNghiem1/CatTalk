@@ -35,18 +35,28 @@ const ChatBox = (props) => {
     }
     }
 
+    useEffect(() => {
+        handelGetMessages()
+    }, [])
+
     const handleSendMessage= (senderId, receiverId) => {
         socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
         setText('')
-
         setTimeout(() => {
             handelGetMessages();
         }, 200);
     }
 
+ 
+   useEffect(() => {
+        socket.on('connection', () => {
+          console.log('Connected to the Socket.IO server');
+        });
+      }, []);
+
     useEffect(() => {
         socket.on('receiveMessage', newMessage => {
-        setMessages(prevMessages => [...prevMessages, newMessage]);
+          setMessages(prevMessages => [...prevMessages, newMessage]);
         });
     }, []);
 
@@ -110,6 +120,7 @@ const ChatBox = (props) => {
                 <InputEmoji
                     onChange={setText}
                     cleanOnEnter
+                    value={newMessageSend}
                     onEnter={() => handleSendMessage(user.userName, props.user.userName)}
                     placeholder="Type a message"
                     />

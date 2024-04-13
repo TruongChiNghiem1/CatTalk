@@ -56,13 +56,14 @@ io.on('connection', (socket) => {
                 content: newMessageSend
             })
 
-            const datasend = { chatId: chatId, createdBy: senderId, userName: receiverId, content: newMessageSend };
+            const datasend = { chatId: chatId, createdBy: senderId, userName: receiverId, content: newMessageSend, createdAt: newMessage.createdAt };
             //emit the message to the receiver
             // socket.to(chatId).emit('receiveMessage', newMessage)
             const user = activeUsers.find((user) => user.userId === receiverId);
             console.log("Sending from socket to :", receiverId)
             console.log("Data: ", datasend)
             if (user) {
+                console.log('aaaaaa');
                 io.to(user.socketId).emit("receiveMessage", datasend);
             }
         } catch (error) {
