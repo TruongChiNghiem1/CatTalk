@@ -167,6 +167,7 @@ function RenderViewChat(res) {
   useEffect(() => {
     socket.on('receiveMessage', newMessage => {
       console.log('new Message', newMessage);
+      //update the state to include new message
       setData(prevMessages => [...prevMessages, newMessage]);
       setTimeout(() => {
         scrollToBottom();

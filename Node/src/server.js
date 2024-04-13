@@ -31,6 +31,7 @@ const http = require('http').createServer(app)
 const io = new Server(http, {
     cors: {
         origin: `http://localhost:${PORT_SOCKET}`,
+        origin: `http://localhost:2080`,
         origin: `http://localhost:5173`,
         methods: ['GET', 'POST'],
     },
@@ -39,8 +40,8 @@ let activeUsers = [];
 io.on('connection', (socket) => {
     socket.on('join_room', (data) => {
         // socket.join(data)
-        if (data && !activeUsers.some((user) => user.userId === data)) {
-            activeUsers.push({ userId: data, socketId: socket.id });
+        if (data.userId && !activeUsers.some((user) => user.userId === data.userName && user.chatId !== data.chatId)) {
+            activeUsers.push({ chatId: data.chatId, userId: data.userName, socketId: socket.id });
             console.log("New User Connected", activeUsers);
         }
     })
@@ -59,11 +60,11 @@ io.on('connection', (socket) => {
             const datasend = { chatId: chatId, createdBy: senderId, userName: receiverId, content: newMessageSend, createdAt: newMessage.createdAt };
             //emit the message to the receiver
             // socket.to(chatId).emit('receiveMessage', newMessage)
-            const user = activeUsers.find((user) => user.userId === receiverId);
+            const user = activeUsers.find((user) => user.userId == receiverId);
             console.log("Sending from socket to :", receiverId)
             console.log("Data: ", datasend)
+            console.log('aaaaaa', activeUsers, receiverId);
             if (user) {
-                console.log('aaaaaa');
                 io.to(user.socketId).emit("receiveMessage", datasend);
             }
         } catch (error) {
@@ -75,6 +76,7 @@ io.on('connection', (socket) => {
             console.log("User Disconnected", activeUsers);
         })
     })
+    console.log(activeUsers);
 })
 
 http.listen(PORT_SOCKET, () => {
