@@ -15,6 +15,7 @@ const Home = () => {
   const [infoUser, setInfoUser] = useState({})
   const [messages, setMessages] = useState([])
   const [chat, setChat] = useState({})
+  const [member, setMember] = useState([])
 
   const handleSwitchMessage = async(senderId, receiverId) => {
     try {
@@ -30,11 +31,22 @@ const Home = () => {
   return (
         <Content
           className='container'
-          style={{background: colorBgContainer,}}
+          style={{background: colorBgContainer}}
         >
         <Row>
-          <ChatList switchChat={handleSwitchMessage} setUser={setInfoUser} setChat={setChat}/>
-          <ChatBox messages={messages} user={infoUser} chat={chat}/>
+          <ChatList 
+            switchChat={handleSwitchMessage} 
+            setUser={setInfoUser} 
+            setChat={setChat}
+            setMember={setMember}
+            />
+
+          <ChatBox 
+            messages={messages} 
+            user={infoUser} 
+            chat={chat}
+            member={member}
+            />
         </Row>
 
         </Content>
