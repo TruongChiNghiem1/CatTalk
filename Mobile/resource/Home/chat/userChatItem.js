@@ -37,8 +37,8 @@ function UserChatItem(props) {
   const fetchDataChatItem = async () => {
     try {
       if (data.objectChat.chatType === 'single') {
-        setNameChat(data.userChat.firstName + ' ' + data.userChat.lastName);
-        setAvatarChat(data.userChat.avatar);
+        setNameChat(data.member[0].firstName + ' ' + data.member[0].lastName);
+        setAvatarChat(data.member[0].avatar);
       } else {
         setNameChat(data.objectChat.groupName);
         setAvatarChat(data.objectChat.avatar);
