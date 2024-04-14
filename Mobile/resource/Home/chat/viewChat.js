@@ -82,8 +82,9 @@ const showActionSheet = () => {
 };
 
 function RenderViewChat(res) {
+  console.log('chat don');
   const navigation = useNavigation();
-  var {dataChat} = res.route.params;
+  var {dataChat, myUserNameOne} = res.route.params;
 
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -100,9 +101,8 @@ function RenderViewChat(res) {
   //Socket
   const route = useRoute();
 
-  const [socket, setSocket] = useState(io.connect('http://172.20.10.4:2090'));
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.129:2090'));
 
-  socket.emit('join_room', {chatId: chatId, userName: myUserName});
 
   const onSubmitNewSendMessage = async (senderId, receiverId) => {
     socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
@@ -136,19 +136,20 @@ function RenderViewChat(res) {
         dataChat.member[0].firstName + ' ' + dataChat.member[0].lastName,
       );
       setChatId(dataChat.objectChat._id);
-
       const token = await AsyncStorage.getItem('token');
       const response = await axios.post(
-        'http://172.20.10.4:2080/messages',
+        'http://192.168.1.129:2080/messages-group',
         {
           senderId: user.userName,
-          receiverId: dataChat.member[0].userName,
+          chatId: dataChat.objectChat._id
         },
         {
           headers: {authorization: `Bearer ${token}`},
         },
       );
-      // console.log(response.data.messages);
+console.log('aaaaaaaaaaaaa');
+
+      console.log(response.data.messages);
       setData(response.data.messages);
       setTimeout(() => {
         scrollToBottom();
@@ -159,9 +160,19 @@ function RenderViewChat(res) {
   };
 
   useEffect(() => {
+    fetchMessages();
+  }, []);
+
+  useEffect(() => {
     socket.on('connection', () => {
       console.log('Connected to the Socket.IO server');
     });
+    const dataJoin = {
+      chatIdJoin: chatId,
+      userNameJoin: myUserNameOne,
+    };
+    console.log(dataJoin);
+    socket.emit('join_room', dataJoin);
   }, []);
 
   useEffect(() => {
@@ -174,9 +185,7 @@ function RenderViewChat(res) {
     });
   }, []);
 
-  useEffect(() => {
-    fetchMessages();
-  }, []);
+  
 
   return (
     <View
@@ -278,6 +287,8 @@ function RenderViewChat(res) {
                   <RenderViewChatItem
                     key={`view_${messageItem._id}_${index}`}
                     data={messageItem}
+                    profileUser={dataChat.member.filter((mem) => mem.userName === messageItem.createdBy)}
+                    typeChat={'single'}
                   />
                 ),
               )

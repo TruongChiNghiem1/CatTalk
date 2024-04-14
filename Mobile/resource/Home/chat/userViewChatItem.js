@@ -24,6 +24,7 @@ import BasicTabBarExample from '../layout/footer';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getMessage} from '../../../service/chat';
+import moment from 'moment';
 
 import {
   Button,
@@ -39,10 +40,7 @@ import {
 } from '@ant-design/react-native';
 
 function RenderViewChatItem(res) {
-  const {data} = res;
-  const [avatar, setAvatar] = useState(
-    'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
-  );
+  const {data, profileUser, typeChat} = res;
 
   let chatItem = (
     <View style={{marginBottom: 10}}>
@@ -56,15 +54,32 @@ function RenderViewChatItem(res) {
             display: 'flex',
             flexDirection: 'row',
           }}>
-          <Image
-            source={{ uri: avatar }}
-            style={{
-              marginRight: 10,
-              width: 30,
-              height: 30,
-              borderRadius: 100,
-            }}></Image>
+            <View style={{ 
+              height: '100',
+              marginBottom: 5,
+              // backgroundColor: 'red',
+              display: 'flex',
+              justifyContent: 'flex-end',
+             }}>
+              <Image
+                source={{ uri: profileUser[0].avatar }}
+                style={{
+                  marginRight: 10,
+                  borderRadius: 100,
+                  width: 30,
+                  height: 30,
+                }}></Image>
+            </View>
           <View>
+            {typeChat == 'multi' ? 
+              <Text style={{ 
+                color: 'black',
+                marginLeft: 5,
+                marginBottom: 6
+                }}>{profileUser[0].firstName + ' ' + profileUser[0].lastName}
+              </Text> : <></>
+            }
+            
             <View
               style={{
                 display: 'flex',
@@ -90,7 +105,7 @@ function RenderViewChatItem(res) {
                   marginTop: 5,
                   fontSize: fontSize.h5,
                 }}>
-                17:20
+                {moment(data.createdAt).format('HH:mm')}
               </Text>
             </View>
             {/* <Image
