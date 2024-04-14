@@ -12,9 +12,9 @@ import ChatMenu from "./ChatMenu";
 const ChatBox = (props) => {
     const {user, cookies} = useContext(AppContext)
     const [loading, setLoading] = useState(true);
-    const [messages, setMessages] = useState();
+    const [messages, setMessages] = useState(props.messages);
     const [userChat, setUserChat] = useState(props.user)
-    const [chatId, setChatId] = useState(props.chat._id)
+    const [chat, setChat] = useState(props.chat)
     const [member, setMember] = useState(props.member)
 
     const [newMessageSend, setText] = useState('');
@@ -31,7 +31,13 @@ const ChatBox = (props) => {
 
     const handelGetMessages = async() => {
     try {
-        const chat = await getMessage(cookies.loginToken, { receiverId: user.userName , senderId: userChat.userName})
+        let recieveId ='';
+        if(chat.chatType === 'single'){
+            recieveId = member.userName;
+        }else{
+             recieveId = user.name;
+        }
+        const chat = await getMessage(cookies.loginToken, { receiverId: recieveId , senderId:user.userName})
         .then(res => {
             setMessages(res.data.messages)
         })
@@ -45,6 +51,7 @@ const ChatBox = (props) => {
     }, [])
 
     const handleSendMessage= (senderId, receiverId) => {
+        let chatId = chat.id;
         socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
         setText('')
         setTimeout(() => {
@@ -54,12 +61,6 @@ const ChatBox = (props) => {
 
  
    useEffect(() => {
-        socket.on('connection', () => {
-          console.log('Connected to the Socket.IO server');
-        });
-      }, []);
-
-    useEffect(() => {
         socket.on('connection', () => {
           console.log('Connected to the Socket.IO server');
         });
@@ -79,21 +80,22 @@ const ChatBox = (props) => {
 
     useEffect(()=> {
         setUserChat(props.user)
-        setChatId(props.chat._id)
+        setChat(props.chat)
         setMessages(props.messages)
         setMember(props.member)
+        console.log(props.messages);
     }, [props.user, props.chat, props.messages, props.member])
     
     return (
         <>
         <Col xl={openMenu ? 12 : 18} id="box_chat" className="d-flex">
-            {userChat && chatId ? (
+            {userChat && chat? (
                 <>
                 <div className="chat_box_header">
                 <div className="left_info">
                     <img src={props.user.avatar} className="avt_chat"/>
                     <div className="flex-column-start">
-                        <h3 className="m-0 primary ">{props.user.firstName} {props.user.lastName}</h3>
+                        <h3 className="m-0 primary ">{chat.chatType === 'single' ?  `${props.user.firstName} ${props.user.lastName}` : `${chat.groupName}`}</h3>
                         <Typography.Text className="m-0">Active</Typography.Text>
                     </div>  
                 

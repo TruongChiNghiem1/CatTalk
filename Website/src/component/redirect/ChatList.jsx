@@ -56,17 +56,26 @@ const ChatList = (props) => {
         setCreateChat(!createChat)
     }
 
-    const handleSwitchChat = (reciverId, senderId) => {
+    const handleSwitchChat = ( senderId, reciverId) => {
         data.map(chat => {
-            if(chat.userChat.userName == reciverId){
-                props.setUser(chat.userChat)
-                props.setChat(chat.objectChat)
-                props.setMember(chat.member)
-                console.log(chat.member);
-            }   
+            if(chat.chatType === 'single'){
+                if(chat.member[0].userName == reciverId){
+                    props.setChat(chat.objectChat)
+                    props.setMember(chat.member)
+                    props.setUser(chat.member[0])
+                }   
+            }else{
+                  if(chat.member[0].userName == reciverId){
+                    props.setChat(chat.objectChat)
+                    props.setMember(chat.member)
+                    props.setUser(chat.member[0])
+                }   
+            }
+            
         })
-        props.switchChat(reciverId, senderId)
+        props.switchChat(senderId, reciverId)
     }
+
 
     return (
     <Col
@@ -119,35 +128,70 @@ const ChatList = (props) => {
                 <List
                 dataSource={data}
                 renderItem={(item) => (
-                    <List.Item 
-                    className='chat_list_item'
-                    onClick={() => handleSwitchChat(item.userChat.userName, item.member[0].userName)}
-                    >
-                        <List.Item.Meta
-                            avatar={<Avatar src={item.userChat.avatar} size='large'/>}
-                            title={
-                                <div className='w-100 flex-between'>
-                                    <span>{item.userChat.firstName} {item.userChat.lastName}</span>
-                                     <Dropdown
-                                        menu={{items}}
-                                        trigger={['click']}    
-                                        className='more_action_chat_list'
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        <a onClick={(e) => e.preventDefault()}>
-                                        <MoreOutlined/>
-                                        </a>
-                                    </Dropdown>
-                                   
-                                </div>
-                            }
-                            description={
-                            <div className='w-100 flex-between'>
-                                <span style={{fontSize: '14px'}} className='new_message'>{item.newMessage ? item.newMessage.content : ''}</span>
-                                <span style={{fontSize: '12px'}}>{item.newMessage ? getHumanReadableDate(new Date(item.newMessage.updatedAt)): null}</span>
-                            </div>}
-                        />
-                    </List.Item>
+                    <>
+                     {item.objectChat.chatType === 'single' ? (
+                         <List.Item 
+                            className='chat_list_item'
+                            onClick={() => handleSwitchChat(user.userName, item.member[0].userName)}
+                            >
+                                <List.Item.Meta
+                                    avatar={<Avatar src={item.member[0].avatar} size='large'/>}
+                                    title={
+                                        <div className='w-100 flex-between'>
+                                            <span>{item.member[0].firstName} {item.member[0].lastName}</span>
+                                            <Dropdown
+                                                menu={{items}}
+                                                trigger={['click']}    
+                                                className='more_action_chat_list'
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                <a onClick={(e) => e.preventDefault()}>
+                                                <MoreOutlined/>
+                                                </a>
+                                            </Dropdown>
+                                        
+                                        </div>
+                                    }
+                                    description={
+                                    <div className='w-100 flex-between'>
+                                        <span style={{fontSize: '14px'}} className='new_message'>{item.newMessage ? item.newMessage.content : ''}</span>
+                                        <span style={{fontSize: '12px'}}>{item.newMessage ? getHumanReadableDate(new Date(item.newMessage.updatedAt)): null}</span>
+                                    </div>}
+                                />
+                            </List.Item>
+                    )
+                     : (
+                         <List.Item 
+                            className='chat_list_item'
+                            onClick={() => handleSwitchChat(user.userName, item.member[0].userName)}
+                            >
+                                <List.Item.Meta
+                                    avatar={<Avatar src={item.objectChat.avatar} size='large'/>}
+                                    title={
+                                        <div className='w-100 flex-between'>
+                                            <span>{item.objectChat.groupName}</span>
+                                            <Dropdown
+                                                menu={{items}}
+                                                trigger={['click']}    
+                                                className='more_action_chat_list'
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                <a onClick={(e) => e.preventDefault()}>
+                                                <MoreOutlined/>
+                                                </a>
+                                            </Dropdown>
+                                        
+                                        </div>
+                                    }
+                                    description={
+                                    <div className='w-100 flex-between'>
+                                        <span style={{fontSize: '14px'}} className='new_message'>{item.newMessage ? item.newMessage.content : ''}</span>
+                                        <span style={{fontSize: '12px'}}>{item.newMessage ? getHumanReadableDate(new Date(item.newMessage.updatedAt)): null}</span>
+                                    </div>}
+                                />
+                            </List.Item>
+                     )}
+                    </>
                 )}
                 />
             )}
