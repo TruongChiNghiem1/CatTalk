@@ -22,9 +22,8 @@ const ChatBox = (props) => {
     const [newMessageSend, setText] = useState('');
     const [openMenu, setOpenMenu] = useState(false);
     const chatRef = useRef(null);
-    const [socket, setSocket] = useState(io.connect('http://192.168.1.53:2090'))
+    const [socket, setSocket] = useState(io.connect('http://192.168.1.129:2090'))
     
-    socket.emit('join_room', {chatIdJoin: id, userNameJoin: cookies.user.userName})
 
     const handleSendMessage= async (senderId) => {
         console.log('gui ne');
@@ -41,15 +40,29 @@ const ChatBox = (props) => {
      }, [messages]);
 
     const handelGetMessages = async() => {
-    try {
-        const chat = await getMessage(cookies.loginToken, { chatId: id})
-        .then(res => {
-            setMessages(res.data.messages)
-        })
-    } catch (error) {
-        console.log(error);
+        try {
+            const chat = await getMessage(cookies.loginToken, { chatId: id})
+            .then(res => {
+                setMessages(res.data.messages)
+            })
+        } catch (error) {
+            console.log(error);
+        }
     }
-    }
+
+    
+
+    useEffect(() => {
+        socket.on('connection', () => {
+          console.log('Connected to the Socket.IO server');
+        });
+        const dataJoin = {
+            chatIdJoin: id, 
+            userNameJoin: cookies.user.userName
+        }
+        console.log(dataJoin);
+        socket.emit('join_room', dataJoin)
+      }, []);
 
     useEffect(() => {
         socket.on('receiveMessage', newMessage => {
@@ -57,12 +70,6 @@ const ChatBox = (props) => {
             setMessages(prevMessages => [...prevMessages, newMessage]);
         });
     }, []);
-
-    useEffect(() => {
-        socket.on('connection', () => {
-          console.log('Connected to the Socket.IO server');
-        });
-      }, []);
 
     useEffect(() => {
         handelGetMessages()

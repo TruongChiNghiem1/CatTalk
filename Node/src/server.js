@@ -40,40 +40,42 @@ const io = new Server(http, {
 let activeUsers = [];
 io.on('connection', (socket) => {
     socket.on('join_room', ({ chatIdJoin, userNameJoin }) => {
-        const { user, error } = addUser({ id: socket.id, chatIdJoin: chatIdJoin, userNameJoin: userNameJoin });
-        console.log(user);
-        socket.join(user.chatIdJoin)
-        console.log("New User Connected", user);
+        const { user, isAddUrs, error } = addUser({ id: socket.id, chatIdJoin: chatIdJoin, userNameJoin: userNameJoin });
+
+        if(isAddUrs){
+            socket.join(user.chatIdJoin)
+            console.log("New User Connected", user);
+        }
+
         // if (data.userId && !activeUsers.some((user) => user.userId === data.userName && user.chatId !== data.chatId)) {
         //     activeUsers.push({ chatId: data.chatId, userId: data.userName, socketId: socket.id }
 
         // }
+            socket.on('message', async(data) => {
+                try {
+                    console.log('nhan ne 11111111', data);
+                    const { chatId, senderId, newMessageSend } = data
+                    console.log(chatId, senderId, newMessageSend);
+                    const newMessage = await Message.create({
+                        chatId: chatId,
+                        createdBy: senderId,
+                        content: newMessageSend
+                    })
 
-        socket.on('message', async(data) => {
-            try {
-                console.log('nhan ne 11111111', data);
-                const { chatId, senderId, newMessageSend } = data
-                console.log(chatId, senderId, newMessageSend);
-                const newMessage = await Message.create({
-                    chatId: chatId,
-                    createdBy: senderId,
-                    content: newMessageSend
-                })
-
-                const datasend = { chatId: chatId, createdBy: senderId, content: newMessageSend, createdAt: newMessage.createdAt };
-                //emit the message to the receiver
-                // socket.to(chatId).emit('receiveMessage', newMessage)
-                // const user = activeUsers.find((user) => user.userId == receiverId);
-                console.log("Data send: ", datasend)
-                if (user) {
-                    io.to(user.chatIdJoin).emit("receiveMessage", datasend);
+                    const datasend = { chatId: chatId, createdBy: senderId, content: newMessageSend, createdAt: newMessage.createdAt };
+                    //emit the message to the receiver
+                    // socket.to(chatId).emit('receiveMessage', newMessage)
+                    // const user = activeUsers.find((user) => user.userId == receiverId);
+                    console.log("Data send: ", datasend)
+                    if (user) {
+                        console.log('gui may lan v');
+                        io.to(user.chatIdJoin).emit("receiveMessage", datasend);
+                    }
+                } catch (error) {
+                    console.log(error)
+                    console.log('Error handling the messages')
                 }
-            } catch (error) {
-                console.log(error)
-                console.log('Error handling the messages')
-            }
-
-        })
+            })
     })
     socket.on('disconnect', () => {
         const user = removeUser(socket.id);
@@ -107,6 +109,7 @@ app.post('/messages', async(req, res) => {
 app.post('/messages-group', async(req, res) => {
     try {
         const { chatId } = req.body
+        console.log(chatId);
             // const messages = await Message.find({
             //     chatId: chatId
             // })

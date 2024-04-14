@@ -99,7 +99,7 @@ function RenderViewChatGroup(res) {
   //Socket
   const route = useRoute();
 
-  const [socket, setSocket] = useState(io.connect('http://172.20.10.4:2090'));
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.129:2090'));
 
   const onSubmitNewSendMessage = async (senderId, receiverId) => {
     socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
@@ -134,7 +134,7 @@ function RenderViewChatGroup(res) {
 
       const token = await AsyncStorage.getItem('token');
       const response = await axios.post(
-        'http://172.20.10.4:2080/messages-group',
+        'http://192.168.1.129:2080/messages-group',
         {
           senderId: user.userName,
           chatId: dataChat.objectChat._id,
@@ -157,11 +157,10 @@ function RenderViewChatGroup(res) {
       console.log('Connected to the Socket.IO server');
     });
     const dataJoin = {
-      chatIdJoin: chatId, 
-      userNameJoin: myUserNameOne
-    }
+      chatIdJoin: chatId,
+      userNameJoin: myUserNameOne,
+    };
     socket.emit('join_room', dataJoin);
-
   }, []);
 
   useEffect(() => {
