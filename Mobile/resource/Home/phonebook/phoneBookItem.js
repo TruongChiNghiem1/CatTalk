@@ -25,7 +25,7 @@ import {io} from 'socket.io-client';
 // import { DemoBlock } from './demo'
 
 const PhoneBookItem = () => {
-  const [socket, setSocket] = useState(io.connect('http://172.20.10.4:2090'));
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.129:2090'));
 
   useEffect(() => {
     socket.on('connection', () => {

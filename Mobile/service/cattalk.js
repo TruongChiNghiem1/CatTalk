@@ -1,5 +1,5 @@
 import {io} from 'socket.io-client';
 
-export const url = 'http://172.20.10.4:2080';
+export const url = 'http://192.168.1.129:2080';
 
-// export const socket = io.connect('http://172.20.10.4:2090/cattalk');
+// export const socket = io.connect('http://192.168.1.129:2090/cattalk');

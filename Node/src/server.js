@@ -134,6 +134,7 @@ app.post('/messages-group', async (req, res) => {
                 }
             }
         ])
+        console.log(messages);
         res.status(200).json({ messages: messages })
     } catch (error) {
         console.log(error);
