@@ -7,16 +7,16 @@ import { useCookies } from 'react-cookie';
 import { AppContext } from '../../context/AppContext';
 import CreateChat from './CreateChat';
 import getHumanReadableDate from '../../helper/getHumanReadableDate';
-import { useSearchParams } from "react-router-dom";
 import { MuteIcon } from '../../helper/CustomIcon';
+import { useNavigate } from 'react-router-dom';
 const ChatList = (props) => {
     const {user} = useContext(AppContext);
-    const [loading, setLoading] = useState(true);
-    const [data, setData] = useState([]);
-    const [cookies, setCookies] = useCookies('loginToken');
+    const [loading, setLoading] = useState(props.loading);
+    const [data, setData] = useState(props.chats);
+    
     const [hasMore, setHasMore] = useState(false);
     const [createChat, setCreateChat] = useState(false)
-    let [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
 
     const items = [
         {
@@ -36,46 +36,24 @@ const ChatList = (props) => {
         },
     ];
 
-    const handleGetAllChat = async () => {
-        try {
-            const res = await getAllChat(cookies.loginToken)
-            if(res.data.status === 200){
-                setData(res.data.chat)
-            }
-            setLoading(false)
-        } catch (error) {
-            console.log('Error: ', error);
-        }
-    }
-
-    useEffect(() => {
-        handleGetAllChat()
-    }, [])
+    useEffect(()=> {
+        setLoading(props.loading)
+        setData(props.chats)
+    }, [props.loading])
 
     const toggleOpenCreate = () => {
         setCreateChat(!createChat)
     }
 
-    const handleSwitchChat = ( senderId, reciverId) => {
-        data.map(chat => {
-            if(chat.chatType === 'single'){
-                if(chat.member[0].userName == reciverId){
-                    props.setChat(chat.objectChat)
-                    props.setMember(chat.member)
-                    props.setUser(chat.member[0])
-                }   
-            }else{
-                  if(chat.member[0].userName == reciverId){
-                    props.setChat(chat.objectChat)
-                    props.setMember(chat.member)
-                    props.setUser(chat.member[0])
-                }   
+    const handleSwitchChat = (chatId) => {
+        data.map(item => {
+            if(item.objectChat._id === chatId) {
+                props.setMember(item.member)
+                props.setChat(item.objectChat)
             }
-            
         })
-        props.switchChat(senderId, reciverId)
+        navigate(`/redirect/${chatId}`)
     }
-
 
     return (
     <Col
@@ -132,7 +110,7 @@ const ChatList = (props) => {
                      {item.objectChat.chatType === 'single' ? (
                          <List.Item 
                             className='chat_list_item'
-                            onClick={() => handleSwitchChat(user.userName, item.member[0].userName)}
+                            onClick={() => handleSwitchChat(item.objectChat._id)}
                             >
                                 <List.Item.Meta
                                     avatar={<Avatar src={item.member[0].avatar} size='large'/>}
@@ -163,7 +141,7 @@ const ChatList = (props) => {
                      : (
                          <List.Item 
                             className='chat_list_item'
-                            onClick={() => handleSwitchChat(user.userName, item.member[0].userName)}
+                            onClick={() => handleSwitchChat(item.objectChat._id)}
                             >
                                 <List.Item.Meta
                                     avatar={<Avatar src={item.objectChat.avatar} size='large'/>}

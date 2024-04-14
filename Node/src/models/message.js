@@ -5,9 +5,6 @@ const chatSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
-    userName: {
-        type: String,
-    },
     /**
      * 0. Hệ thống
      * 1. tin nhắn text
@@ -30,13 +27,11 @@ const chatSchema = new mongoose.Schema({
     createdBy: {
         type: String,
     }
-},
-    {
-        timestamps: true,
-        versionKey: false,
-    }
-);
+}, {
+    timestamps: true,
+    versionKey: false,
+});
 
 const Message = mongoose.model("Message", chatSchema);
 
-module.exports = Message; 
+module.exports = Message;
