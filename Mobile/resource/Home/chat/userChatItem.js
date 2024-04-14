@@ -19,7 +19,9 @@ import {DrawerActions, useNavigation} from '@react-navigation/native';
 import {io} from 'socket.io-client';
 
 function UserChatItem(props) {
-  const [socket, setSocket] = useState(io.connect('http://192.168.1.170:2090'));
+  const [socket, setSocket] = useState(
+    io.connect('http://172.28.106.167:2090'),
+  );
 
   useEffect(() => {
     socket.on('connection', () => {
@@ -50,12 +52,26 @@ function UserChatItem(props) {
     }
   };
 
+  const TruncatedText = ({text}) => {
+    if (text.length <= 80) {
+      return <Text>{text}</Text>; // Trả về văn bản gốc nếu đủ ngắn
+    }
+
+    const truncatedText = text.substring(0, 80) + '...'; // Cắt đoạn văn bản khi quá dài
+
+    return <Text>{truncatedText}</Text>;
+  };
+
   useEffect(() => {
     fetchDataChatItem();
   }, []);
   return (
     <TouchableOpacity
-      onPress={() => navigation.navigate('RenderViewChat', {dataChat: data})}>
+      onPress={() => {
+        data.objectChat.chatType === 'single'
+          ? navigation.navigate('RenderViewChat', {dataChat: data})
+          : navigation.navigate('RenderViewChatGroup', {dataChat: data});
+      }}>
       <View
         style={{
           margin: 15,
@@ -92,7 +108,7 @@ function UserChatItem(props) {
                 fontSize: fontSize.h4,
                 width: 310,
               }}>
-              {newMessage}
+              <TruncatedText text={newMessage} />
             </Text>
           </View>
         </View>

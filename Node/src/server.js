@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const dotenv = require('dotenv')
-const { connect } = require('mongoose')
+const { connect, default: mongoose } = require('mongoose')
 const cors = require('cors')
 const router = require('./routers')
 // const routerSocket = require('./routers/socket')
@@ -93,6 +93,42 @@ app.post('/messages', async (req, res) => {
             ],
         })
 
+        res.status(200).json({ messages: messages })
+    } catch (error) {
+        console.log(error);
+        res.status(200).json({ error: error })
+    }
+})
+
+app.post('/messages-group', async (req, res) => {
+    try {
+        const { senderId, chatId } = req.body
+        // const messages = await Message.find({
+        //     chatId: chatId
+        // })
+        const chatIdObject = new mongoose.Types.ObjectId(chatId);
+        const messages = await Message.aggregate([
+            {$match: {chatId: chatIdObject}},
+            {$lookup: {
+                from: 'users',
+                localField: 'createdBy',
+                foreignField: 'userName',
+                as: 'user'
+            }},
+            {
+                $project: {
+                    chatId: 1,
+                    createdBy: 1,
+                    typeMessage: 1,
+                    content: 1,
+                    createdAt: 1,
+                    firstName: { $arrayElemAt: ['$user.firstName', 0]},
+                    lastName: { $arrayElemAt: ['$user.lastName', 0]},
+                    avatar: { $arrayElemAt: ['$user.avatar', 0]},
+                }
+            }
+        ])
+        console.log('dsvsd',messages);
         res.status(200).json({ messages: messages })
     } catch (error) {
         console.log(error);

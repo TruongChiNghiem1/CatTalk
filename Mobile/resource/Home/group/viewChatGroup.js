@@ -25,9 +25,9 @@ import BasicTabBarExample from '../layout/footer';
 import {useRoute, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getMessage} from '../../../service/chat';
-import RenderMyViewChatItem from './myViewChatItem';
-import RenderSystemViewChatItem from './systemViewChatItem';
-import RenderViewChatItem from './userViewChatItem';
+import RenderMyViewChatItem from '../chat/myViewChatItem';
+import RenderSystemViewChatItem from '../chat/systemViewChatItem';
+import RenderViewChatGroupItem from '../chat/userViewChatItem';
 import {socket} from '../../../service/cattalk';
 import {io} from 'socket.io-client';
 import axios from 'axios';
@@ -81,10 +81,9 @@ const showActionSheet = () => {
   );
 };
 
-function RenderViewChat(res) {
+function RenderViewChatGroup(res) {
   const navigation = useNavigation();
   var {dataChat} = res.route.params;
-
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [myUserName, setMyUserName] = useState('');
@@ -100,7 +99,9 @@ function RenderViewChat(res) {
   //Socket
   const route = useRoute();
 
-  const [socket, setSocket] = useState(io.connect('http://192.168.1.170:2090'));
+  const [socket, setSocket] = useState(
+    io.connect('http://172.28.106.167:2090'),
+  );
 
   socket.emit('join_room', {chatId: chatId, userName: myUserName});
 
@@ -130,25 +131,23 @@ function RenderViewChat(res) {
       const user = JSON.parse(userStorage);
       setMyUserName(user.userName);
 
-      setUserNameChat(dataChat.userChat.userName);
-      setAvatar(dataChat.userChat.avatar);
-      setNameUserChat(
-        dataChat.userChat.firstName + ' ' + dataChat.userChat.lastName,
-      );
+      setUserNameChat(dataChat.objectChat.userName);
+      setAvatar(dataChat.objectChat.avatar);
+      setNameUserChat(dataChat.objectChat.groupName);
       setChatId(dataChat.objectChat._id);
 
       const token = await AsyncStorage.getItem('token');
       const response = await axios.post(
-        'http://192.168.1.170:2080/messages',
+        'http://172.28.106.167:2080/messages-group',
         {
           senderId: user.userName,
-          receiverId: dataChat.userChat.userName,
+          chatId: dataChat.objectChat._id,
         },
         {
           headers: {authorization: `Bearer ${token}`},
         },
       );
-      // console.log(response.data.messages);
+      console.log('cdscsd' ,response.data.messages.users);
       setData(response.data.messages);
       setTimeout(() => {
         scrollToBottom();
@@ -276,7 +275,7 @@ function RenderViewChat(res) {
                     data={messageItem}
                   />
                 ) : (
-                  <RenderViewChatItem
+                  <RenderViewChatGroupItem
                     key={`view_${messageItem._id}_${index}`}
                     data={messageItem}
                   />
@@ -376,4 +375,4 @@ function RenderViewChat(res) {
   );
 }
 
-export default RenderViewChat;
+export default RenderViewChatGroup;
