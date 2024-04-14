@@ -64,7 +64,6 @@ function CreateGroup(res) {
         nameGroup: nameGroup,
         userNameAdd : selectUserGroup
       }
-      console.log(dataAddGroup);
       const createGroup = await createThisGroup(token, dataAddGroup);
       setMessage(createGroup.data.message);
       setModalVisible(true)

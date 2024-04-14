@@ -25,6 +25,7 @@ import {getAllChat} from '../../../service/chat';
 const ChatItem = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [myUserName, setMyUserName] = useState('');
   const [avatar, setAvatar] = useState(
     'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
   );
@@ -44,6 +45,7 @@ const ChatItem = () => {
       const userStorage = await AsyncStorage.getItem('user');
       const user = JSON.parse(userStorage);
       setAvatar(user.avatar);
+      setMyUserName(user.userName)
     } catch (e) {
       console.log(e);
     }
@@ -94,7 +96,7 @@ const ChatItem = () => {
             {data && data.length ? (
               <>
                 {data.map(item => (
-                  <UserChatItem key={item.objectChat._id} data={item} />
+                  <UserChatItem key={item.objectChat._id} data={item} myUserName={myUserName} />
                 ))}
               </>
             ) : (

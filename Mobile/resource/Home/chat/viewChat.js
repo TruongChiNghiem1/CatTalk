@@ -100,7 +100,7 @@ function RenderViewChat(res) {
   //Socket
   const route = useRoute();
 
-  const [socket, setSocket] = useState(io.connect('http://192.168.1.170:2090'));
+  const [socket, setSocket] = useState(io.connect('http://172.20.10.4:2090'));
 
   socket.emit('join_room', {chatId: chatId, userName: myUserName});
 
@@ -130,19 +130,19 @@ function RenderViewChat(res) {
       const user = JSON.parse(userStorage);
       setMyUserName(user.userName);
 
-      setUserNameChat(dataChat.userChat.userName);
-      setAvatar(dataChat.userChat.avatar);
+      setUserNameChat(dataChat.member[0].userName);
+      setAvatar(dataChat.member[0].avatar);
       setNameUserChat(
-        dataChat.userChat.firstName + ' ' + dataChat.userChat.lastName,
+        dataChat.member[0].firstName + ' ' + dataChat.member[0].lastName,
       );
       setChatId(dataChat.objectChat._id);
 
       const token = await AsyncStorage.getItem('token');
       const response = await axios.post(
-        'http://192.168.1.170:2080/messages',
+        'http://172.20.10.4:2080/messages',
         {
           senderId: user.userName,
-          receiverId: dataChat.userChat.userName,
+          receiverId: dataChat.member[0].userName,
         },
         {
           headers: {authorization: `Bearer ${token}`},
