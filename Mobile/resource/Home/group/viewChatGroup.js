@@ -25,9 +25,9 @@ import BasicTabBarExample from '../layout/footer';
 import {useRoute, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getMessage} from '../../../service/chat';
-import RenderMyViewChatItem from './myViewChatItem';
-import RenderSystemViewChatItem from './systemViewChatItem';
-import RenderViewChatItem from './userViewChatItem';
+import RenderMyViewChatItem from '../chat/myViewChatItem';
+import RenderSystemViewChatItem from '../chat/systemViewChatItem';
+import RenderViewChatGroupItem from '../chat/userViewChatItem';
 import {socket} from '../../../service/cattalk';
 import {io} from 'socket.io-client';
 import axios from 'axios';
@@ -81,13 +81,12 @@ const showActionSheet = () => {
   );
 };
 
-function RenderViewChat(res) {
+function RenderViewChatGroup(res) {
   const navigation = useNavigation();
-  var {dataChat} = res.route.params;
-
+  var {dataChat, myUserNameOne} = res.route.params;
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
-  const [myUserName, setMyUserName] = useState('');
+  const [myUserName, setMyUserName] = useState(myUserNameOne);
   const [userNameChat, setUserNameChat] = useState('');
   const [newMessageSend, setNewMessageSend] = useState('');
   const [nameUserChat, setNameUserChat] = useState('');
@@ -100,9 +99,7 @@ function RenderViewChat(res) {
   //Socket
   const route = useRoute();
 
-  const [socket, setSocket] = useState(io.connect('http://192.168.1.170:2090'));
-
-  socket.emit('join_room', {chatId: chatId, userName: myUserName});
+  const [socket, setSocket] = useState(io.connect('http://172.20.10.4:2090'));
 
   const onSubmitNewSendMessage = async (senderId, receiverId) => {
     socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
@@ -130,25 +127,22 @@ function RenderViewChat(res) {
       const user = JSON.parse(userStorage);
       setMyUserName(user.userName);
 
-      setUserNameChat(dataChat.userChat.userName);
-      setAvatar(dataChat.userChat.avatar);
-      setNameUserChat(
-        dataChat.userChat.firstName + ' ' + dataChat.userChat.lastName,
-      );
+      setUserNameChat(dataChat.objectChat.userName);
+      setAvatar(dataChat.objectChat.avatar);
+      setNameUserChat(dataChat.objectChat.groupName);
       setChatId(dataChat.objectChat._id);
 
       const token = await AsyncStorage.getItem('token');
       const response = await axios.post(
-        'http://192.168.1.170:2080/messages',
+        'http://172.20.10.4:2080/messages-group',
         {
           senderId: user.userName,
-          receiverId: dataChat.userChat.userName,
+          chatId: dataChat.objectChat._id,
         },
         {
           headers: {authorization: `Bearer ${token}`},
         },
       );
-      // console.log(response.data.messages);
       setData(response.data.messages);
       setTimeout(() => {
         scrollToBottom();
@@ -162,6 +156,12 @@ function RenderViewChat(res) {
     socket.on('connection', () => {
       console.log('Connected to the Socket.IO server');
     });
+    const dataJoin = {
+      chatIdJoin: chatId, 
+      userNameJoin: myUserNameOne
+    }
+    socket.emit('join_room', dataJoin);
+
   }, []);
 
   useEffect(() => {
@@ -276,7 +276,7 @@ function RenderViewChat(res) {
                     data={messageItem}
                   />
                 ) : (
-                  <RenderViewChatItem
+                  <RenderViewChatGroupItem
                     key={`view_${messageItem._id}_${index}`}
                     data={messageItem}
                   />
@@ -376,4 +376,4 @@ function RenderViewChat(res) {
   );
 }
 
-export default RenderViewChat;
+export default RenderViewChatGroup;

@@ -64,7 +64,6 @@ const getAllChat = async (req, res) => {
             }
         }
         chats.sort((createdAtA, createdAtB) => createdAtB.createdAtMessage - createdAtA.createdAtMessage)
-        console.log(chats);
         if (chats) {
             return res.json({
                 status: 200,
