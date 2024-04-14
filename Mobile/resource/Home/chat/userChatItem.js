@@ -19,9 +19,7 @@ import {DrawerActions, useNavigation} from '@react-navigation/native';
 import {io} from 'socket.io-client';
 
 function UserChatItem(props) {
-  const [socket, setSocket] = useState(
-    io.connect('http://172.28.106.167:2090'),
-  );
+  const [socket, setSocket] = useState(io.connect('http://172.20.10.4:2090'));
 
   useEffect(() => {
     socket.on('connection', () => {
@@ -29,7 +27,7 @@ function UserChatItem(props) {
     });
   }, []);
 
-  var {data} = props;
+  var {data, myUserName} = props;
   const navigation = useNavigation();
   const [avatarChat, setAvatarChat] = useState(
     'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
@@ -70,7 +68,7 @@ function UserChatItem(props) {
       onPress={() => {
         data.objectChat.chatType === 'single'
           ? navigation.navigate('RenderViewChat', {dataChat: data})
-          : navigation.navigate('RenderViewChatGroup', {dataChat: data});
+          : navigation.navigate('RenderViewChatGroup', {dataChat: data, myUserNameOne: myUserName});
       }}>
       <View
         style={{

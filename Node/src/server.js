@@ -12,6 +12,7 @@ const PORT_SOCKET = process.env.PORT_SOCKET
 const URI_DB = process.env.URI_DB
 const Message = require('./models/message')
 const { Server } = require("socket.io");
+const { addUser, removeUser } = require("./models/userAddGroup");
 connect(URI_DB)
 
 app.use(cors({ credentials: true }))
@@ -38,44 +39,49 @@ const io = new Server(http, {
 })
 let activeUsers = [];
 io.on('connection', (socket) => {
-    socket.on('join_room', (data) => {
-        // socket.join(data)
-        if (data.userId && !activeUsers.some((user) => user.userId === data.userName && user.chatId !== data.chatId)) {
-            activeUsers.push({ chatId: data.chatId, userId: data.userName, socketId: socket.id });
-            console.log("New User Connected", activeUsers);
-        }
-    })
+    socket.on('join_room', ({chatIdJoin, userNameJoin}) => {
+        const { user, error } = addUser({ id: socket.id,chatIdJoin: chatIdJoin ,userNameJoin: userNameJoin });
+        console.log(user);
+        socket.join(user.chatIdJoin)
+        console.log("New User Connected", user);
+        // if (data.userId && !activeUsers.some((user) => user.userId === data.userName && user.chatId !== data.chatId)) {
+        //     activeUsers.push({ chatId: data.chatId, userId: data.userName, socketId: socket.id });
+            
+        // }
 
-    socket.on('message', async (data) => {
-        try {
-            const { chatId, senderId, receiverId, newMessageSend } = data
-            console.log(chatId, senderId, receiverId, newMessageSend);
-            const newMessage = await Message.create({
-                chatId: chatId,
-                createdBy: senderId,
-                userName: receiverId,
-                content: newMessageSend
-            })
+        socket.on('message', async (data) => {
+            try {
+                const { chatId, senderId, receiverId, newMessageSend } = data
+                console.log(chatId, senderId, receiverId, newMessageSend);
+                const newMessage = await Message.create({
+                    chatId: chatId,
+                    createdBy: senderId,
+                    userName: receiverId,
+                    content: newMessageSend
+                })
 
-            const datasend = { chatId: chatId, createdBy: senderId, userName: receiverId, content: newMessageSend, createdAt: newMessage.createdAt };
-            //emit the message to the receiver
-            // socket.to(chatId).emit('receiveMessage', newMessage)
-            const user = activeUsers.find((user) => user.userId == receiverId);
-            console.log("Sending from socket to :", receiverId)
-            console.log("Data: ", datasend)
-            console.log('aaaaaa', activeUsers, receiverId);
-            if (user) {
-                io.to(user.socketId).emit("receiveMessage", datasend);
+                const datasend = { chatId: chatId, createdBy: senderId, userName: receiverId, content: newMessageSend, createdAt: newMessage.createdAt };
+                //emit the message to the receiver
+                // socket.to(chatId).emit('receiveMessage', newMessage)
+                // const user = activeUsers.find((user) => user.userId == receiverId);
+                console.log("Data send: ", datasend)
+                if (user) {
+                    io.to(user.chatIdJoin).emit("receiveMessage", datasend);
+                }
+            } catch (error) {
+                console.log(error)
+                console.log('Error handling the messages')
             }
-        } catch (error) {
-            console.log(error)
-            console.log('Error handling the messages')
-        }
-        socket.on('disconnect', () => {
-            activeUsers = activeUsers.filter((user) => user.socketId !== socket.id);
-            console.log("User Disconnected", activeUsers);
+            
         })
     })
+    socket.on('disconnect', () => {
+        const user = removeUser(socket.id);
+        console.log("User Disconnected ",user);
+        // activeUsers = activeUsers.filter((user) => user.socketId !== socket.id);
+        // console.log("User Disconnected", activeUsers);
+    })
+
     console.log(activeUsers);
 })
 
@@ -128,7 +134,6 @@ app.post('/messages-group', async (req, res) => {
                 }
             }
         ])
-        console.log('dsvsd',messages);
         res.status(200).json({ messages: messages })
     } catch (error) {
         console.log(error);

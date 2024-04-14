@@ -100,9 +100,7 @@ function RenderViewChat(res) {
   //Socket
   const route = useRoute();
 
-  const [socket, setSocket] = useState(
-    io.connect('http://172.28.106.167:2090'),
-  );
+  const [socket, setSocket] = useState(io.connect('http://172.20.10.4:2090'));
 
   socket.emit('join_room', {chatId: chatId, userName: myUserName});
 
@@ -141,7 +139,7 @@ function RenderViewChat(res) {
 
       const token = await AsyncStorage.getItem('token');
       const response = await axios.post(
-        'http://172.28.106.167:2080/messages',
+        'http://172.20.10.4:2080/messages',
         {
           senderId: user.userName,
           receiverId: dataChat.member[0].userName,

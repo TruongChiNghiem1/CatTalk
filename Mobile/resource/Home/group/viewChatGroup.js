@@ -83,10 +83,10 @@ const showActionSheet = () => {
 
 function RenderViewChatGroup(res) {
   const navigation = useNavigation();
-  var {dataChat} = res.route.params;
+  var {dataChat, myUserNameOne} = res.route.params;
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
-  const [myUserName, setMyUserName] = useState('');
+  const [myUserName, setMyUserName] = useState(myUserNameOne);
   const [userNameChat, setUserNameChat] = useState('');
   const [newMessageSend, setNewMessageSend] = useState('');
   const [nameUserChat, setNameUserChat] = useState('');
@@ -99,11 +99,7 @@ function RenderViewChatGroup(res) {
   //Socket
   const route = useRoute();
 
-  const [socket, setSocket] = useState(
-    io.connect('http://172.28.106.167:2090'),
-  );
-
-  socket.emit('join_room', {chatId: chatId, userName: myUserName});
+  const [socket, setSocket] = useState(io.connect('http://172.20.10.4:2090'));
 
   const onSubmitNewSendMessage = async (senderId, receiverId) => {
     socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
@@ -138,7 +134,7 @@ function RenderViewChatGroup(res) {
 
       const token = await AsyncStorage.getItem('token');
       const response = await axios.post(
-        'http://172.28.106.167:2080/messages-group',
+        'http://172.20.10.4:2080/messages-group',
         {
           senderId: user.userName,
           chatId: dataChat.objectChat._id,
@@ -147,7 +143,6 @@ function RenderViewChatGroup(res) {
           headers: {authorization: `Bearer ${token}`},
         },
       );
-      console.log('cdscsd' ,response.data.messages.users);
       setData(response.data.messages);
       setTimeout(() => {
         scrollToBottom();
@@ -161,6 +156,12 @@ function RenderViewChatGroup(res) {
     socket.on('connection', () => {
       console.log('Connected to the Socket.IO server');
     });
+    const dataJoin = {
+      chatIdJoin: chatId, 
+      userNameJoin: myUserNameOne
+    }
+    socket.emit('join_room', dataJoin);
+
   }, []);
 
   useEffect(() => {
