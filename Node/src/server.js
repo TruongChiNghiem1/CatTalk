@@ -56,7 +56,7 @@ io.on('connection', (socket) => {
                 const newMessage = await Message.create({
                     chatId: chatId,
                     createdBy: senderId,
-                    userName: receiverId,
+                    // userName: receiverId,
                     content: newMessageSend
                 })
 
