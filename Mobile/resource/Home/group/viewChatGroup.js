@@ -31,6 +31,7 @@ import RenderViewChatGroupItem from '../chat/userViewChatItem';
 import {socket} from '../../../service/cattalk';
 import {io} from 'socket.io-client';
 import axios from 'axios';
+import {faUserPlus} from '@fortawesome/free-solid-svg-icons/faUserPlus';
 
 import {
   Button,
@@ -51,36 +52,6 @@ this.state = {
   text: '',
 };
 
-const showActionSheet = () => {
-  const BUTTONS = [
-    <View style={{width: 400}}>
-      <List.Item extra={<Switch />}>Mute message</List.Item>
-    </View>,
-    <Toch style={{}}>
-      <View
-        style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-        <FontAwesomeIcon
-          style={{color: 'red', marginRight: 8}}
-          icon={faTrashCan}
-        />
-        <Text style={{color: 'red', fontSize: fontSize.h3}}>Delete chat </Text>
-      </View>
-    </Toch>,
-  ];
-  ActionSheet.showActionSheetWithOptions(
-    {
-      title: 'Option',
-      message: 'Description',
-      options: BUTTONS,
-      cancelButtonIndex: 3,
-      // destructiveButtonIndex: 3,
-    },
-    // (buttonIndex: any) => {
-    // this.setState({clicked: BUTTONS[buttonIndex]});
-    // },
-  );
-};
-
 function RenderViewChatGroup(res) {
   console.log('Chat group');
   const navigation = useNavigation();
@@ -94,13 +65,14 @@ function RenderViewChatGroup(res) {
   const [chatId, setChatId] = useState(dataChat.objectChat._id);
   const [allChatMessage, setAllChatMessage] = useState('');
   const scrollViewRef = useRef();
+
   const [avatar, setAvatar] = useState(
     'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
   );
   //Socket
   const route = useRoute();
 
-  const [socket, setSocket] = useState(io.connect('http://192.168.1.129:2090'));
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.20:2090'));
 
   const onSubmitNewSendMessage = async (senderId, receiverId) => {
     socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
@@ -135,7 +107,7 @@ function RenderViewChatGroup(res) {
 
       const token = await AsyncStorage.getItem('token');
       const response = await axios.post(
-        'http://192.168.1.129:2080/messages-group',
+        'http://192.168.1.20:2080/messages-group',
         {
           senderId: user.userName,
           chatId: dataChat.objectChat._id,
@@ -178,6 +150,128 @@ function RenderViewChatGroup(res) {
   useEffect(() => {
     fetchMessages();
   }, []);
+
+  const showActionSheet = () => {
+    var BUTTONS = [
+      <View style={{width: 400}}>
+        <List.Item extra={<Switch />}>Mute message</List.Item>
+      </View>,
+    ];
+    dataChat.member.map(userItem => {
+      BUTTONS.push(
+        <View
+          style={{
+            width: 400,
+            height: 200,
+          }}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('RenderProfile', {data: userItem})
+            }
+            style={
+              {
+                // margin: 15,
+              }
+            }>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+              <View
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-around',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <Image
+                  source={{uri: avatar}}
+                  style={{
+                    marginRight: 15,
+                    width: 50,
+                    height: 50,
+                    borderRadius: 100,
+                  }}></Image>
+                <Text
+                  style={{
+                    color: 'black',
+                    fontWeight: 'bold',
+                    fontSize: fontSize.h3,
+                  }}>
+                  {userItem.firstName + ' ' + userItem.lastName}
+                </Text>
+              </View>
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  width: 50,
+                }}>
+                {1 ? (
+                  <TouchableOpacity
+                    onPress={() => pressAddFriend(userItem.userName)}>
+                    <View
+                      style={{
+                        backgroundColor: 'white',
+                        width: 37,
+                        marginTop: 7,
+                        height: 37,
+                        borderRadius: 100,
+                        marginLeft: 8,
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}>
+                      <FontAwesomeIcon
+                        icon={faUserPlus}
+                        color={colors.colorBgButton}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                ) : (
+                  <></>
+                )}
+              </View>
+            </View>
+          </TouchableOpacity>
+        </View>,
+      );
+    });
+
+    BUTTONS.push(
+      <TouchableOpacity style={{}}>
+        <View
+          style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+          <FontAwesomeIcon
+            style={{color: 'red', marginRight: 8}}
+            icon={faTrashCan}
+          />
+          <Text style={{color: 'red', fontSize: fontSize.h3}}>
+            Delete chat{' '}
+          </Text>
+        </View>
+      </TouchableOpacity>,
+    );
+
+    ActionSheet.showActionSheetWithOptions(
+      {
+        title: 'Option',
+        message: 'Description',
+        options: BUTTONS,
+        cancelButtonIndex: 3,
+        // destructiveButtonIndex: 3,
+      },
+      // (buttonIndex: any) => {
+      // this.setState({clicked: BUTTONS[buttonIndex]});
+      // },
+    );
+  };
 
   return (
     <View
@@ -252,7 +346,9 @@ function RenderViewChatGroup(res) {
                   width: 15,
                   height: 23,
                 }}
-                onPress={showActionSheet}>
+                onPress={() =>
+                  navigation.navigate('RenderMoreChatGroup', {data: dataChat})
+                }>
                 <FontAwesomeIcon
                   style={{marginHorizontal: 10}}
                   color={colors.primary}
@@ -278,8 +374,10 @@ function RenderViewChatGroup(res) {
                 ) : (
                   <RenderViewChatGroupItem
                     key={`view_${messageItem._id}_${index}`}
-                    data={messageItem} 
-                    profileUser={dataChat.member.filter((mem) => mem.userName === messageItem.createdBy)}
+                    data={messageItem}
+                    profileUser={dataChat.member.filter(
+                      mem => mem.userName === messageItem.createdBy,
+                    )}
                     typeChat={'multi'}
                   />
                 ),

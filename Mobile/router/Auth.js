@@ -13,6 +13,8 @@ import CreateGroup from '../resource/Home/group/createGroup';
 import RenderProfile from '../resource/Home/profile/profile';
 import RenderMyProfile from '../resource/Home/profile/myProfile';
 import RenderViewChatGroup from '../resource/Home/group/viewChatGroup';
+import RenderMoreChatGroup from '../resource/Home/group/moreChatGroup';
+import CreateMemberThisGroup from '../resource/Home/group/createMemberThisGroup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
@@ -73,6 +75,8 @@ const App = () => {
       <Stack.Screen name="CreateGroup" component={CreateGroup} />
       <Stack.Screen name="Auth" component={Auth} />
       <Stack.Screen name="RenderViewChatGroup" component={RenderViewChatGroup} />
+      <Stack.Screen name="RenderMoreChatGroup" component={RenderMoreChatGroup} />
+      <Stack.Screen name="CreateMemberThisGroup" component={CreateMemberThisGroup} />
     </Stack.Navigator>
   );
 };

@@ -42,7 +42,6 @@ io.on('connection', (socket) => {
     socket.on('join_room', ({chatIdJoin, userNameJoin}) => {
         const { user, error } = addUser({ id: socket.id,chatIdJoin: chatIdJoin ,userNameJoin: userNameJoin });
         console.log(user);
-        socket.join(user.chatIdJoin)
         console.log("New User Connected", user);
         // if (data.userId && !activeUsers.some((user) => user.userId === data.userName && user.chatId !== data.chatId)) {
         //     activeUsers.push({ chatId: data.chatId, userId: data.userName, socketId: socket.id });
@@ -64,7 +63,6 @@ io.on('connection', (socket) => {
                 //emit the message to the receiver
                 // socket.to(chatId).emit('receiveMessage', newMessage)
                 // const user = activeUsers.find((user) => user.userId == receiverId);
-                console.log("Data send: ", datasend)
                 if (user) {
                     io.to(user.chatIdJoin).emit("receiveMessage", datasend);
                 }
@@ -134,7 +132,6 @@ app.post('/messages-group', async (req, res) => {
                 }
             }
         ])
-        console.log(messages);
         res.status(200).json({ messages: messages })
     } catch (error) {
         console.log(error);

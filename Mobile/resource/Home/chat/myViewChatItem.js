@@ -24,6 +24,7 @@ import BasicTabBarExample from '../layout/footer';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getMessage} from '../../../service/chat';
+import moment from 'moment';
 
 import {
   Button,
@@ -84,7 +85,7 @@ function RenderMyViewChatItem(res) {
                 marginTop: 5,
                 fontSize: fontSize.h5,
               }}>
-              16:04
+              {moment(data.createdAt).format('HH:mm')}
             </Text>
           </View>
         </View>

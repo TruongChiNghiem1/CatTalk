@@ -19,7 +19,7 @@ import {DrawerActions, useNavigation} from '@react-navigation/native';
 import {io} from 'socket.io-client';
 
 function UserChatItem(props) {
-  const [socket, setSocket] = useState(io.connect('http://192.168.1.129:2090'));
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.20:2090'));
 
   useEffect(() => {
     socket.on('connection', () => {
@@ -68,9 +68,9 @@ function UserChatItem(props) {
       onPress={() => {
         data.objectChat.chatType === 'single'
           ? navigation.navigate('RenderViewChat', {
-            dataChat: data,
-            myUserNameOne: myUserName
-          })
+              dataChat: data,
+              myUserNameOne: myUserName,
+            })
           : navigation.navigate('RenderViewChatGroup', {
               dataChat: data,
               myUserNameOne: myUserName,

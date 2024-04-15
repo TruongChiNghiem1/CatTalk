@@ -58,6 +58,12 @@ export const addFriend = async (token, userNameAdd) => {
     });
 }
 
+export const getFriendAddGroup = async (token, search, chatId) => {
+    return await axios.get(`${url}/user/get-friend-add-group`,{ userNameAdd: search, chatId: chatId }, {
+        headers: { authorization: `Bearer ${token}`}
+    });
+}
+
 export const deleteFriend = async (token, userNameDelete) => {
     return await axios.post(`${url}/user/delete-friend`,{ userNameDelete: userNameDelete }, {
         headers: { authorization: `Bearer ${token}`}
