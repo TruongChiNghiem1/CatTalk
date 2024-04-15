@@ -129,29 +129,6 @@ function ViewFriendItem(props) {
             alignItems: 'center',
             width: 50,
           }}>
-            {!isFriendNow ?
-              <TouchableOpacity 
-                onPress={() => pressAddFriend(data.userName)}
-              >
-                  <View
-                      style={{
-                          backgroundColor: 'white',
-                          width: 37,
-                          marginTop: 7,
-                          height: 37,
-                          borderRadius: 100,
-                          marginLeft: 8,
-                          display: 'flex',
-                          flexDirection: 'row',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                      }}>
-                      <FontAwesomeIcon icon={faUserPlus} color={colors.colorBgButton} />
-                  </View>
-              </TouchableOpacity>
-              :
-              <></>
-            }
         </View>
       </View>
     </View>

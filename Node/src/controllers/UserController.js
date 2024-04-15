@@ -401,6 +401,7 @@ const uploadAvatar = async (req, res) => {
     }
 }
 
+
 const uploadBackground = async (req, res) => {
     try {
         const token = req.headers.authorization.split(' ')[1]
@@ -740,9 +741,16 @@ const createChat11 = async (username, userNameAdd) => {
     }
 }
 
-const getUser = async (username) => {
-    const user = await User.find({userName: username})
+const getUser = async (req, res) => {
+    const {username} = req.query
+    console.log(username);
+    const user = await User.findOne({userName: username})
+console.log(user);
     return user
+    return res.json({
+        status: 200,
+        user: user
+    })
 }
 
 const deleteFriend = async (req, res) => {
@@ -904,6 +912,71 @@ const changePassword = async (req, res) => {
         })
     }
 }
+
+
+const getFriendAddGroup = async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1]
+        const decoded = jwt.verify(token, SECRET_CODE)
+        const username = decoded.username
+
+        const { search, chatId } = req.query
+        const searchRegex = new RegExp(search, 'i')
+
+        const user = await User.findOne({ userName: username }) // Tìm người dùng dựa trên username của bạn
+        
+        if (!user) {
+            return res.json({
+                status: 500,
+                message: 'User does not exist!',
+            })
+        }
+
+        const friendUsernames = user.friends
+        const friends = await User.find(
+            {
+                userName: { $in: friendUsernames },
+                $or: [
+                    { userName: searchRegex },
+                    { firstName: searchRegex },
+                    { lastName: searchRegex },
+                    { email: searchRegex },
+                ]
+                
+            },
+            {
+                userName: 1,
+                friends: 1,
+                firstName: 1,
+                lastName: 1,
+                avatar: 1,
+                background: 1,
+            }
+        )
+
+        const userGroupChat = await Member.find({ chatId: chatId })
+
+        friends.forEach((userFriend) => {
+            const inGroup = userGroupChat.find((userGroup) => userGroup.userName === userFriend.userName)
+            if (inGroup){
+                userFriend.inThisGroup = 1
+            } else {
+                userFriend.inThisGroup = 0
+            }
+        })
+
+        return res.json({
+            status: 200,
+            data: friends,
+        })
+    } catch (error) {
+        console.log(error)
+        return res.json({
+            status: 500,
+            message: 'Opps, somthing went wrong!!!',
+        })
+    }
+}
 module.exports = {
     signUp,
     mailConfirm,
@@ -921,5 +994,7 @@ module.exports = {
     getMyUser,
     deleteFriend,
     checkAuth,
-    changePassword
+    changePassword,
+    getFriendAddGroup,
+    getUser
 }

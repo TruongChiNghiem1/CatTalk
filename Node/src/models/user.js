@@ -59,6 +59,9 @@ const userSchema = new mongoose.Schema({
     },
     isFriend: {
         type: Number,
+    },
+    inThisGroup: {
+        type: Number,
     }
 },
     {

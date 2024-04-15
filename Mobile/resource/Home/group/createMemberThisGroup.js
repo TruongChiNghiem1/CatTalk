@@ -19,7 +19,7 @@ import axios from 'axios';
 import {url} from '../../../service/cattalk';
 import ViewFriendItem from './viewFriendItem';
 import {getFriendAddGroup} from '../../../service/user';
-import {createThisGroup} from '../../../service/chat';
+import {createNewMemberGroup} from '../../../service/chat';
 import {faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons/faMagnifyingGlass';
 import {
   Checkbox,
@@ -29,23 +29,25 @@ import {
 
 // import { DemoBlock } from './demo'
 function CreateMemberThisGroup(res) {
+  var {dataCreate} = res.route.params;
   const navigation = useNavigation();
-  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [nameGroup, setNameGroup] = useState('');
   const [selectUserGroup, setSelectUserGroup] = useState([]);
+  const [data, setData] = useState([]);
   const CheckboxItem = Checkbox.CheckboxItem
   const [message, setMessage] = useState([]);
   const [token, setToken] = useState();
   const [modalVisible, setModalVisible] = useState(false);
-
+  const chatId = dataCreate.objectChat._id;
   // const [user, setUser] = useState('');
 
   const fetchData = async () => {
     setLoading(true);
     try {
       const tokenGet = await AsyncStorage.getItem('token');
+      
       const items = await getFriendAddGroup(tokenGet, search, chatId);
       setData(items.data.data);
       setToken(tokenGet);
@@ -61,10 +63,12 @@ function CreateMemberThisGroup(res) {
   const createThisGroupButton = async() => {
     try {
       var dataAddGroup = {
-        nameGroup: nameGroup,
+        chatId: chatId,
         userNameAdd : selectUserGroup
       }
-      const createGroup = await createThisGroup(token, dataAddGroup);
+      console.log(dataAddGroup);
+      const createGroup = await createNewMemberGroup(token, dataAddGroup);
+      console.log(createGroup);
       setMessage(createGroup.data.message);
       setModalVisible(true)
     } catch (error) {
@@ -235,15 +239,24 @@ function CreateMemberThisGroup(res) {
               <>
                 <List renderHeader="Chọn thành viên">
                   {data.map(item => (
+                    item.inThisGroup ? 
                     <CheckboxItem style={{ height: 80, }}
-                      onChange={(event) => {
-                        // this.setState({ checkboxItem1: event.target.checked })
-                        event.target.checked ?
-                        setSelectUserGroup([...selectUserGroup, item.userName]) :
-                        setSelectUserGroup(selectUserGroup.filter(usr =>  usr !== item.userName))
-                      }}>
+                      checked
+                      disabled
+                      >
                       <ViewFriendItem data={item} />
-                    </CheckboxItem>
+                    </CheckboxItem> 
+                    :
+                    <CheckboxItem style={{ height: 80, }}
+                    onChange={(event) => {
+                      // this.setState({ checkboxItem1: event.target.checked })
+                      event.target.checked ?
+                      setSelectUserGroup([...selectUserGroup, item.userName]) :
+                      setSelectUserGroup(selectUserGroup.filter(usr =>  usr !== item.userName))
+                    }}
+                    >
+                    <ViewFriendItem data={item} />
+                  </CheckboxItem>
                   ))}
                 </List>
               </>

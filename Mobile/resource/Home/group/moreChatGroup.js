@@ -33,6 +33,7 @@ import {io} from 'socket.io-client';
 import axios from 'axios';
 import {faUserPlus} from '@fortawesome/free-solid-svg-icons/faUserPlus';
 import ViewUserItem from './viewUserItem'
+import { getMemberInGroup } from '../../../service/chat';
 
 import {
   Button,
@@ -51,14 +52,20 @@ function RenderMoreChatGroup(res) {
   const navigation = useNavigation();
   var {data} = res.route.params;
   const [loading, setLoading] = useState(false);
-  const [nameUserChat, setNameUserChat] = useState('');
+  const [member, setMember] = useState([]);
+  const [myUserName, setMyUserName] = useState('');
+  const [isLeader, setIsLeader] = useState('');
   const scrollViewRef = useRef();
   
-  const fetchMessages = async () => {
+  const fetchData = async () => {
     try {
-      let user = await AsyncStorage.get('user');
-      user = JSON.parse(user);
-      console.log(user);
+      const token = await AsyncStorage.getItem('token');
+      const userStorage = await AsyncStorage.getItem('user');
+      const user = JSON.parse(userStorage);
+      const getMember = await getMemberInGroup(token, data.objectChat._id)
+      setMember(getMember.data.member)
+      setMyUserName(user.userName)
+      setIsLeader(data.objectChat.lead === user.userName ? 1 : 0)
     } catch (error) {
       console.log('Error fetching the messages', error);
     }
@@ -69,7 +76,7 @@ function RenderMoreChatGroup(res) {
   };
 
   useEffect(() => {
-    fetchMessages();
+    fetchData();
   }, []);
 
   return (
@@ -147,13 +154,14 @@ function RenderMoreChatGroup(res) {
             <View style={{width: 420, backgroundColor: colors.colorHide }}>
               <List.Item extra={<Switch />}>Mute message</List.Item>
             </View>
-            {data.member.map((userItem) => (
-                <ViewUserItem data={userItem} />
+            {member.map((userItem) => (
+                <ViewUserItem fetchData={fetchData} data={userItem} isLead={isLeader} chatId={data.objectChat._id} myUserName={myUserName} />
             ))
             }
-
+          
+          
             <TouchableOpacity
-              onPress={() => navigation.navigate('CreateMemberThisGroup', {data: data })}
+              onPress={() => navigation.navigate('CreateMemberThisGroup', {dataCreate: data })}
               style={{
                 margin: 15,
               }}>
@@ -200,6 +208,7 @@ function RenderMoreChatGroup(res) {
                 
               </View>
             </TouchableOpacity>
+            
 
             <TouchableOpacity style={{
               width: 411,

@@ -46,6 +46,12 @@ export const getFriends = async (token, search) => {
     });
 }
 
+export const getUser = async (token, username) => {
+    return await axios.get(`${url}/user/get-user?username=${username}`, {
+        headers: { authorization: `Bearer ${token}` },
+    });
+}
+
 export const searchUser = async (token, search) => {
     return await axios.get(`${url}/user/search?search=${search}`, {
         headers: { authorization: `Bearer ${token}` }
@@ -59,7 +65,7 @@ export const addFriend = async (token, userNameAdd) => {
 }
 
 export const getFriendAddGroup = async (token, search, chatId) => {
-    return await axios.get(`${url}/user/get-friend-add-group`,{ userNameAdd: search, chatId: chatId }, {
+    return await axios.get(`${url}/user/get-friend-add-group?search=${search}&chatId=${chatId}`, {
         headers: { authorization: `Bearer ${token}`}
     });
 }
