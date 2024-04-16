@@ -42,7 +42,6 @@ import {
 function RenderMyViewChatItem(res) {
   const [loading, setLoading] = useState(false);
   const {data} = res;
-  console.log(data);
   const [avatar, setAvatar] = useState(
     'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
   );

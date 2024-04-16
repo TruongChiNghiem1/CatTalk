@@ -78,13 +78,10 @@ io.on('connection', (socket) => {
         socket.on('messageImage', async (data, params) => {
             try {
                 const { chatId, senderId, receiverId, newMessageSend } = params
-                console.log(newMessageSend);
                 const base64String = newMessageSend[0].base64; // Truy cập vào trường base64 trong mảng
 
                 const bufferData = Buffer.from(base64String, 'base64'); // Chuyển đổi từ chuỗi base64 sang đối tượng Buffer
                 const filePath = generateUniqueFileName(); 
-                console.log('file', data);
-                console.log('params',bufferData);
                 const paramsS3 = {
                     Bucket: process.env.BUCKET_NAME,
                     Key: filePath,
@@ -119,6 +116,7 @@ io.on('connection', (socket) => {
                         // socket.to(chatId).emit('receiveMessage', newMessage)
                         // const user = activeUsers.find((user) => user.userId == receiverId);
                         if (user) {
+                            console.log('Received message');
                             io.to(user.chatIdJoin).emit("receiveMessage", datasend);
                         }
                     }
@@ -128,7 +126,6 @@ io.on('connection', (socket) => {
                 console.log(error)
                 console.log('Error handling the messages')
             }
-            
         })
     })
 

@@ -79,7 +79,16 @@ function RenderViewChatItem(res) {
                 }}>{profileUser[0].firstName + ' ' + profileUser[0].lastName}
               </Text> : <></>
             }
-            
+            {data.typeMessage == 2 ? 
+              <Image
+                source={{ uri: data.content }}
+                style={{
+                  marginTop: 7,
+                  width: 250,
+                  height: 150,
+                  borderRadius: 20,
+                }}></Image>
+              :
             <View
               style={{
                 display: 'flex',
@@ -107,7 +116,7 @@ function RenderViewChatItem(res) {
                 }}>
                 {moment(data.createdAt).format('HH:mm')}
               </Text>
-            </View>
+            </View>}
             {/* <Image
               source={images.testImg2}
               style={{
