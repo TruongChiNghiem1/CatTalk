@@ -117,7 +117,9 @@ io.on('connection', (socket) => {
                         // const user = activeUsers.find((user) => user.userId == receiverId);
                         if (user) {
                             console.log('Received message');
-                            io.to(user.chatIdJoin).emit("receiveMessage", datasend);
+                            setTimeout(() => {
+                                io.to(user.chatIdJoin).emit("receiveMessage", datasend);
+                            }, 1000);
                         }
                     }
                 })

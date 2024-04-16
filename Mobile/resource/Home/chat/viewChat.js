@@ -101,7 +101,7 @@ function RenderViewChat(res) {
   //Socket
   const route = useRoute();
 
-  const [socket, setSocket] = useState(io.connect('http://192.168.1.20:2090'));
+  const [socket, setSocket] = useState(io.connect('http://172.28.107.55:2090'));
 
   const onSubmitNewSendMessage = async (senderId, receiverId) => {
     socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
@@ -137,7 +137,7 @@ function RenderViewChat(res) {
       setChatId(dataChat.objectChat._id);
       const token = await AsyncStorage.getItem('token');
       const response = await axios.post(
-        'http://192.168.1.20:2080/messages-group',
+        'http://172.28.107.55:2080/messages-group',
         {
           senderId: user.userName,
           chatId: dataChat.objectChat._id,

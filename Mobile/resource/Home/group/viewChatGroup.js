@@ -69,7 +69,6 @@ function RenderViewChatGroup(res) {
   const scrollViewRef = useRef();
   const [selectedImage, setSelectedImage] = useState('');
   const [typeMessage, setTypeMessage] = useState(1);
-  
 
   const [avatar, setAvatar] = useState(
     'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
@@ -77,10 +76,15 @@ function RenderViewChatGroup(res) {
   //Socket
   const route = useRoute();
 
-  const [socket, setSocket] = useState(io.connect('http://192.168.1.20:2090'));
+  const [socket, setSocket] = useState(io.connect('http://172.28.107.55:2090'));
 
   const onSubmitNewSendMessage = async () => {
-    socket.emit('message', {chatId: chatId, senderId: myUserName, newMessageSend: newMessageSend, typeMessage: typeMessage});
+    socket.emit('message', {
+      chatId: chatId,
+      senderId: myUserName,
+      newMessageSend: newMessageSend,
+      typeMessage: typeMessage,
+    });
     setNewMessageSend('');
     // call the fetchMessages() function to see the UI update
     setTimeout(() => {
@@ -112,7 +116,7 @@ function RenderViewChatGroup(res) {
 
       const token = await AsyncStorage.getItem('token');
       const response = await axios.post(
-        'http://192.168.1.20:2080/messages-group',
+        'http://172.28.107.55:2080/messages-group',
         {
           senderId: user.userName,
           chatId: dataChat.objectChat._id,
@@ -157,18 +161,18 @@ function RenderViewChatGroup(res) {
   }, []);
 
   // const chooseImage = async () => {
-    // let result = await ImagePicker.launchImageLibraryAsync({
-    //   allowsEditing: true,
-    //   quality: 1
-    // })
+  // let result = await ImagePicker.launchImageLibraryAsync({
+  //   allowsEditing: true,
+  //   quality: 1
+  // })
 
-    // console.log('chon anh ', result);
-    // if(!result.canceled){
-    //   //set
-    // } else {
-    //   console.log('no choose image');
-    // }
-  // } 
+  // console.log('chon anh ', result);
+  // if(!result.canceled){
+  //   //set
+  // } else {
+  //   console.log('no choose image');
+  // }
+  // }
 
   const chooseImage = () => {
     const options = {
@@ -178,20 +182,24 @@ function RenderViewChatGroup(res) {
       maxWidth: 2000,
     };
 
-    launchImageLibrary(options, (response) => {
+    launchImageLibrary(options, response => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.error) {
         console.log('Image picker error: ', response.error);
       } else {
-        let base64String = response.assets
+        let base64String = response.assets;
         // let base64String = response.uri || response.assets?.[0]?.uri;
         // const base64String = imageToBase64(imageUri);
-        socket.emit('messageImage',base64String, {chatId: chatId, senderId: myUserName, newMessageSend: base64String});
+        socket.emit('messageImage', base64String, {
+          chatId: chatId,
+          senderId: myUserName,
+          newMessageSend: base64String,
+        });
         // call the fetchMessages() function to see the UI update
         setTimeout(() => {
           fetchMessages();
-        }, 200);
+        }, 1000);
       }
     });
   };
@@ -366,9 +374,7 @@ function RenderViewChatGroup(res) {
                 size={20}
                 icon={faFaceSmile}
               />
-              <TouchableOpacity
-                onPress={chooseImage}
-              >
+              <TouchableOpacity onPress={chooseImage}>
                 <FontAwesomeIcon
                   style={{marginRight: 15}}
                   color={colors.primary}
