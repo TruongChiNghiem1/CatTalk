@@ -15,6 +15,7 @@ const { Server } = require("socket.io");
 const { addUser, removeUser } = require("./models/userAddGroup");
 const s3 = require('./config/aws-helper.js')
 connect(URI_DB)
+const fs = require('fs');
 
 app.use(cors({ credentials: true }))
 
@@ -51,16 +52,16 @@ io.on('connection', (socket) => {
 
         socket.on('message', async (data) => {
             try {
-                const { chatId, senderId, receiverId, newMessageSend } = data
-                console.log(chatId, senderId, receiverId, newMessageSend);
+                const { chatId, senderId, newMessageSend, typeMessage } = data
                 const newMessage = await Message.create({
                     chatId: chatId,
                     createdBy: senderId,
                     // userName: receiverId,
-                    content: newMessageSend
+                    content: newMessageSend,
+                    typeMessage: typeMessage
                 })
 
-                const datasend = { chatId: chatId, createdBy: senderId, userName: receiverId, content: newMessageSend, createdAt: newMessage.createdAt };
+                const datasend = { chatId: chatId, createdBy: senderId, content: newMessageSend, createdAt: newMessage.createdAt };
                 //emit the message to the receiver
                 // socket.to(chatId).emit('receiveMessage', newMessage)
                 // const user = activeUsers.find((user) => user.userId == receiverId);
@@ -76,17 +77,19 @@ io.on('connection', (socket) => {
 
         socket.on('messageImage', async (data, params) => {
             try {
-                const { chatId, senderId, receiverId, newMessageSend, typeMessage } = params
+                const { chatId, senderId, receiverId, newMessageSend } = params
+                console.log(newMessageSend);
+                const base64String = newMessageSend[0].base64; // Truy cập vào trường base64 trong mảng
 
-                const image = newMessageSend
+                const bufferData = Buffer.from(base64String, 'base64'); // Chuyển đổi từ chuỗi base64 sang đối tượng Buffer
                 const filePath = generateUniqueFileName(); 
                 console.log('file', data);
-                console.log('params', params);
+                console.log('params',bufferData);
                 const paramsS3 = {
                     Bucket: process.env.BUCKET_NAME,
                     Key: filePath,
-                    Body: data,
-                    ContentType: 'image/jpeg/png/jpg',
+                    Body: bufferData,
+                    ContentType: data.type,
                 }
 
                 s3.upload(paramsS3, async (err, data) => {
@@ -102,7 +105,7 @@ io.on('connection', (socket) => {
                             createdBy: senderId,
                             // userName: receiverId,
                             content: data.Location,
-                            typeMessage: typeMessage
+                            typeMessage: 2
                         })
 
                         const datasend = { 

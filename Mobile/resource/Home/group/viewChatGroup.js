@@ -80,9 +80,7 @@ function RenderViewChatGroup(res) {
   const [socket, setSocket] = useState(io.connect('http://192.168.1.20:2090'));
 
   const onSubmitNewSendMessage = async () => {
-    console.log('222222222222222222222222' , chatId, senderId, receiverId, newMessageSend, typeMessage);
-
-    socket.emit('message', {chatId: chatId, senderId: myUserName, newMeessageSend: newMessageSend, typeMessage: typeMessage});
+    socket.emit('message', {chatId: chatId, senderId: myUserName, newMessageSend: newMessageSend, typeMessage: typeMessage});
     setNewMessageSend('');
     // call the fetchMessages() function to see the UI update
     setTimeout(() => {
@@ -175,7 +173,7 @@ function RenderViewChatGroup(res) {
   const chooseImage = () => {
     const options = {
       mediaType: 'photo',
-      includeBase64: false,
+      includeBase64: true,
       maxHeight: 2000,
       maxWidth: 2000,
     };
@@ -186,16 +184,31 @@ function RenderViewChatGroup(res) {
       } else if (response.error) {
         console.log('Image picker error: ', response.error);
       } else {
-        let imageUri = response.uri || response.assets?.[0]?.uri;
-        console.log('222222222222222222222222' , chatId, myUserName, imageUri);
-
-        socket.emit('messageImage',imageUri, {chatId: chatId, senderId: myUserName, newMessageSend: imageUri});
+        let base64String = response.assets
+        // let base64String = response.uri || response.assets?.[0]?.uri;
+        // const base64String = imageToBase64(imageUri);
+        console.log('222222222222222222222222' , base64String);
+        socket.emit('messageImage',base64String, {chatId: chatId, senderId: myUserName, newMessageSend: base64String});
         setNewMessageSend('');
         // call the fetchMessages() function to see the UI update
         setTimeout(() => {
           fetchMessages();
         }, 200);
       }
+    });
+  };
+
+  const imageToBase64 = async (imageUri) => {
+    const response = await fetch(imageUri);
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        resolve(base64String);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
     });
   };
 

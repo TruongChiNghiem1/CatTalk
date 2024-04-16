@@ -365,6 +365,7 @@ const uploadAvatar = async (req, res) => {
         const username = decoded.username
 
         const avatar = req.file
+        console.log('req.file.buffer = ', req.file.buffer);
         const filePath = avatar.originalname
         const paramsS3 = {
             Bucket: process.env.BUCKET_NAME,
