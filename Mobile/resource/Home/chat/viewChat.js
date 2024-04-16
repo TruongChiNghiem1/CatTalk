@@ -101,8 +101,7 @@ function RenderViewChat(res) {
   //Socket
   const route = useRoute();
 
-  const [socket, setSocket] = useState(io.connect('http://192.168.1.129:2090'));
-
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.20:2090'));
 
   const onSubmitNewSendMessage = async (senderId, receiverId) => {
     socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
@@ -138,16 +137,16 @@ function RenderViewChat(res) {
       setChatId(dataChat.objectChat._id);
       const token = await AsyncStorage.getItem('token');
       const response = await axios.post(
-        'http://192.168.1.129:2080/messages-group',
+        'http://192.168.1.20:2080/messages-group',
         {
           senderId: user.userName,
-          chatId: dataChat.objectChat._id
+          chatId: dataChat.objectChat._id,
         },
         {
           headers: {authorization: `Bearer ${token}`},
         },
       );
-console.log('aaaaaaaaaaaaa');
+      console.log('aaaaaaaaaaaaa');
 
       console.log(response.data.messages);
       setData(response.data.messages);
@@ -184,8 +183,6 @@ console.log('aaaaaaaaaaaaa');
       }, 200);
     });
   }, []);
-
-  
 
   return (
     <View
@@ -287,7 +284,9 @@ console.log('aaaaaaaaaaaaa');
                   <RenderViewChatItem
                     key={`view_${messageItem._id}_${index}`}
                     data={messageItem}
-                    profileUser={dataChat.member.filter((mem) => mem.userName === messageItem.createdBy)}
+                    profileUser={dataChat.member.filter(
+                      mem => mem.userName === messageItem.createdBy,
+                    )}
                     typeChat={'single'}
                   />
                 ),

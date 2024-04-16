@@ -10,25 +10,27 @@ import {images, colors, fontSize} from '../../../constant';
 import {Image, Alert, Modal, StyleSheet, Pressable} from 'react-native';
 import {UIInput} from '../../../components';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {faTrashCan} from '@fortawesome/free-solid-svg-icons/faTrashCan';
+
 import {height} from '@fortawesome/free-solid-svg-icons/faMugSaucer';
 import {AppRegistry} from 'react-native';
 import {Button, Icon, WhiteSpace, WingBlank} from '@ant-design/react-native';
 import {faVideo} from '@fortawesome/free-solid-svg-icons/faVideo';
 import {faUserPlus} from '@fortawesome/free-solid-svg-icons/faUserPlus';
-import { addFriend, getOneUser } from '../../../service/user';
+import { deleteMember } from '../../../service/chat';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
 
 
-function ViewFriendItem(props) {
+function ViewUserItem(props) {
   const navigation = useNavigation();
   const [message, setMessage] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const [modalVisible, setModalVisible] = useState(false);
-  const {data} = props;
-  const [isFriendNow, setIsFriendNow] = useState(data.isFriend)
+  const {data, isLead, chatId, myUserName} = props;
+  const [isFriendNow, setIsFriendNow] = useState(1)
   // const [friend, setfriend] = useState();
   const avatar = data.avatar ?? 'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg';
 
@@ -45,21 +47,21 @@ function ViewFriendItem(props) {
     getData();
   }, []);
 
-  const pressAddFriend = async (userNameAdd) => {
+  const pressDeleteMember = async (userNameDelete) => {
     try {
       const token = await AsyncStorage.getItem('token');
-      
-      const items = await addFriend(token, userNameAdd);
+      const items = await deleteMember(token, chatId, userNameDelete);
       setMessage(items.data.message);
       setModalVisible(true)
+      props.fetchData()
     } catch (error) {
       console.error(error);
     }
   }
 
   return (
-    <View
-      // onPress={() => navigation.navigate('RenderProfile', {data: data })}
+    <TouchableOpacity
+      onPress={() => navigation.navigate('RenderProfile', {data: data })}
       style={{
         margin: 15,
       }}>
@@ -129,9 +131,32 @@ function ViewFriendItem(props) {
             alignItems: 'center',
             width: 50,
           }}>
+            {isLead && data.userName !== myUserName ?
+              <TouchableOpacity 
+                onPress={() => pressDeleteMember(data.userName)}
+              >
+                  <View
+                      style={{
+                          backgroundColor: 'white',
+                          width: 37,
+                          marginTop: 7,
+                          height: 37,
+                          borderRadius: 100,
+                          marginLeft: 8,
+                          display: 'flex',
+                          flexDirection: 'row',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                      }}>
+                      <FontAwesomeIcon icon={faTrashCan} color={'red'} />
+                  </View>
+              </TouchableOpacity>
+              :
+              <></>
+            }
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -182,4 +207,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ViewFriendItem
+export default ViewUserItem

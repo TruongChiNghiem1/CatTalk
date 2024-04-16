@@ -18,7 +18,7 @@ const chatSchema = new mongoose.Schema({
      * 6. voice
      */
     typeMessage: {
-        type: mongoose.Schema.Types.Number,
+        type: String,
     },
     content: {
         type: mongoose.Schema.Types.String,

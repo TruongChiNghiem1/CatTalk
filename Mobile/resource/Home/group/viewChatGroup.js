@@ -31,6 +31,9 @@ import RenderViewChatGroupItem from '../chat/userViewChatItem';
 import {socket} from '../../../service/cattalk';
 import {io} from 'socket.io-client';
 import axios from 'axios';
+import {faUserPlus} from '@fortawesome/free-solid-svg-icons/faUserPlus';
+// import * as ImagePicker from "expo-image-picker"
+import {launchImageLibrary} from 'react-native-image-picker';
 
 import {
   Button,
@@ -51,36 +54,6 @@ this.state = {
   text: '',
 };
 
-const showActionSheet = () => {
-  const BUTTONS = [
-    <View style={{width: 400}}>
-      <List.Item extra={<Switch />}>Mute message</List.Item>
-    </View>,
-    <Toch style={{}}>
-      <View
-        style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-        <FontAwesomeIcon
-          style={{color: 'red', marginRight: 8}}
-          icon={faTrashCan}
-        />
-        <Text style={{color: 'red', fontSize: fontSize.h3}}>Delete chat </Text>
-      </View>
-    </Toch>,
-  ];
-  ActionSheet.showActionSheetWithOptions(
-    {
-      title: 'Option',
-      message: 'Description',
-      options: BUTTONS,
-      cancelButtonIndex: 3,
-      // destructiveButtonIndex: 3,
-    },
-    // (buttonIndex: any) => {
-    // this.setState({clicked: BUTTONS[buttonIndex]});
-    // },
-  );
-};
-
 function RenderViewChatGroup(res) {
   console.log('Chat group');
   const navigation = useNavigation();
@@ -94,16 +67,20 @@ function RenderViewChatGroup(res) {
   const [chatId, setChatId] = useState(dataChat.objectChat._id);
   const [allChatMessage, setAllChatMessage] = useState('');
   const scrollViewRef = useRef();
+  const [selectedImage, setSelectedImage] = useState('');
+  const [typeMessage, setTypeMessage] = useState(1);
+  
+
   const [avatar, setAvatar] = useState(
     'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
   );
   //Socket
   const route = useRoute();
 
-  const [socket, setSocket] = useState(io.connect('http://192.168.1.129:2090'));
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.20:2090'));
 
-  const onSubmitNewSendMessage = async (senderId, receiverId) => {
-    socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
+  const onSubmitNewSendMessage = async () => {
+    socket.emit('message', {chatId: chatId, senderId: myUserName, newMessageSend: newMessageSend, typeMessage: typeMessage});
     setNewMessageSend('');
     // call the fetchMessages() function to see the UI update
     setTimeout(() => {
@@ -135,7 +112,7 @@ function RenderViewChatGroup(res) {
 
       const token = await AsyncStorage.getItem('token');
       const response = await axios.post(
-        'http://192.168.1.129:2080/messages-group',
+        'http://192.168.1.20:2080/messages-group',
         {
           senderId: user.userName,
           chatId: dataChat.objectChat._id,
@@ -178,6 +155,46 @@ function RenderViewChatGroup(res) {
   useEffect(() => {
     fetchMessages();
   }, []);
+
+  // const chooseImage = async () => {
+    // let result = await ImagePicker.launchImageLibraryAsync({
+    //   allowsEditing: true,
+    //   quality: 1
+    // })
+
+    // console.log('chon anh ', result);
+    // if(!result.canceled){
+    //   //set
+    // } else {
+    //   console.log('no choose image');
+    // }
+  // } 
+
+  const chooseImage = () => {
+    const options = {
+      mediaType: 'photo',
+      includeBase64: true,
+      maxHeight: 2000,
+      maxWidth: 2000,
+    };
+
+    launchImageLibrary(options, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('Image picker error: ', response.error);
+      } else {
+        let base64String = response.assets
+        // let base64String = response.uri || response.assets?.[0]?.uri;
+        // const base64String = imageToBase64(imageUri);
+        socket.emit('messageImage',base64String, {chatId: chatId, senderId: myUserName, newMessageSend: base64String});
+        // call the fetchMessages() function to see the UI update
+        setTimeout(() => {
+          fetchMessages();
+        }, 200);
+      }
+    });
+  };
 
   return (
     <View
@@ -252,7 +269,9 @@ function RenderViewChatGroup(res) {
                   width: 15,
                   height: 23,
                 }}
-                onPress={showActionSheet}>
+                onPress={() =>
+                  navigation.navigate('RenderMoreChatGroup', {data: dataChat})
+                }>
                 <FontAwesomeIcon
                   style={{marginHorizontal: 10}}
                   color={colors.primary}
@@ -278,8 +297,10 @@ function RenderViewChatGroup(res) {
                 ) : (
                   <RenderViewChatGroupItem
                     key={`view_${messageItem._id}_${index}`}
-                    data={messageItem} 
-                    profileUser={dataChat.member.filter((mem) => mem.userName === messageItem.createdBy)}
+                    data={messageItem}
+                    profileUser={dataChat.member.filter(
+                      mem => mem.userName === messageItem.createdBy,
+                    )}
                     typeChat={'multi'}
                   />
                 ),
@@ -345,14 +366,18 @@ function RenderViewChatGroup(res) {
                 size={20}
                 icon={faFaceSmile}
               />
-              <FontAwesomeIcon
-                style={{marginRight: 15}}
-                color={colors.primary}
-                size={20}
-                icon={faImage}
-              />
               <TouchableOpacity
-                onPress={() => onSubmitNewSendMessage(myUserName, userNameChat)}
+                onPress={chooseImage}
+              >
+                <FontAwesomeIcon
+                  style={{marginRight: 15}}
+                  color={colors.primary}
+                  size={20}
+                  icon={faImage}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => onSubmitNewSendMessage()}
                 style={{
                   width: 30,
                   height: 30,
