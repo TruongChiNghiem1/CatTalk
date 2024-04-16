@@ -55,48 +55,52 @@ function RenderMyViewChatItem(res) {
           display: 'flex',
           alignItems: 'flex-end',
         }}>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-          }}>
+        {data.typeMessage === 2 ? 
+          <Image
+            source={{ uri: data.content }}
+            style={{
+              marginTop: 7,
+              width: 250,
+              height: 150,
+              borderRadius: 20,
+            }}></Image>
+          :
           <View
             style={{
               display: 'flex',
-              justifyContent: 'space-around',
-              width: 250,
-              borderWidth: 0,
-              paddingVertical: 11,
-              paddingLeft: 12,
-              paddingRight: 10,
-              borderRadius: 20,
-              backgroundColor: '#FFEFD8',
+              flexDirection: 'row',
             }}>
-            <Text
+            <View
               style={{
-                color: 'black',
-                fontSize: fontSize.h4,
+                display: 'flex',
+                justifyContent: 'space-around',
+                width: 250,
+                borderWidth: 0,
+                paddingVertical: 11,
+                paddingLeft: 12,
+                paddingRight: 10,
+                borderRadius: 20,
+                backgroundColor: '#FFEFD8',
               }}>
-              {data.content}
-            </Text>
-            <Text
-              style={{
-                color: '#b4b4b4c7',
-                marginTop: 5,
-                fontSize: fontSize.h5,
-              }}>
-              {moment(data.createdAt).format('HH:mm')}
-            </Text>
+              <Text
+                style={{
+                  color: 'black',
+                  fontSize: fontSize.h4,
+                }}>
+                {data.content}
+              </Text>
+              <Text
+                style={{
+                  color: '#b4b4b4c7',
+                  marginTop: 5,
+                  fontSize: fontSize.h5,
+                }}>
+                {moment(data.createdAt).format('HH:mm')}
+              </Text>
+            </View>
           </View>
-        </View>
-        {/* <Image
-          source={images.testImg}
-          style={{
-            marginTop: 7,
-            width: 250,
-            height: 150,
-            borderRadius: 20,
-          }}></Image> */}
+        }
+        
       </View>
     </View>
   );

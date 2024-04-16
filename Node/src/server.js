@@ -13,6 +13,7 @@ const URI_DB = process.env.URI_DB
 const Message = require('./models/message')
 const { Server } = require("socket.io");
 const { addUser, removeUser } = require("./models/userAddGroup");
+const s3 = require('./config/aws-helper.js')
 connect(URI_DB)
 
 app.use(cors({ credentials: true }))
@@ -72,7 +73,62 @@ io.on('connection', (socket) => {
             }
             
         })
+
+        socket.on('messageImage', async (data, params) => {
+            try {
+                const { chatId, senderId, receiverId, newMessageSend, typeMessage } = params
+
+                const image = newMessageSend
+                const filePath = generateUniqueFileName(); 
+                console.log('file', data);
+                console.log('params', params);
+                const paramsS3 = {
+                    Bucket: process.env.BUCKET_NAME,
+                    Key: filePath,
+                    Body: data,
+                    ContentType: 'image/jpeg/png/jpg',
+                }
+
+                s3.upload(paramsS3, async (err, data) => {
+                    if (err) {
+                        console.log('Upload fail', err)
+                        return res.json({
+                            status: 500,
+                            message: 'Server cannot save your image, try again!',
+                        })
+                    } else {
+                        const newMessage = await Message.create({
+                            chatId: chatId,
+                            createdBy: senderId,
+                            // userName: receiverId,
+                            content: data.Location,
+                            typeMessage: typeMessage
+                        })
+
+                        const datasend = { 
+                            chatId: chatId, 
+                            createdBy: senderId, 
+                            userName: receiverId, 
+                            content: data.Location,
+                            createdAt: newMessage.createdAt, 
+                            typeMessage: 2 };
+                        //emit the message to the receiver
+                        // socket.to(chatId).emit('receiveMessage', newMessage)
+                        // const user = activeUsers.find((user) => user.userId == receiverId);
+                        if (user) {
+                            io.to(user.chatIdJoin).emit("receiveMessage", datasend);
+                        }
+                    }
+                })
+
+            } catch (error) {
+                console.log(error)
+                console.log('Error handling the messages')
+            }
+            
+        })
     })
+
     socket.on('disconnect', () => {
         const user = removeUser(socket.id);
         console.log("User Disconnected ",user);
@@ -86,6 +142,14 @@ io.on('connection', (socket) => {
 http.listen(PORT_SOCKET, () => {
     console.log('Socket.IO server running on port 2090')
 })
+
+function generateUniqueFileName() {
+    const timestamp = new Date().getTime(); // Get the current timestamp
+    const randomString = Math.random().toString(36).substring(2, 8); // Generate a random string
+    const fileName = `${timestamp}-${randomString}.jpg`; // Create the file name using the timestamp and random string
+  
+    return fileName;
+  }
 
 app.post('/messages', async (req, res) => {
     try {

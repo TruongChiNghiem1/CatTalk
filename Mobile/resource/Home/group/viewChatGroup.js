@@ -32,6 +32,8 @@ import {socket} from '../../../service/cattalk';
 import {io} from 'socket.io-client';
 import axios from 'axios';
 import {faUserPlus} from '@fortawesome/free-solid-svg-icons/faUserPlus';
+// import * as ImagePicker from "expo-image-picker"
+import {launchImageLibrary} from 'react-native-image-picker';
 
 import {
   Button,
@@ -65,6 +67,9 @@ function RenderViewChatGroup(res) {
   const [chatId, setChatId] = useState(dataChat.objectChat._id);
   const [allChatMessage, setAllChatMessage] = useState('');
   const scrollViewRef = useRef();
+  const [selectedImage, setSelectedImage] = useState('');
+  const [typeMessage, setTypeMessage] = useState(1);
+  
 
   const [avatar, setAvatar] = useState(
     'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
@@ -74,8 +79,10 @@ function RenderViewChatGroup(res) {
 
   const [socket, setSocket] = useState(io.connect('http://192.168.1.20:2090'));
 
-  const onSubmitNewSendMessage = async (senderId, receiverId) => {
-    socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
+  const onSubmitNewSendMessage = async () => {
+    console.log('222222222222222222222222' , chatId, senderId, receiverId, newMessageSend, typeMessage);
+
+    socket.emit('message', {chatId: chatId, senderId: myUserName, newMeessageSend: newMessageSend, typeMessage: typeMessage});
     setNewMessageSend('');
     // call the fetchMessages() function to see the UI update
     setTimeout(() => {
@@ -150,6 +157,47 @@ function RenderViewChatGroup(res) {
   useEffect(() => {
     fetchMessages();
   }, []);
+
+  // const chooseImage = async () => {
+    // let result = await ImagePicker.launchImageLibraryAsync({
+    //   allowsEditing: true,
+    //   quality: 1
+    // })
+
+    // console.log('chon anh ', result);
+    // if(!result.canceled){
+    //   //set
+    // } else {
+    //   console.log('no choose image');
+    // }
+  // } 
+
+  const chooseImage = () => {
+    const options = {
+      mediaType: 'photo',
+      includeBase64: false,
+      maxHeight: 2000,
+      maxWidth: 2000,
+    };
+
+    launchImageLibrary(options, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('Image picker error: ', response.error);
+      } else {
+        let imageUri = response.uri || response.assets?.[0]?.uri;
+        console.log('222222222222222222222222' , chatId, myUserName, imageUri);
+
+        socket.emit('messageImage',imageUri, {chatId: chatId, senderId: myUserName, newMessageSend: imageUri});
+        setNewMessageSend('');
+        // call the fetchMessages() function to see the UI update
+        setTimeout(() => {
+          fetchMessages();
+        }, 200);
+      }
+    });
+  };
 
   const showActionSheet = () => {
     var BUTTONS = [
@@ -443,14 +491,18 @@ function RenderViewChatGroup(res) {
                 size={20}
                 icon={faFaceSmile}
               />
-              <FontAwesomeIcon
-                style={{marginRight: 15}}
-                color={colors.primary}
-                size={20}
-                icon={faImage}
-              />
               <TouchableOpacity
-                onPress={() => onSubmitNewSendMessage(myUserName, userNameChat)}
+                onPress={chooseImage}
+              >
+                <FontAwesomeIcon
+                  style={{marginRight: 15}}
+                  color={colors.primary}
+                  size={20}
+                  icon={faImage}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => onSubmitNewSendMessage()}
                 style={{
                   width: 30,
                   height: 30,

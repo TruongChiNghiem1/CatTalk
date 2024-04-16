@@ -31,6 +31,7 @@
     "antd-mobile": "^5.34.0",
     "axios": "^1.6.8",
     "bootstrap": "^5.1.0",
+    "expo-image-picker": "^14.7.1",
     "expo-linear-gradient": "^12.5.0",
     "formik": "^2.4.5",
     "jsonwebtoken": "^9.0.2",
