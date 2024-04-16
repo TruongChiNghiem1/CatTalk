@@ -52,13 +52,13 @@ io.on('connection', (socket) => {
 
         socket.on('message', async (data) => {
             try {
-                const { chatId, senderId, newMessageSend, typeMessage } = data
+                const { chatId, senderId, newMessageSend } = data
                 const newMessage = await Message.create({
                     chatId: chatId,
                     createdBy: senderId,
                     // userName: receiverId,
                     content: newMessageSend,
-                    typeMessage: typeMessage
+                    typeMessage: 1
                 })
 
                 const datasend = { chatId: chatId, createdBy: senderId, content: newMessageSend, createdAt: newMessage.createdAt };
@@ -66,6 +66,7 @@ io.on('connection', (socket) => {
                 // socket.to(chatId).emit('receiveMessage', newMessage)
                 // const user = activeUsers.find((user) => user.userId == receiverId);
                 if (user) {
+                    console.log('gui text ne ');
                     io.to(user.chatIdJoin).emit("receiveMessage", datasend);
                 }
             } catch (error) {
