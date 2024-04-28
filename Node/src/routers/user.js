@@ -1,4 +1,5 @@
 const express = require('express');
+<<<<<<< HEAD
 const { 
     signUp, 
     mailConfirm, 
@@ -20,6 +21,11 @@ const {
     getFriendAddGroup,
     getUser
 } = require('../controllers/UserController');
+=======
+const { signUp, mailConfirm, authEmail, signIn, editProfile, getFriends, uploadAvatar,
+    updateAboutUs, uploadBackground, searchUser, testData, changeTheme, addFriend, getMyUser, 
+    checkAuth, deleteFriend, changePassword, searchFriend } = require('../controllers/UserController');
+>>>>>>> devquyenfix
 const checkLogin = require('../middlewares/auth');
 // const uploadImage = require('../middlewares/uploadImage')
 const app = express();
@@ -47,8 +53,12 @@ routerUser.post('/change-password', changePassword)
 
 //Add friend
 routerUser.get('/get-friends', getFriends)
+<<<<<<< HEAD
 routerUser.get('/get-user', getUser)
 routerUser.get('/get-friend-add-group', getFriendAddGroup)
+=======
+routerUser.get('/search-friend', searchFriend)
+>>>>>>> devquyenfix
 routerUser.get('/search', searchUser)
 routerUser.post('/add-friend', addFriend)
 routerUser.post('/delete-friend', deleteFriend)

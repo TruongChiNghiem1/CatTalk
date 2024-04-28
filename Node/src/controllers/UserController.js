@@ -612,6 +612,54 @@ const searchUser = async (req, res) => {
     }
 }
 
+const searchFriend = async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1]
+        const decoded = jwt.verify(token, SECRET_CODE)
+        const username = decoded.username
+        const { search } = req.query
+        const searchRegex = new RegExp(search, 'i')
+
+        const finds = await User.find(
+            {
+                $or: [
+                    { userName: searchRegex },
+                    { firstName: searchRegex },
+                    { lastName: searchRegex },
+                    { email: searchRegex },
+                ],
+                friends: { $in: username },
+            },
+            {
+                firstName: 1,
+                friends: 1,
+                lastName: 1,
+                userName: 1,
+                avatar: 1,
+                background: 1
+            }
+        )
+    
+        if (finds) {
+            return res.json({
+                status: 200,
+                users: finds,
+            })
+        } else {
+            return res.json({
+                status: 201,
+                message: 'User not found!',
+            })
+        }
+    } catch (error) {
+        console.log(error)
+        return res.json({
+            status: 500,
+            message: 'Opps, somthing went wrong!!!',
+        })
+    }
+}
+
 const addFriend = async (req, res) => {
     try {
         const token = req.headers.authorization.split(' ')[1]
@@ -996,6 +1044,10 @@ module.exports = {
     deleteFriend,
     checkAuth,
     changePassword,
+<<<<<<< HEAD
     getFriendAddGroup,
     getUser
+=======
+    searchFriend
+>>>>>>> devquyenfix
 }

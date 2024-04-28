@@ -96,7 +96,7 @@ const AppLayout = (props) => {
                 key: 'redirect',
                 icon: <MessageOutlined />,
                 label: 'Message',
-                onClick: () => {navigate('/redirect'), setOpenSearch(false), setOpenNotify(false)}
+                onClick: () => {navigate('/redirect/0'), setOpenSearch(false), setOpenNotify(false)}
                 },
                 {
                 key: 'notify',

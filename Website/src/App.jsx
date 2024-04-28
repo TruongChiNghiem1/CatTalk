@@ -74,7 +74,7 @@ function App() {
           <Route path="/" element={<AppLayout theme={setCurrentTheme}/>}>
             <Route index element={<Navigate to="home" />} />
             <Route path="home" element={<Home />} />
-            <Route path="redirect" element={<Redirect/>} />
+            <Route path="redirect/:id" element={<Redirect/>} />
             <Route path="profile" element={<Profile/>} />
           </Route>
         </Route>  

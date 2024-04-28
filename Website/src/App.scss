@@ -402,12 +402,29 @@
   #list-member{
     border-top: 1px solid #dfdfdf60;
   }
+
+  .menu-action{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    .action-item{
+      padding: .5rem;
+        border-radius: 20px;
+    }
+
+    .action-item:hover{
+      background-color: rgba(255, 237, 204, 0.295);
+      width: 100%;
+    }
+  }
 }
 
 
 #box_chat{
   position: relative;
-  height: 85vh;
+  height: 88vh;
   .chat_box_header{
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
@@ -490,7 +507,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 75%;
+    max-width: 65%;
   }
 
   .more_action_chat_list{
@@ -511,7 +528,7 @@
 
 .chat_box{
   border-radius: 20px;
-  min-height: 85vh;
+  min-height: 88vh;
   background-color: #d2fdff;
   overflow: hidden;
   position: relative; 
@@ -521,7 +538,7 @@
 .chat_box_main{
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
-  height: 70vh;
+  height: 73vh;
   background-color: #d2fdff;
   overflow: hidden;
   position: relative;
@@ -582,3 +599,6 @@
   }
 }
 
+.create_chat_modal .ant-modal-body{
+  min-height: 40vh;
+}

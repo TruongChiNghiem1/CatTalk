@@ -4,7 +4,7 @@ const dotenv = require('dotenv')
 const { connect, default: mongoose } = require('mongoose')
 const cors = require('cors')
 const router = require('./routers')
-// const routerSocket = require('./routers/socket')
+    // const routerSocket = require('./routers/socket'
 const bodyParser = require('body-parser')
 dotenv.config()
 const PORT = process.env.PORT
@@ -46,8 +46,8 @@ io.on('connection', (socket) => {
         if (error) return callBack(error);
         console.log("New User Connected", user);
         // if (data.userId && !activeUsers.some((user) => user.userId === data.userName && user.chatId !== data.chatId)) {
-        //     activeUsers.push({ chatId: data.chatId, userId: data.userName, socketId: socket.id });
-            
+        //     activeUsers.push({ chatId: data.chatId, userId: data.userName, socketId: socket.id }
+
         // }
         socket.join(user.chatIdJoin);
 
@@ -137,18 +137,17 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         const user = removeUser(socket.id);
-        console.log("User Disconnected ",user);
+        console.log("User Disconnected ", user);
         // activeUsers = activeUsers.filter((user) => user.socketId !== socket.id);
-        // console.log("User Disconnected", activeUsers);
+        // console.log("User Disconnected", activeUsers)
     })
-
-    console.log(activeUsers);
 })
 
 http.listen(PORT_SOCKET, () => {
     console.log('Socket.IO server running on port 2090')
 })
 
+<<<<<<< HEAD
 function generateUniqueFileName() {
     const timestamp = new Date().getTime(); // Get the current timestamp
     const randomString = Math.random().toString(36).substring(2, 8); // Generate a random string
@@ -158,6 +157,9 @@ function generateUniqueFileName() {
   }
 
 app.post('/messages', async (req, res) => {
+=======
+app.post('/messages', async(req, res) => {
+>>>>>>> devquyenfix
     try {
         const { senderId, receiverId } = req.body
         const messages = await Message.find({
@@ -174,21 +176,24 @@ app.post('/messages', async (req, res) => {
     }
 })
 
-app.post('/messages-group', async (req, res) => {
+app.post('/messages-group', async(req, res) => {
     try {
-        const { senderId, chatId } = req.body
-        // const messages = await Message.find({
-        //     chatId: chatId
-        // })
+        const { chatId } = req.body
+        console.log(chatId);
+            // const messages = await Message.find({
+            //     chatId: chatId
+            // })
         const chatIdObject = new mongoose.Types.ObjectId(chatId);
         const messages = await Message.aggregate([
-            {$match: {chatId: chatIdObject}},
-            {$lookup: {
-                from: 'users',
-                localField: 'createdBy',
-                foreignField: 'userName',
-                as: 'user'
-            }},
+            { $match: { chatId: chatIdObject } },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'createdBy',
+                    foreignField: 'userName',
+                    as: 'user'
+                }
+            },
             {
                 $project: {
                     chatId: 1,
@@ -196,9 +201,9 @@ app.post('/messages-group', async (req, res) => {
                     typeMessage: 1,
                     content: 1,
                     createdAt: 1,
-                    firstName: { $arrayElemAt: ['$user.firstName', 0]},
-                    lastName: { $arrayElemAt: ['$user.lastName', 0]},
-                    avatar: { $arrayElemAt: ['$user.avatar', 0]},
+                    firstName: { $arrayElemAt: ['$user.firstName', 0] },
+                    lastName: { $arrayElemAt: ['$user.lastName', 0] },
+                    avatar: { $arrayElemAt: ['$user.avatar', 0] },
                 }
             }
         ])
