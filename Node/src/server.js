@@ -41,14 +41,16 @@ const io = new Server(http, {
 })
 let activeUsers = [];
 io.on('connection', (socket) => {
-    socket.on('join_room', ({chatIdJoin, userNameJoin}) => {
+    socket.on('join_room', ({chatIdJoin, userNameJoin},callBack) => {
         const { user, error } = addUser({ id: socket.id,chatIdJoin: chatIdJoin ,userNameJoin: userNameJoin });
-        console.log(user);
+        if (error) return callBack(error);
         console.log("New User Connected", user);
         // if (data.userId && !activeUsers.some((user) => user.userId === data.userName && user.chatId !== data.chatId)) {
         //     activeUsers.push({ chatId: data.chatId, userId: data.userName, socketId: socket.id });
             
         // }
+        socket.join(user.chatIdJoin);
+
 
         socket.on('message', async (data) => {
             try {
@@ -62,12 +64,13 @@ io.on('connection', (socket) => {
                 })
 
                 const datasend = { chatId: chatId, createdBy: senderId, content: newMessageSend, createdAt: newMessage.createdAt };
+                console.log(user);
                 //emit the message to the receiver
                 // socket.to(chatId).emit('receiveMessage', newMessage)
                 // const user = activeUsers.find((user) => user.userId == receiverId);
                 if (user) {
-                    console.log('gui text ne ');
-                    io.to(user.chatIdJoin).emit("receiveMessage", datasend);
+                    console.log('gui text ne ', datasend, user.chatIdJoin);
+                    io.to(chatId).emit("receiveMessage", datasend);
                 }
             } catch (error) {
                 console.log(error)
