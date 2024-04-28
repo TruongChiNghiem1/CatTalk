@@ -19,7 +19,7 @@ import {DrawerActions, useNavigation} from '@react-navigation/native';
 import {io} from 'socket.io-client';
 
 function UserChatItem(props) {
-  const [socket, setSocket] = useState(io.connect('http://192.168.1.20:2090'));
+  const [socket, setSocket] = useState(io.connect('http://192.168.0.115:2090'));
 
   useEffect(() => {
     socket.on('connection', () => {
