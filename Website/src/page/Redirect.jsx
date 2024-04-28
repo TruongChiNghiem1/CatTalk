@@ -9,7 +9,7 @@ import { useCookies } from 'react-cookie';
 import img from '../assets/cat_1.png'
 const {Content} = Layout;
 
-const Home = () => {
+const Redirect = () => {
   const {
     token: { colorBgContainer },
   } = theme.useToken(); 
@@ -79,4 +79,4 @@ const Home = () => {
         </Content>
   );
 };
-export default Home;
+export default Redirect;

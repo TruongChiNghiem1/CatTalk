@@ -22,7 +22,7 @@ const ChatBox = (props) => {
     const [newMessageSend, setText] = useState('');
     const [openMenu, setOpenMenu] = useState(false);
     const chatRef = useRef(null);
-    const [socket, setSocket] = useState(io.connect('http://192.168.1.129:2090'))
+    const [socket, setSocket] = useState(io.connect('http://192.168.0.115:2090'))
     
 
     const handleSendMessage= async (senderId) => {
@@ -51,7 +51,6 @@ const ChatBox = (props) => {
     }
 
     
-
     useEffect(() => {
         socket.on('connection', () => {
           console.log('Connected to the Socket.IO server');
@@ -62,7 +61,7 @@ const ChatBox = (props) => {
         }
         console.log(dataJoin);
         socket.emit('join_room', dataJoin)
-      }, []);
+    }, []);
 
     useEffect(() => {
         socket.on('receiveMessage', newMessage => {

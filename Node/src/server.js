@@ -42,13 +42,12 @@ const io = new Server(http, {
 let activeUsers = [];
 io.on('connection', (socket) => {
     socket.on('join_room', ({chatIdJoin, userNameJoin},callBack) => {
-        const { user, error } = addUser({ id: socket.id,chatIdJoin: chatIdJoin ,userNameJoin: userNameJoin });
-        if (error) return callBack(error);
-        console.log("New User Connected", user);
+        const { user, isAddUrs } = addUser({ id: socket.id,chatIdJoin: chatIdJoin ,userNameJoin: userNameJoin });
         // if (data.userId && !activeUsers.some((user) => user.userId === data.userName && user.chatId !== data.chatId)) {
         //     activeUsers.push({ chatId: data.chatId, userId: data.userName, socketId: socket.id }
 
         // }
+        console.log("New User Connected", user);
         socket.join(user.chatIdJoin);
 
 
@@ -64,7 +63,6 @@ io.on('connection', (socket) => {
                 })
 
                 const datasend = { chatId: chatId, createdBy: senderId, content: newMessageSend, createdAt: newMessage.createdAt };
-                console.log(user);
                 //emit the message to the receiver
                 // socket.to(chatId).emit('receiveMessage', newMessage)
                 // const user = activeUsers.find((user) => user.userId == receiverId);
@@ -147,7 +145,6 @@ http.listen(PORT_SOCKET, () => {
     console.log('Socket.IO server running on port 2090')
 })
 
-<<<<<<< HEAD
 function generateUniqueFileName() {
     const timestamp = new Date().getTime(); // Get the current timestamp
     const randomString = Math.random().toString(36).substring(2, 8); // Generate a random string
@@ -157,9 +154,6 @@ function generateUniqueFileName() {
   }
 
 app.post('/messages', async (req, res) => {
-=======
-app.post('/messages', async(req, res) => {
->>>>>>> devquyenfix
     try {
         const { senderId, receiverId } = req.body
         const messages = await Message.find({

@@ -1044,10 +1044,7 @@ module.exports = {
     deleteFriend,
     checkAuth,
     changePassword,
-<<<<<<< HEAD
     getFriendAddGroup,
-    getUser
-=======
+    getUser,
     searchFriend
->>>>>>> devquyenfix
 }

@@ -116,11 +116,7 @@ function RenderViewChatGroup(res) {
 
       const token = await AsyncStorage.getItem('token');
       const response = await axios.post(
-<<<<<<< HEAD
         'http://192.168.0.115:2080/messages-group',
-=======
-        'http://192.168.1.129:2080/messages-group',
->>>>>>> devquyenfix
         {
           senderId: user.userName,
           chatId: dataChat.objectChat._id,
