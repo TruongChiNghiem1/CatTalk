@@ -7,16 +7,16 @@ import { useCookies } from 'react-cookie';
 import { AppContext } from '../../context/AppContext';
 import CreateChat from './CreateChat';
 import getHumanReadableDate from '../../helper/getHumanReadableDate';
-import { useSearchParams } from "react-router-dom";
 import { MuteIcon } from '../../helper/CustomIcon';
+import { useNavigate } from 'react-router-dom';
 const ChatList = (props) => {
     const {user} = useContext(AppContext);
-    const [loading, setLoading] = useState(true);
-    const [data, setData] = useState([]);
-    const [cookies, setCookies] = useCookies('loginToken');
+    const [loading, setLoading] = useState(props.loading);
+    const [data, setData] = useState(props.chats);
+    
     const [hasMore, setHasMore] = useState(false);
     const [createChat, setCreateChat] = useState(false)
-    let [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
 
     const items = [
         {
@@ -36,36 +36,23 @@ const ChatList = (props) => {
         },
     ];
 
-    const handleGetAllChat = async () => {
-        try {
-            const res = await getAllChat(cookies.loginToken)
-            if(res.data.status === 200){
-                setData(res.data.chat)
-            }
-            setLoading(false)
-        } catch (error) {
-            console.log('Error: ', error);
-        }
-    }
-
-    useEffect(() => {
-        handleGetAllChat()
-    }, [])
+    useEffect(()=> {
+        setLoading(props.loading)
+        setData(props.chats)
+    }, [props.loading])
 
     const toggleOpenCreate = () => {
         setCreateChat(!createChat)
     }
 
-    const handleSwitchChat = (reciverId, senderId) => {
-        data.map(chat => {
-            if(chat.userChat.userName == reciverId){
-                props.setUser(chat.userChat)
-                props.setChat(chat.objectChat)
-                props.setMember(chat.member)
-                console.log(chat.member);
-            }   
+    const handleSwitchChat = (chatId) => {
+        data.map(item => {
+            if(item.objectChat._id === chatId) {
+                props.setMember(item.member)
+                props.setChat(item.objectChat)
+            }
         })
-        props.switchChat(reciverId, senderId)
+        navigate(`/redirect/${chatId}`)
     }
 
     return (
@@ -119,35 +106,70 @@ const ChatList = (props) => {
                 <List
                 dataSource={data}
                 renderItem={(item) => (
-                    <List.Item 
-                    className='chat_list_item'
-                    onClick={() => handleSwitchChat(item.userChat.userName, item.member[0].userName)}
-                    >
-                        <List.Item.Meta
-                            avatar={<Avatar src={item.userChat.avatar} size='large'/>}
-                            title={
-                                <div className='w-100 flex-between'>
-                                    <span>{item.userChat.firstName} {item.userChat.lastName}</span>
-                                     <Dropdown
-                                        menu={{items}}
-                                        trigger={['click']}    
-                                        className='more_action_chat_list'
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        <a onClick={(e) => e.preventDefault()}>
-                                        <MoreOutlined/>
-                                        </a>
-                                    </Dropdown>
-                                   
-                                </div>
-                            }
-                            description={
-                            <div className='w-100 flex-between'>
-                                <span style={{fontSize: '14px'}} className='new_message'>{item.newMessage ? item.newMessage.content : ''}</span>
-                                <span style={{fontSize: '12px'}}>{item.newMessage ? getHumanReadableDate(new Date(item.newMessage.updatedAt)): null}</span>
-                            </div>}
-                        />
-                    </List.Item>
+                    <>
+                     {item.objectChat.chatType === 'single' ? (
+                         <List.Item 
+                            className='chat_list_item'
+                            onClick={() => handleSwitchChat(item.objectChat._id)}
+                            >
+                                <List.Item.Meta
+                                    avatar={<Avatar src={item.member[0].avatar} size='large'/>}
+                                    title={
+                                        <div className='w-100 flex-between'>
+                                            <span>{item.member[0].firstName} {item.member[0].lastName}</span>
+                                            <Dropdown
+                                                menu={{items}}
+                                                trigger={['click']}    
+                                                className='more_action_chat_list'
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                <a onClick={(e) => e.preventDefault()}>
+                                                <MoreOutlined/>
+                                                </a>
+                                            </Dropdown>
+                                        
+                                        </div>
+                                    }
+                                    description={
+                                    <div className='w-100 flex-between'>
+                                        <span style={{fontSize: '14px'}} className='new_message'>{item.newMessage ? item.newMessage.content : ''}</span>
+                                        <span style={{fontSize: '12px'}}>{item.newMessage ? getHumanReadableDate(new Date(item.newMessage.updatedAt)): null}</span>
+                                    </div>}
+                                />
+                            </List.Item>
+                    )
+                     : (
+                         <List.Item 
+                            className='chat_list_item'
+                            onClick={() => handleSwitchChat(item.objectChat._id)}
+                            >
+                                <List.Item.Meta
+                                    avatar={<Avatar src={item.objectChat.avatar} size='large'/>}
+                                    title={
+                                        <div className='w-100 flex-between'>
+                                            <span>{item.objectChat.groupName}</span>
+                                            <Dropdown
+                                                menu={{items}}
+                                                trigger={['click']}    
+                                                className='more_action_chat_list'
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                <a onClick={(e) => e.preventDefault()}>
+                                                <MoreOutlined/>
+                                                </a>
+                                            </Dropdown>
+                                        
+                                        </div>
+                                    }
+                                    description={
+                                    <div className='w-100 flex-between'>
+                                        <span style={{fontSize: '14px'}} className='new_message'>{item.newMessage ? item.newMessage.content : ''}</span>
+                                        <span style={{fontSize: '12px'}}>{item.newMessage ? getHumanReadableDate(new Date(item.newMessage.updatedAt)): null}</span>
+                                    </div>}
+                                />
+                            </List.Item>
+                     )}
+                    </>
                 )}
                 />
             )}

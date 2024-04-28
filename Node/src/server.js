@@ -4,7 +4,7 @@ const dotenv = require('dotenv')
 const { connect, default: mongoose } = require('mongoose')
 const cors = require('cors')
 const router = require('./routers')
-// const routerSocket = require('./routers/socket')
+    // const routerSocket = require('./routers/socket'
 const bodyParser = require('body-parser')
 dotenv.config()
 const PORT = process.env.PORT
@@ -42,13 +42,12 @@ const io = new Server(http, {
 let activeUsers = [];
 io.on('connection', (socket) => {
     socket.on('join_room', ({chatIdJoin, userNameJoin},callBack) => {
-        const { user, error } = addUser({ id: socket.id,chatIdJoin: chatIdJoin ,userNameJoin: userNameJoin });
-        if (error) return callBack(error);
-        console.log("New User Connected", user);
+        const { user, isAddUrs } = addUser({ id: socket.id,chatIdJoin: chatIdJoin ,userNameJoin: userNameJoin });
         // if (data.userId && !activeUsers.some((user) => user.userId === data.userName && user.chatId !== data.chatId)) {
-        //     activeUsers.push({ chatId: data.chatId, userId: data.userName, socketId: socket.id });
-            
+        //     activeUsers.push({ chatId: data.chatId, userId: data.userName, socketId: socket.id }
+
         // }
+        console.log("New User Connected", user);
         socket.join(user.chatIdJoin);
 
 
@@ -64,7 +63,6 @@ io.on('connection', (socket) => {
                 })
 
                 const datasend = { chatId: chatId, createdBy: senderId, content: newMessageSend, createdAt: newMessage.createdAt };
-                console.log(user);
                 //emit the message to the receiver
                 // socket.to(chatId).emit('receiveMessage', newMessage)
                 // const user = activeUsers.find((user) => user.userId == receiverId);
@@ -137,12 +135,10 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         const user = removeUser(socket.id);
-        console.log("User Disconnected ",user);
+        console.log("User Disconnected ", user);
         // activeUsers = activeUsers.filter((user) => user.socketId !== socket.id);
-        // console.log("User Disconnected", activeUsers);
+        // console.log("User Disconnected", activeUsers)
     })
-
-    console.log(activeUsers);
 })
 
 http.listen(PORT_SOCKET, () => {
@@ -174,21 +170,24 @@ app.post('/messages', async (req, res) => {
     }
 })
 
-app.post('/messages-group', async (req, res) => {
+app.post('/messages-group', async(req, res) => {
     try {
-        const { senderId, chatId } = req.body
-        // const messages = await Message.find({
-        //     chatId: chatId
-        // })
+        const { chatId } = req.body
+        console.log(chatId);
+            // const messages = await Message.find({
+            //     chatId: chatId
+            // })
         const chatIdObject = new mongoose.Types.ObjectId(chatId);
         const messages = await Message.aggregate([
-            {$match: {chatId: chatIdObject}},
-            {$lookup: {
-                from: 'users',
-                localField: 'createdBy',
-                foreignField: 'userName',
-                as: 'user'
-            }},
+            { $match: { chatId: chatIdObject } },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'createdBy',
+                    foreignField: 'userName',
+                    as: 'user'
+                }
+            },
             {
                 $project: {
                     chatId: 1,
@@ -196,9 +195,9 @@ app.post('/messages-group', async (req, res) => {
                     typeMessage: 1,
                     content: 1,
                     createdAt: 1,
-                    firstName: { $arrayElemAt: ['$user.firstName', 0]},
-                    lastName: { $arrayElemAt: ['$user.lastName', 0]},
-                    avatar: { $arrayElemAt: ['$user.avatar', 0]},
+                    firstName: { $arrayElemAt: ['$user.firstName', 0] },
+                    lastName: { $arrayElemAt: ['$user.lastName', 0] },
+                    avatar: { $arrayElemAt: ['$user.avatar', 0] },
                 }
             }
         ])

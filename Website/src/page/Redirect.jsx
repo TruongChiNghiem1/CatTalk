@@ -1,32 +1,49 @@
 
-import { Layout, theme, Typography, Row } from 'antd';
+import { Layout, theme, Typography, Row, Col} from 'antd';
 import ChatList from '../component/redirect/ChatList';
 import ChatBox from '../component/redirect/ChatBox';
-import { useContext, useState } from 'react';
-import { getMessage } from '../service/redirect';
-import { AppContext } from '../context/AppContext';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { getAllChat } from '../service/redirect';
+import { useCookies } from 'react-cookie';
+import img from '../assets/cat_1.png'
 const {Content} = Layout;
-const Home = () => {
+
+const Redirect = () => {
   const {
     token: { colorBgContainer },
   } = theme.useToken(); 
-  const {cookies} = useContext(AppContext)
+  const {id} = useParams()
+  const [chat, setChat] = useState()
+  const [member, setMember] = useState()
+  const [cookies, setCookies] = useCookies('loginToken');
+  const [chats, setChats] = useState([]);
+  const [loading, setLoading] = useState(true)
 
-  const [infoUser, setInfoUser] = useState({})
-  const [messages, setMessages] = useState([])
-  const [chat, setChat] = useState({})
-  const [member, setMember] = useState([])
-
-  const handleSwitchMessage = async(senderId, receiverId) => {
-    try {
-      const chat = await getMessage(cookies.loginToken, {senderId, receiverId})
-      .then(res => {
-        setMessages(res.data.messages)
-      })
-    } catch (error) {
-      console.log(error);
+    const handleGetAllChat = async () => {
+        try {
+            const res = await getAllChat(cookies.loginToken)
+            if(res.data.status === 200){
+                setChats(res.data.chat)
+                if(id !== 0){
+                  res.data.chat.map(item => {
+                  if(item.objectChat._id == id){
+                    setChat(item.objectChat)
+                    setMember(item.member)
+                  }
+                })
+                }
+                setLoading(false)
+            }
+        } catch (error) {
+            console.log('Error: ', error);
+        }
     }
-  }
+
+    useEffect(() => {
+        handleGetAllChat()
+    }, [])
+
 
   return (
         <Content
@@ -35,21 +52,31 @@ const Home = () => {
         >
         <Row>
           <ChatList 
-            switchChat={handleSwitchMessage} 
-            setUser={setInfoUser} 
-            setChat={setChat}
+            loading={loading}
+            chats={chats}
             setMember={setMember}
+            setChat={setChat}
             />
+            {!loading && id != 0 ? (
+              <ChatBox  
+                chat={chat}
+                member={member}
+              />
+            ): (
+                <Col span={18}>
+                  <div className="chat_box">
+                    <div className="h-100 w-100 flex-center">
+                        <img style={{width: '20rem'}} src={img}/>
+                        <Typography.Title>Let's start</Typography.Title>
+                    </div>
+                  </div>
+                </Col>
+                )
+            }
 
-          <ChatBox 
-            messages={messages} 
-            user={infoUser} 
-            chat={chat}
-            member={member}
-            />
         </Row>
 
         </Content>
   );
 };
-export default Home;
+export default Redirect;

@@ -18,7 +18,8 @@ const {
     deleteFriend, 
     changePassword,
     getFriendAddGroup,
-    getUser
+    getUser,
+    searchFriend
 } = require('../controllers/UserController');
 const checkLogin = require('../middlewares/auth');
 // const uploadImage = require('../middlewares/uploadImage')
@@ -49,6 +50,7 @@ routerUser.post('/change-password', changePassword)
 routerUser.get('/get-friends', getFriends)
 routerUser.get('/get-user', getUser)
 routerUser.get('/get-friend-add-group', getFriendAddGroup)
+routerUser.get('/search-friend', searchFriend)
 routerUser.get('/search', searchUser)
 routerUser.post('/add-friend', addFriend)
 routerUser.post('/delete-friend', deleteFriend)

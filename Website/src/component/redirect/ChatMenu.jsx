@@ -1,11 +1,12 @@
-import { theme, Typography, Switch, Col, Skeleton, List, Avatar} from "antd"
+import { theme, Typography, Switch, Col, Skeleton, List, Avatar, Modal, Button} from "antd"
 import { useSpring, animated } from "react-spring"
-import {BellOutlined} from '@ant-design/icons';
+import {BellOutlined, DeleteOutlined, LogoutOutlined, ExclamationCircleFilled} from '@ant-design/icons';
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useState } from "react";
-
+const { confirm } = Modal;
 const ChatMenu = (props) => {
     const {token: { colorBgContainer }} = theme.useToken();
+     const [modal] = Modal.useModal();
     const [hasMore, setHasMore] = useState(false)
     const animationProps = useSpring({
         opacity: 1,
@@ -21,6 +22,24 @@ const ChatMenu = (props) => {
             console.log('Error: ', e.message);
         }
     }
+
+    const showDeleteConfirm = () => {
+        confirm({
+            title: 'Are you sure delete this chat?',
+            icon: <ExclamationCircleFilled />,
+            content: 'Some descriptions',
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk() {
+                console.log('OK');
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
+};
+
     return (
         <Col 
             span={6} 
@@ -35,7 +54,7 @@ const ChatMenu = (props) => {
           <animated.div style={animationProps}>
             <div 
                 style={{
-                    height: '100%',
+                    height: '80vh',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'start',
@@ -100,7 +119,24 @@ const ChatMenu = (props) => {
                         </InfiniteScroll>
                     </div>     
                 </div>
-                <div>Co cai nit</div>
+
+                <div className="menu-action">
+                    <div 
+                        className="delete-message action-item flex-center" 
+                        style={{color: 'orange'}}
+                        onClick={showDeleteConfirm}
+                        >
+                            <DeleteOutlined className="mr-1"/>
+                            Delete chat history
+                    </div>
+                    {props.chat.chatType === 'group' && (
+                        <div className="delete-chat action-item flex-center" style={{color: 'orange'}}>
+                            <LogoutOutlined className="mr-1"/>
+                            Leave group
+                        </div>
+                    )}
+                </div>
+
 
             </div>
                  
