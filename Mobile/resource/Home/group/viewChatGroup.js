@@ -197,9 +197,9 @@ function RenderViewChatGroup(res) {
           newMessageSend: base64String,
         });
         // call the fetchMessages() function to see the UI update
-        setTimeout(() => {
-          fetchMessages();
-        }, 1000);
+        // setTimeout(() => {
+        //   fetchMessages();
+        // }, 1000);
       }
     });
   };
