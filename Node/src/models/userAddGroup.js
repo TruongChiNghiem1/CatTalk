@@ -18,3 +18,19 @@ exports.removeUser = (id) => {
   const index = users.findIndex((user) => user.id === id);
   return users[index];
 };
+
+let notifyUsers = [];
+exports.addUserNotify = ({ id, userNameJoin }) => {
+  if (!userNameJoin) return { error: "Username and room are required." };
+  const userNotify = { id, userNameJoin };
+
+  const hashasUserInSameChatId = notifyUsers.some(obj => obj.userNameJoin === userNameJoin);
+  
+  let isAddUrs = false;
+  if(!hashasUserInSameChatId){
+    notifyUsers.push(userNotify);
+    isAddUrs = true;
+  }
+
+  return { userNotify,isAddUrs };
+};

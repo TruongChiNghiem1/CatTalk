@@ -19,16 +19,36 @@ import axios from 'axios';
 import {url} from '../../../service/cattalk';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getAllChat} from '../../../service/chat';
+import {io} from 'socket.io-client';
 
 // import { DemoBlock } from './demo'
 
-const ChatItem = () => {
+const ChatItem = ({user}) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [newMessageNotify, setNewMessageNotify] = useState([]);
   const [myUserName, setMyUserName] = useState('');
+
   const [avatar, setAvatar] = useState(
     'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
   );
+
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.9:2090'));
+
+  useEffect(() => {
+    socket.on('receiveNotify', newMessage => {
+      console.log('pppppp', data);
+
+      setData(prevData =>
+        prevData.map(item => {
+          if (item.newMessage && item.newMessage.chatId === newMessage.chatId) {
+            return {...item.newMessage, content: newMessage.content}; // Thay đổi thuộc tính content thành giá trị mới
+          }
+          return item;
+        }),
+      );
+    });
+  }, []);
 
   const fetchData = async () => {
     setLoading(true);
@@ -38,14 +58,14 @@ const ChatItem = () => {
       // );
       const token = await AsyncStorage.getItem('token');
       const res = await getAllChat(token);
-    
+
       setData(res.data.chat);
       setLoading(false);
 
-      const userStorage = await AsyncStorage.getItem('user');
-      const user = JSON.parse(userStorage);
+      // const userStorage = await AsyncStorage.getItem('user');
+      // const user = JSON.parse(userStorage);
       setAvatar(user.avatar);
-      setMyUserName(user.userName)
+      setMyUserName(user.userName);
     } catch (e) {
       console.log(e);
     }
@@ -53,7 +73,16 @@ const ChatItem = () => {
 
   useEffect(() => {
     fetchData();
+    socket.on('connection', () => {
+      console.log('Connected to the Socket.IO server');
+    });
+    const dataJoin = {
+      userNameJoin: user.userName,
+    };
+
+    socket.emit('join_new_message', dataJoin);
   }, []);
+
   return (
     <View
       style={{
@@ -96,7 +125,12 @@ const ChatItem = () => {
             {data && data.length ? (
               <>
                 {data.map(item => (
-                  <UserChatItem key={item.objectChat._id} data={item} myUserName={myUserName} />
+                  <UserChatItem
+                    // key={item.objectChat._id}
+                    data={item}
+                    myUserName={myUserName}
+                    // newMessageIO={newMessageNotify.newMessage && (newMessageNotify.newMessage.chatId == item.objectChat._id) ? newMessageNotify.newMessage : ''}
+                  />
                 ))}
               </>
             ) : (

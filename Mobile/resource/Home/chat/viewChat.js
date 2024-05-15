@@ -31,7 +31,7 @@ import RenderViewChatItem from './userViewChatItem';
 import {socket} from '../../../service/cattalk';
 import {io} from 'socket.io-client';
 import axios from 'axios';
-
+import {launchImageLibrary} from 'react-native-image-picker';
 import {
   Button,
   Icon,
@@ -94,14 +94,15 @@ function RenderViewChat(res) {
   const [nameUserChat, setNameUserChat] = useState('');
   const [chatId, setChatId] = useState(dataChat.objectChat._id);
   const [allChatMessage, setAllChatMessage] = useState('');
+  const [isLongPressParent, setIsLongPressParent] = useState(false);
   const scrollViewRef = useRef();
   const [avatar, setAvatar] = useState(
     'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
   );
   //Socket
   const route = useRoute();
-
-  const [socket, setSocket] = useState(io.connect('http://192.168.0.115:2090'));
+  var token;
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.9:2090'));
 
   const onSubmitNewSendMessage = async (senderId, receiverId) => {
     socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
@@ -110,6 +111,30 @@ function RenderViewChat(res) {
     setTimeout(() => {
       fetchMessages();
     }, 200);
+  };
+
+  const chooseImage = () => {
+    const options = {
+      mediaType: 'photo',
+      includeBase64: true,
+      maxHeight: 2000,
+      maxWidth: 2000,
+    };
+
+    launchImageLibrary(options, response => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('Image picker error: ', response.error);
+      } else {
+        let base64String = response.assets;
+        socket.emit('messageImage', base64String, {
+          chatId: chatId,
+          senderId: myUserName,
+          newMessageSend: base64String,
+        });
+      }
+    });
   };
 
   const scrollToBottom = async () => {
@@ -135,9 +160,9 @@ function RenderViewChat(res) {
         dataChat.member[0].firstName + ' ' + dataChat.member[0].lastName,
       );
       setChatId(dataChat.objectChat._id);
-      const token = await AsyncStorage.getItem('token');
+      token = await AsyncStorage.getItem('token');
       const response = await axios.post(
-        'http://192.168.0.115:2080/messages-group',
+        'http://192.168.1.9:2080/messages-group',
         {
           senderId: user.userName,
           chatId: dataChat.objectChat._id,
@@ -179,10 +204,17 @@ function RenderViewChat(res) {
         scrollToBottom();
       }, 200);
     });
+
+    socket.on('receive-recall-message', messageDelete => {
+      setData(prevData =>
+        prevData.filter(item => item._id !== messageDelete._id),
+      );
+    });
   }, []);
 
   return (
     <View
+      onPress={() => setIsLongPressParent(false)}
       style={{
         flex: 1,
       }}>
@@ -276,6 +308,10 @@ function RenderViewChat(res) {
                   <RenderMyViewChatItem
                     key={`my_${messageItem._id}_${index}`}
                     data={messageItem}
+                    socket={socket}
+                    chatId={chatId}
+                    myUserName={myUserName}
+                    setData={setData}
                   />
                 ) : (
                   <RenderViewChatItem
@@ -285,11 +321,14 @@ function RenderViewChat(res) {
                       mem => mem.userName === messageItem.createdBy,
                     )}
                     typeChat={'single'}
+                    chatId={chatId}
+                    myUserName={myUserName}
+                    setData={setData}
                   />
                 ),
               )
             ) : (
-              <></>
+              <Text>Loading...</Text>
             )}
           </ScrollView>
           <View
@@ -349,12 +388,14 @@ function RenderViewChat(res) {
                 size={20}
                 icon={faFaceSmile}
               />
-              <FontAwesomeIcon
-                style={{marginRight: 15}}
-                color={colors.primary}
-                size={20}
-                icon={faImage}
-              />
+              <TouchableOpacity onPress={chooseImage}>
+                <FontAwesomeIcon
+                  style={{marginRight: 15}}
+                  color={colors.primary}
+                  size={20}
+                  icon={faImage}
+                />
+              </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => onSubmitNewSendMessage(myUserName, userNameChat)}
                 style={{

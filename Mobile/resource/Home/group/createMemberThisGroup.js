@@ -66,9 +66,7 @@ function CreateMemberThisGroup(res) {
         chatId: chatId,
         userNameAdd : selectUserGroup
       }
-      console.log(dataAddGroup);
       const createGroup = await createNewMemberGroup(token, dataAddGroup);
-      console.log(createGroup);
       setMessage(createGroup.data.message);
       setModalVisible(true)
     } catch (error) {

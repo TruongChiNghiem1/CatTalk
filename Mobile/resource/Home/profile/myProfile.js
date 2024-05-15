@@ -5,71 +5,101 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
-  Alert,
-  Modal,
   StyleSheet,
-  Pressable,
 } from 'react-native';
+import {Provider, Modal, Button} from '@ant-design/react-native';
 import {images, colors, fontSize} from '../../../constant';
 import {Image} from 'react-native';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faChevronLeft} from '@fortawesome/free-solid-svg-icons/faChevronLeft';
-import {faCommentDots} from '@fortawesome/free-solid-svg-icons/faCommentDots';
-import {faUserPlus} from '@fortawesome/free-solid-svg-icons/faUserPlus';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
-import {getOneUser} from '../../../service/user';
-import {UIInput} from '../../../components';
-import {editProfile} from '../../../service/user';
-
-
-import {
-  Button,
-  Icon,
-  WhiteSpace,
-  WingBlank,
-  InputItem,
-  TextareaItem,
-  Provider,
-  ActionSheet,
-  List,
-  Switch,
-} from '@ant-design/react-native';
+import {editProfile, uploadAvatarMobile, getUser} from '../../../service/user';
+import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
+import {faCamera} from '@fortawesome/free-solid-svg-icons/faCamera';
+import {faImages} from '@fortawesome/free-solid-svg-icons/faImages';
 
 // import { DemoBlock } from './demo'
-function renderViewChatItem(prop) {
+function renderViewChatItem(token, prop) {
   const [firstName, setfirstName] = useState('');
   const [lastName, setlastName] = useState('');
   const [birthday, setbirthday] = useState('');
   const [gender, setgender] = useState('');
   const [hometown, sethometown] = useState('');
-  
-  // setAvatar(prop.avatar)
-  const onSubmitHandler = async() => {
+  const [avatar, setAvatar] = useState('');
+  const [visible2, setVisible2] = useState(false);
+
+  const onSubmitHandler = async () => {
     try {
-      const token = await AsyncStorage.getItem('token');
       let values = {
         token,
         firstName,
         lastName,
         birthday,
         gender,
-        hometown
-      }
-      const res = await editProfile(values)
+        hometown,
+      };
+      const res = await editProfile(values);
 
       if (res.data.status !== 200) {
         setMessage(res.data.message);
-        setModalVisible(true)
       } else {
         setMessage(res.data.message);
       }
     } catch (error) {
-      setModalVisible(true)
       console.log(error);
     }
-  }
+  };
+
+  const chooseImage = () => {
+    const options = {
+      mediaType: 'photo',
+      includeBase64: true,
+      maxHeight: 2000,
+      maxWidth: 2000,
+    };
+
+    launchImageLibrary(options,async response => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('Image picker error: ', response.error);
+      } else {
+        let newAvatar = response.assets;
+        const res = await uploadAvatarMobile(newAvatar, token);
+        setAvatar(res.data.avatar);
+      }
+    });
+  };
+
+  const takePhoto = async () => {
+    try {
+      const { assets } = await launchCamera({
+        mediaType: 'photo',
+        includeBase64: true,
+        maxHeight: 2000,
+        maxWidth: 2000,
+      });
+  
+      if (assets && assets.length > 0) {
+        let newAvatar = assets;
+        const res = await uploadAvatarMobile(newAvatar, token);
+        setAvatar(res.data.avatar);
+      }
+    } catch (error) {
+      console.error('Error taking photo:', error);
+    }
+  };
+  
+
+  const onClose2 = () => {
+    setVisible2(false);
+  };
+
+  useEffect(() => {
+    setAvatar(prop.avatar)
+  }, [prop.avatar]);
 
   let chatItem = (
     <View
@@ -88,14 +118,23 @@ function renderViewChatItem(prop) {
           alignItems: 'center',
         }}>
         <View>
-          <Image
-            source={{uri: prop.avatar}}
+          <TouchableOpacity
             style={{
               width: 130,
               height: 130,
               borderRadius: 100,
               zIndex: 1,
-            }}></Image>
+            }}
+            onPress={() => setVisible2(true)}>
+            <Image
+              style={{
+                width: 130,
+                height: 130,
+                borderRadius: 100,
+                zIndex: 1,
+              }}
+              source={{uri: avatar}}></Image>
+          </TouchableOpacity>
         </View>
         <View
           style={{
@@ -135,7 +174,7 @@ function renderViewChatItem(prop) {
               }}>
               Description: {prop.description}
             </Text>
-            
+
             <Text
               style={{
                 color: 'black',
@@ -174,6 +213,78 @@ function renderViewChatItem(prop) {
           </View>
         </View>
       </View>
+      <Modal
+        popup
+        visible={visible2}
+        animationType="slide-up"
+        onClose={onClose2}>
+        <View
+          style={{
+            paddingTop: 15,
+            paddingBottom: 5,
+            paddingHorizontal: 20,
+            height: 120,
+          }}>
+          <TouchableOpacity
+            style={{
+              height: 45,
+              flexDirection: 'row',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              marginBottom: 5,
+            }}
+            onPress={takePhoto}>
+            <FontAwesomeIcon
+              style={{paddingRight: 40}}
+              color={colors.primary}
+              size={20}
+              icon={faCamera}
+            />
+            <Text
+              style={{
+                textAlign: 'center',
+                color: 'black',
+                fontSize: fontSize.h4,
+              }}>
+              Take a new photo
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              height: 45,
+              flexDirection: 'row',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+            }}
+            onPress={chooseImage}>
+            <FontAwesomeIcon
+              style={{paddingRight: 40}}
+              color={colors.primary}
+              size={20}
+              icon={faImages}
+            />
+            <Text
+              style={{
+                textAlign: 'center',
+                color: 'black',
+                fontSize: fontSize.h4,
+              }}>
+              Choose from your device
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <Button
+          type="primary"
+          style={{
+            backgroundColor: colors.colorBgButton,
+            borderColor: colors.colorBgButton,
+          }}
+          onPress={onClose2}>
+          Cancel
+        </Button>
+      </Modal>
     </View>
   );
 
@@ -194,12 +305,19 @@ function RenderMyProfile(res) {
   const [data, setData] = useState([]);
   const [background, setBackground] = useState('');
   const [loading, setLoading] = useState(false);
+  const [token, settoken] = useState('');
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const user = await AsyncStorage.getItem('user');
-      setData(JSON.parse(user));
+      const userAsyncStorage = await AsyncStorage.getItem('user');
+      var getToken = await AsyncStorage.getItem('token');
+      settoken(getToken)
+      const myUserName = JSON.parse(userAsyncStorage).userName
+
+      const user = await getUser(token, myUserName);
+      AsyncStorage.setItem('user', JSON.stringify(user.data.user));
+      setData(user.data.user);
 
       setBackground(data.background);
       setLoading(false);
@@ -249,7 +367,7 @@ function RenderMyProfile(res) {
                 />
               </TouchableOpacity>
             </View>
-            <ScrollView>{renderViewChatItem(data)}</ScrollView>
+            <ScrollView>{renderViewChatItem(token,data)}</ScrollView>
           </View>
         </ImageBackground>
       </Provider>

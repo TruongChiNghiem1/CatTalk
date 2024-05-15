@@ -4,6 +4,7 @@ const User = require('../models/user.js')
 const Chat = require('../models/chat.js')
 const Member = require('../models/member.js')
 const Message = require('../models/message.js')
+const DeleteMessage = require('../models/DeleteMessage.js')
 const { Mongoose } = require('mongoose')
 const { connect, default: mongoose } = require('mongoose')
 
@@ -44,6 +45,7 @@ const getAllChat = async (req, res) => {
                     notifyType: 1,
                     chatType: 1,
                     chatId: 1,
+                    isNewChat: 1,
                     firstName: { $arrayElemAt: ['$user.firstName', 0]},
                     lastName: { $arrayElemAt: ['$user.lastName', 0]},
                     avatar: { $arrayElemAt: ['$user.avatar', 0]},
@@ -60,12 +62,13 @@ const getAllChat = async (req, res) => {
                     member: memberChat,
                     objectChat: chat,
                     newMessage: message,
-                    createdAtMessage: message.createdAt
+                    // createdAtMessage: message.createdAt
                 }
                 chats.push(newChat)
             }
         }
-        chats.sort((createdAtA, createdAtB) => createdAtB.createdAtMessage - createdAtA.createdAtMessage)
+
+        chats.sort((createdAtA, createdAtB) => createdAtB.newMessage.createdAt - createdAtA.newMessage.createdAt)
         if (chats) {
             return res.json({
                 status: 200,
@@ -107,6 +110,7 @@ const getMessage = async (req, res) => {
         })
     }
 }
+
 
 const createThisGroup = async (req, res) => {
     try {
@@ -340,6 +344,37 @@ const deleteMember = async (req, res) => {
     }
 }
 
+const deleteMessage = async (req, res) => {
+    try {
+
+        const { chatId, data,myUserName } = req.body
+
+        const deleteMessage = await DeleteMessage.create({
+            userName: myUserName,
+            messageId: data._id,
+            chatId: chatId,
+        })
+
+        console.log('aaaaaaaaa', deleteMessage);
+
+        if (!deleteMessage) {
+            return res.json({
+                status: 500,
+                message: "Can't delete member, please try again",
+            })
+        }
+        return res.json({
+            status: 200,
+            message: 'Delete successful member',
+        })
+    } catch (error) {
+        return res.json({
+            status: 500,
+            message: 'Opps, somthing went wrong!!!',
+        })
+    }
+}
+
 const getMemberInGroup = async (req, res) => {
     try {
         const { chatId } = req.query
@@ -366,7 +401,6 @@ const getMemberInGroup = async (req, res) => {
             }}
         ])
 
-        console.log(memberChat);
 
         if (!memberChat) {
             return res.json({
@@ -393,5 +427,6 @@ module.exports = {
     createThisGroup,
     createNewMemberGroup,
     deleteMember,
-    getMemberInGroup
+    getMemberInGroup,
+    deleteMessage
  }

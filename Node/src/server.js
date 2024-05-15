@@ -11,8 +11,10 @@ const PORT = process.env.PORT
 const PORT_SOCKET = process.env.PORT_SOCKET
 const URI_DB = process.env.URI_DB
 const Message = require('./models/message')
+const Member = require('./models/member')
+const DeleteMessage = require('./models/DeleteMessage.js')
 const { Server } = require("socket.io");
-const { addUser, removeUser } = require("./models/userAddGroup");
+const { addUser, removeUser,addUserNotify } = require("./models/userAddGroup");
 const s3 = require('./config/aws-helper.js')
 connect(URI_DB)
 const fs = require('fs');
@@ -39,17 +41,42 @@ const io = new Server(http, {
         methods: ['GET', 'POST'],
     },
 })
-let activeUsers = [];
+let unreadMessageCounts = {};
 io.on('connection', (socket) => {
+    socket.on('join_new_message', ({userNameJoin},callBack) => {
+        const { userNotify } = addUserNotify({ id: socket.id ,userNameJoin: userNameJoin });
+        console.log("New User Connected", userNotify);
+        socket.join(userNotify.userNameJoin);
+
+        // socket.on('sss', async (data) => {
+        //     try {
+        //         const { chatId, senderId, newMessageSend } = data
+        //         const newMessage = await Message.create({
+        //             chatId: chatId,
+        //             createdBy: senderId,
+        //             // userName: receiverId,
+        //             content: newMessageSend,
+        //             typeMessage: 1
+        //         })
+
+        //         const datasend = { chatId: chatId, createdBy: senderId, content: newMessageSend, createdAt: newMessage.createdAt };
+
+        //         if (user) {
+        //             console.log('gui text ne ', datasend, user.chatIdJoin);
+        //             io.to(chatId).emit("receiveMessage", datasend);
+        //         }
+        //     } catch (error) {
+        //         console.log(error)
+        //         console.log('Error handling the messages')
+        //     }
+        // })
+
+    })
+    
     socket.on('join_room', ({chatIdJoin, userNameJoin},callBack) => {
         const { user, isAddUrs } = addUser({ id: socket.id,chatIdJoin: chatIdJoin ,userNameJoin: userNameJoin });
-        // if (data.userId && !activeUsers.some((user) => user.userId === data.userName && user.chatId !== data.chatId)) {
-        //     activeUsers.push({ chatId: data.chatId, userId: data.userName, socketId: socket.id }
-
-        // }
         console.log("New User Connected", user);
         socket.join(user.chatIdJoin);
-
 
         socket.on('message', async (data) => {
             try {
@@ -62,13 +89,23 @@ io.on('connection', (socket) => {
                     typeMessage: 1
                 })
 
+                const sendNotify = await Member.find(
+                    { 
+                        chatId: chatId,
+                        userName: {$ne: senderId}
+                    }).updateMany(
+                    {
+                        $set: {
+                            isNewChat: 1
+                        }
+                    }
+                )
+
                 const datasend = { chatId: chatId, createdBy: senderId, content: newMessageSend, createdAt: newMessage.createdAt };
-                //emit the message to the receiver
-                // socket.to(chatId).emit('receiveMessage', newMessage)
-                // const user = activeUsers.find((user) => user.userId == receiverId);
                 if (user) {
                     console.log('gui text ne ', datasend, user.chatIdJoin);
                     io.to(chatId).emit("receiveMessage", datasend);
+                    io.to(senderId).emit("receiveNotify", datasend);
                 }
             } catch (error) {
                 console.log(error)
@@ -131,6 +168,25 @@ io.on('connection', (socket) => {
                 console.log('Error handling the messages')
             }
         })
+
+        socket.on('recall-message', async (params) => {
+            try {
+                const {data, chatId} = params;
+                const deleteMessage = await Message.deleteOne({
+                    _id: data._id,
+                })
+                
+                const messageDelete = data;
+
+                if (user) {
+                    io.to(chatId).emit("receive-recall-message", messageDelete);
+                }
+            } catch (error) {
+                console.log(error)
+                console.log('Error handling the messages')
+            }
+            
+        })
     })
 
     socket.on('disconnect', () => {
@@ -151,7 +207,7 @@ function generateUniqueFileName() {
     const fileName = `${timestamp}-${randomString}.jpg`; // Create the file name using the timestamp and random string
   
     return fileName;
-  }
+}
 
 app.post('/messages', async (req, res) => {
     try {
@@ -172,14 +228,18 @@ app.post('/messages', async (req, res) => {
 
 app.post('/messages-group', async(req, res) => {
     try {
-        const { chatId } = req.body
-        console.log(chatId);
-            // const messages = await Message.find({
-            //     chatId: chatId
-            // })
+        const { chatId, senderId } = req.body
+
+        const deletedMessage = await DeleteMessage.find({ 
+            chatId: chatId,
+            userName: senderId,
+        })
+
+        const deletedMessageIds = deletedMessage.map(deletedMessage => new mongoose.Types.ObjectId(deletedMessage.messageId));
+
         const chatIdObject = new mongoose.Types.ObjectId(chatId);
         const messages = await Message.aggregate([
-            { $match: { chatId: chatIdObject } },
+            { $match: { chatId: chatIdObject, _id: {$nin: deletedMessageIds} } },
             {
                 $lookup: {
                     from: 'users',
