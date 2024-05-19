@@ -5,11 +5,9 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
-  Alert,
 } from 'react-native';
 import {images, colors, fontSize} from '../../../constant';
 import {Image} from 'react-native';
-import {UIInput} from '../../../components';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faChevronLeft} from '@fortawesome/free-solid-svg-icons/faChevronLeft';
 import {faVideo} from '@fortawesome/free-solid-svg-icons/faVideo';
@@ -20,18 +18,16 @@ import {faImage} from '@fortawesome/free-solid-svg-icons/faImage';
 import {faTrashCan} from '@fortawesome/free-solid-svg-icons/faTrashCan';
 import {faPaperPlane} from '@fortawesome/free-solid-svg-icons/faPaperPlane';
 import {height} from '@fortawesome/free-solid-svg-icons/faMugSaucer';
-import {AppRegistry} from 'react-native';
-import BasicTabBarExample from '../layout/footer';
 import {useRoute, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {getMessage} from '../../../service/chat';
 import RenderMyViewChatItem from './myViewChatItem';
 import RenderSystemViewChatItem from './systemViewChatItem';
 import RenderViewChatItem from './userViewChatItem';
 import {socket} from '../../../service/cattalk';
 import {io} from 'socket.io-client';
 import axios from 'axios';
-
+import {launchImageLibrary} from 'react-native-image-picker';
+import {UIInput} from '../../../components';
 import {
   Button,
   Icon,
@@ -43,7 +39,12 @@ import {
   ActionSheet,
   List,
   Switch,
+  Modal,
+  Checkbox,
 } from '@ant-design/react-native';
+import ViewFriendItem from './viewFriendItem';
+import {getFriends} from '../../../service/user';
+import {faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons/faMagnifyingGlass';
 
 this.state = {
   value: '',
@@ -88,20 +89,27 @@ function RenderViewChat(res) {
 
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
+  const [dataFriend, setDataFriend] = useState([]);
   const [myUserName, setMyUserName] = useState('');
   const [userNameChat, setUserNameChat] = useState('');
   const [newMessageSend, setNewMessageSend] = useState('');
   const [nameUserChat, setNameUserChat] = useState('');
   const [chatId, setChatId] = useState(dataChat.objectChat._id);
   const [allChatMessage, setAllChatMessage] = useState('');
+  const [isLongPressParent, setIsLongPressParent] = useState(false);
+  const [isOpenModalForwardMessage, setIsOpenModalForwardMessage] =
+    useState(false);
   const scrollViewRef = useRef();
+  const [search, setSearch] = useState('');
   const [avatar, setAvatar] = useState(
     'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
   );
+  const [selectUserGroup, setSelectUserGroup] = useState([]);
+  const CheckboxItem = Checkbox.CheckboxItem;
   //Socket
   const route = useRoute();
-
-  const [socket, setSocket] = useState(io.connect('http://192.168.0.115:2090'));
+  const [token, settoken] = useState('');
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.22:2090'));
 
   const onSubmitNewSendMessage = async (senderId, receiverId) => {
     socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
@@ -110,6 +118,30 @@ function RenderViewChat(res) {
     setTimeout(() => {
       fetchMessages();
     }, 200);
+  };
+
+  const chooseImage = () => {
+    const options = {
+      mediaType: 'photo',
+      includeBase64: true,
+      maxHeight: 2000,
+      maxWidth: 2000,
+    };
+
+    launchImageLibrary(options, response => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('Image picker error: ', response.error);
+      } else {
+        let base64String = response.assets;
+        socket.emit('messageImage', base64String, {
+          chatId: chatId,
+          senderId: myUserName,
+          newMessageSend: base64String,
+        });
+      }
+    });
   };
 
   const scrollToBottom = async () => {
@@ -135,9 +167,10 @@ function RenderViewChat(res) {
         dataChat.member[0].firstName + ' ' + dataChat.member[0].lastName,
       );
       setChatId(dataChat.objectChat._id);
-      const token = await AsyncStorage.getItem('token');
+      var getToken = await AsyncStorage.getItem('token');
+      settoken(getToken);
       const response = await axios.post(
-        'http://192.168.0.115:2080/messages-group',
+        'http://192.168.1.22:2080/messages-group',
         {
           senderId: user.userName,
           chatId: dataChat.objectChat._id,
@@ -179,10 +212,45 @@ function RenderViewChat(res) {
         scrollToBottom();
       }, 200);
     });
+
+    socket.on('receive-recall-message', messageDelete => {
+      setData(prevData =>
+        prevData.filter(item => item._id !== messageDelete._id),
+      );
+    });
   }, []);
+
+  const onCloseModalForwardMessage = () => {
+    setIsOpenModalForwardMessage(false);
+  };
+
+  const onOpenModalForwardMessage = async () => {
+    getDataFriend();
+    setIsOpenModalForwardMessage(true);
+  };
+
+  const getDataFriend = async () => {
+    const items = await getFriends(token, search);
+    setDataFriend(items.data.data);
+  };
+
+  const createThisGroupButton = async () => {
+    try {
+      var dataAddGroup = {
+        nameGroup: nameGroup,
+        userNameAdd: selectUserGroup,
+      };
+      const createGroup = await createThisGroup(token, dataAddGroup);
+      setMessage(createGroup.data.message);
+      setModalVisible(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <View
+      onPress={() => setIsLongPressParent(false)}
       style={{
         flex: 1,
       }}>
@@ -276,6 +344,11 @@ function RenderViewChat(res) {
                   <RenderMyViewChatItem
                     key={`my_${messageItem._id}_${index}`}
                     data={messageItem}
+                    socket={socket}
+                    chatId={chatId}
+                    myUserName={myUserName}
+                    setData={setData}
+                    onOpenModalForwardMessage={onOpenModalForwardMessage}
                   />
                 ) : (
                   <RenderViewChatItem
@@ -285,11 +358,14 @@ function RenderViewChat(res) {
                       mem => mem.userName === messageItem.createdBy,
                     )}
                     typeChat={'single'}
+                    chatId={chatId}
+                    myUserName={myUserName}
+                    setData={setData}
                   />
                 ),
               )
             ) : (
-              <></>
+              <Text>Loading...</Text>
             )}
           </ScrollView>
           <View
@@ -349,12 +425,14 @@ function RenderViewChat(res) {
                 size={20}
                 icon={faFaceSmile}
               />
-              <FontAwesomeIcon
-                style={{marginRight: 15}}
-                color={colors.primary}
-                size={20}
-                icon={faImage}
-              />
+              <TouchableOpacity onPress={chooseImage}>
+                <FontAwesomeIcon
+                  style={{marginRight: 15}}
+                  color={colors.primary}
+                  size={20}
+                  icon={faImage}
+                />
+              </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => onSubmitNewSendMessage(myUserName, userNameChat)}
                 style={{
@@ -377,6 +455,108 @@ function RenderViewChat(res) {
             </View>
           </View>
         </ImageBackground>
+        <Modal
+          popup
+          visible={isOpenModalForwardMessage}
+          animationType="slide-up"
+          onClose={onCloseModalForwardMessage}>
+          <View
+            style={{
+              paddingTop: 15,
+              paddingBottom: 5,
+              paddingHorizontal: 20,
+              height: 720,
+            }}>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+              }}>
+              <UIInput
+                placeholder="Nhập username hoặc email"
+                width={320}
+                height={10}
+                onChangeText={setSearch}></UIInput>
+              <TouchableOpacity onPress={getDataFriend} title="Login">
+                <View
+                  style={{
+                    backgroundColor: 'white',
+                    width: 41,
+                    marginTop: 7,
+                    height: 41,
+                    borderRadius: 100,
+                    marginLeft: 8,
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <FontAwesomeIcon
+                    icon={faMagnifyingGlass}
+                    color={colors.colorBgButton}
+                  />
+                </View>
+              </TouchableOpacity>
+            </View>
+            {loading ? (
+              <Text>loading....</Text>
+            ) : (
+              <ScrollView
+                style={{
+                  marginVertical: 15,
+                  backgroundColor: colors.colorHide,
+                }}>
+                {dataFriend && dataFriend.length ? (
+                  <>
+                    {dataFriend.map(item => (
+                      <View style={{height: 80}}>
+                        <ViewFriendItem data={item} />
+                      </View>
+                    ))}
+                  </>
+                ) : (
+                  <View
+                    style={{
+                      width: 440,
+                      opacity: 0.75,
+                      height: 500,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <Image
+                      source={images.empty}
+                      style={{
+                        marginRight: 15,
+
+                        width: 120,
+                        height: 120,
+                        borderRadius: 100,
+                      }}></Image>
+                    <Text
+                      style={{
+                        color: colors.primary,
+                        fontWeight: 'bold',
+                        fontSize: 18,
+                      }}>
+                      No user found
+                    </Text>
+                  </View>
+                )}
+              </ScrollView>
+            )}
+          </View>
+          <Button
+            type="primary"
+            style={{
+              width: 400,
+              backgroundColor: colors.colorBgButton,
+              borderColor: colors.colorBgButton,
+            }}
+            onPress={onCloseModalForwardMessage}>
+            Cancel
+          </Button>
+        </Modal>
       </Provider>
     </View>
   );

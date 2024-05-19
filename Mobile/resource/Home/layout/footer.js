@@ -26,12 +26,21 @@ export default class BasicTabBarExample extends React.Component {
     const {navigation} = props;
     this.navigation = navigation
     const { route } = props;
-    const token = AsyncStorage.setItem('token')
-    const user = AsyncStorage.setItem('user')
 
-    this.state.user = user;
-    this.state.token = token;
+    this.getDataFromAsyncStorage();
   }
+
+  getDataFromAsyncStorage = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const user = await AsyncStorage.getItem('user');
+      if (user) {
+        this.setState({ user: JSON.parse(user), token });
+      }
+    } catch (error) {
+      console.error('Error getting data from AsyncStorage:', error);
+    }
+  };
 
   renderContent1(pageText) {
     return <Chat user={this.state.user}></Chat>;

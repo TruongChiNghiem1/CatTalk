@@ -186,12 +186,12 @@ function CreateGroup(res) {
             alignItems: 'center',
             marginTop: 10,
           }}>
-            <UIInput
-              placeholder="Nhập tên nhóm"
-              width={340}
-              height={10}
-              onChangeText={setNameGroup}></UIInput>
-          </View>
+          <UIInput
+            placeholder="Nhập tên nhóm"
+            width={340}
+            height={10}
+            onChangeText={setNameGroup}></UIInput>
+        </View>
         <View
           style={{
             display: 'flex',

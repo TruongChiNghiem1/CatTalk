@@ -37,7 +37,14 @@ const chatSchema = new mongoose.Schema({
     
     lastName: {
         type: String
-    }
+    },
+    /**
+     * 0. Không thông báo mới ở chatId của user này
+     * 1. Có thông báo mới ở chatId của user này
+     */
+    isNewChat: {
+        type: mongoose.Schema.Types.Number,
+    },
 },
     {
         timestamps: true,

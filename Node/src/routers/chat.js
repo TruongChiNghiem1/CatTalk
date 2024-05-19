@@ -5,7 +5,8 @@ const {
     createThisGroup,
     createNewMemberGroup,
     deleteMember,
-    getMemberInGroup
+    getMemberInGroup,
+    deleteMessage
 } = require('../controllers/ChatController')
 const checkLogin = require('../middlewares/auth');
 const app = express();
@@ -18,5 +19,6 @@ routerChat.get('/get-message', getMessage)
 routerChat.post('/create-this-group', createThisGroup)
 routerChat.post('/create-new-member-group', createNewMemberGroup)
 routerChat.post('/delete-member', deleteMember)
+routerChat.post('/delete-message', deleteMessage)
 
 module.exports = routerChat;

@@ -365,7 +365,7 @@ const uploadAvatar = async (req, res) => {
         const username = decoded.username
 
         const avatar = req.file
-        console.log('req.file.buffer = ', req.file.buffer);
+        console.log('req.file.buffer = ', req.file.buffer)
         const filePath = avatar.originalname
         const paramsS3 = {
             Bucket: process.env.BUCKET_NAME,
@@ -402,6 +402,58 @@ const uploadAvatar = async (req, res) => {
     }
 }
 
+const uploadAvatarMobile = async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1]
+        const decoded = jwt.verify(token, SECRET_CODE)
+        const username = decoded.username
+
+        const base64String = req.body[0].base64 // Truy cập vào trường base64 trong mảng
+
+        const bufferData = Buffer.from(base64String, 'base64') // Chuyển đổi từ chuỗi base64 sang đối tượng Buffer
+        const filePath = generateUniqueFileName()
+        const paramsS3 = {
+            Bucket: process.env.BUCKET_NAME,
+            Key: filePath,
+            Body: bufferData,
+            ContentType: req.body[0].type,
+        }
+
+        s3.upload(paramsS3, async (err, data) => {
+            if (err) {
+                console.log('Upload fail', err)
+                return res.json({
+                    status: 500,
+                    message: 'Server cannot save your avatar, try again!',
+                })
+            } else {
+                const user = await User.findOneAndUpdate(
+                    { userName: username },
+                    { avatar: data.Location }
+                )
+                return res.json({
+                    status: 200,
+                    message: 'Changed avatar successfully!',
+                    avatar: data.Location,
+                })
+            }
+        })
+    } catch (error) {
+        console.log(error)
+        return res.json({
+            status: 500,
+            message: 'Opps, somthing went wrong!!!',
+        })
+    }
+}
+
+function generateUniqueFileName() {
+    const timestamp = new Date().getTime(); // Get the current timestamp
+    const randomString = Math.random().toString(36).substring(2, 8); // Generate a random string
+    const fileName = `${timestamp}-${randomString}.jpg`; // Create the file name using the timestamp and random string
+  
+    return fileName;
+}
 
 const uploadBackground = async (req, res) => {
     try {
@@ -636,10 +688,10 @@ const searchFriend = async (req, res) => {
                 lastName: 1,
                 userName: 1,
                 avatar: 1,
-                background: 1
+                background: 1,
             }
         )
-    
+
         if (finds) {
             return res.json({
                 status: 200,
@@ -744,7 +796,7 @@ const createChat11 = async (username, userNameAdd) => {
                 notifyType: 1,
                 chatType: 'single',
                 createdBy: username,
-            }
+            },
         ]
 
         const member = await Member.create(newMember)
@@ -756,11 +808,12 @@ const createChat11 = async (username, userNameAdd) => {
             })
         }
 
-        const nameUser = await User.findOne({userName: username})
-        const nameUserAdd = await User.findOne({userName: userNameAdd})
+        const nameUser = await User.findOne({ userName: username })
+        const nameUserAdd = await User.findOne({ userName: userNameAdd })
 
         const fullNameUser = nameUser.firstName + ' ' + nameUser.lastName
-        const fullNameUserAdd = nameUserAdd.firstName + ' ' + nameUserAdd.lastName
+        const fullNameUserAdd =
+            nameUserAdd.firstName + ' ' + nameUserAdd.lastName
 
         const newMessage = [
             {
@@ -776,7 +829,7 @@ const createChat11 = async (username, userNameAdd) => {
                 typeMessage: 0,
                 content: `You and ${fullNameUser} have just become friends`,
                 createdBy: username,
-            }
+            },
         ]
 
         const message = await Message.create(newMessage)
@@ -791,14 +844,11 @@ const createChat11 = async (username, userNameAdd) => {
 }
 
 const getUser = async (req, res) => {
-    const {username} = req.query
-    console.log(username);
-    const user = await User.findOne({userName: username})
-console.log(user);
-    return user
+    const { username } = req.query
+    const user = await User.findOne({ userName: username })
     return res.json({
         status: 200,
-        user: user
+        user: user,
     })
 }
 
@@ -918,10 +968,10 @@ const checkAuth = async (req, res) => {
 
 const changePassword = async (req, res) => {
     try {
-        const { currentpass, newpass, repass } = req.body;
-        const token = req.headers.authorization.split(" ")[1];
-        const decoded = jwt.verify(token, SECRET_CODE);
-        const username = decoded.username;
+        const { currentpass, newpass, repass } = req.body
+        const token = req.headers.authorization.split(' ')[1]
+        const decoded = jwt.verify(token, SECRET_CODE)
+        const username = decoded.username
         // Check email
         const user = await User.findOne({ userName: username })
         if (!user) {
@@ -941,27 +991,29 @@ const changePassword = async (req, res) => {
 
         const hashedPassword = await bcrypyjs.hash(newpass, 10)
         if (newpass == repass) {
-            const user = await User.findOneAndUpdate({ userName: username }, { password: hashedPassword });
+            const user = await User.findOneAndUpdate(
+                { userName: username },
+                { password: hashedPassword }
+            )
         } else {
             return res.json({
                 status: 500,
-                message: 'Invalid Repeat password'
+                message: 'Invalid Repeat password',
             })
         }
 
         return res.json({
             status: 200,
-            message: 'Change passwords successfully'
+            message: 'Change passwords successfully',
         })
     } catch (error) {
-        console.log(error);
+        console.log(error)
         return res.json({
             status: 402,
             message: 'Opps, somthing went wrong!!!',
         })
     }
 }
-
 
 const getFriendAddGroup = async (req, res) => {
     try {
@@ -973,7 +1025,7 @@ const getFriendAddGroup = async (req, res) => {
         const searchRegex = new RegExp(search, 'i')
 
         const user = await User.findOne({ userName: username }) // Tìm người dùng dựa trên username của bạn
-        
+
         if (!user) {
             return res.json({
                 status: 500,
@@ -990,8 +1042,7 @@ const getFriendAddGroup = async (req, res) => {
                     { firstName: searchRegex },
                     { lastName: searchRegex },
                     { email: searchRegex },
-                ]
-                
+                ],
             },
             {
                 userName: 1,
@@ -1006,8 +1057,10 @@ const getFriendAddGroup = async (req, res) => {
         const userGroupChat = await Member.find({ chatId: chatId })
 
         friends.forEach((userFriend) => {
-            const inGroup = userGroupChat.find((userGroup) => userGroup.userName === userFriend.userName)
-            if (inGroup){
+            const inGroup = userGroupChat.find(
+                (userGroup) => userGroup.userName === userFriend.userName
+            )
+            if (inGroup) {
                 userFriend.inThisGroup = 1
             } else {
                 userFriend.inThisGroup = 0
@@ -1046,5 +1099,6 @@ module.exports = {
     changePassword,
     getFriendAddGroup,
     getUser,
-    searchFriend
+    searchFriend,
+    uploadAvatarMobile,
 }
