@@ -582,6 +582,7 @@
 .sendChatBox{
   display: flex;
   width: 100%;
+    max-width: 50%;
   justify-content: start;
   padding-left: 1rem;
   .sendChat {
@@ -589,7 +590,6 @@
     background: rgb(255, 255, 255);
     color: #1e696b;
     width: max-content;
-    max-width: 50%;
     border-radius: 20px;
     margin-bottom: .3rem;
   }

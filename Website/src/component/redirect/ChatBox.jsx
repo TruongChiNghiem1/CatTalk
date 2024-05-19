@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useContext, useInsertionEffect } from "react";
-import { Button, Col, Typography } from "antd";
+import { useState, useEffect, useRef, useContext } from "react";
+import { Button, Col, Empty, Typography, Image} from "antd";
 import {VideoCameraOutlined, MoreOutlined, SendOutlined,PaperClipOutlined} from '@ant-design/icons';
 import InputEmoji from "react-input-emoji";
 import getChatTime from "../../helper/getChatTime";
@@ -18,11 +18,12 @@ const ChatBox = (props) => {
     const [member, setMember] = useState(props.member)
     const [chatId, setChatId] = useState(id)
 
+    console.log(props.member);
 
     const [newMessageSend, setText] = useState('');
     const [openMenu, setOpenMenu] = useState(false);
     const chatRef = useRef(null);
-    const [socket, setSocket] = useState(io.connect('http://192.168.1.22:2090'))
+    const [socket, setSocket] = useState(io.connect('http://192.168.3.170:2090'))
     
 
     const handleSendMessage= async (senderId) => {
@@ -59,13 +60,11 @@ const ChatBox = (props) => {
             chatIdJoin: id, 
             userNameJoin: cookies.user.userName
         }
-        console.log(dataJoin);
         socket.emit('join_room', dataJoin)
     }, []);
 
     useEffect(() => {
         socket.on('receiveMessage', newMessage => {
-            console.log('new Message', newMessage);
             setMessages(prevMessages => [...prevMessages, newMessage]);
         });
     }, []);
@@ -114,38 +113,81 @@ const ChatBox = (props) => {
                              {messages.map(item =>{
                                 if(item.typeMessage === 0){
                                         return (
-                                            <div key={item._id} className="myChatBox flex-center mb-1">
-                                                <span style={{color: '#2b7b7ec3'}}>{item.content}</span>
+                                            <div key={item._id} className="sendChatBox mb-1 flex-center">
+                                                <span style={{color: '#2b7b7ec3', fontSize: '12px'}}>{item.content}</span>
                                             </div>
                                         )
-                                }else{
+                                }
+                                else{
                                     if(item.createdBy === user.userName){
-                                        return (
-                                            <div key={item._id} className="myChatBox">
-                                                <div className="myChat">
-                                                    <span>{item.content}</span>
-                                                <div className="flex-end time">{getChatTime(item.createdAt)}</div>
+                                        if(item.typeMessage == 2){
+                                            return (
+                                                <div key={item._id} className="myChatBox mb-1">
+                                                <div className="column-end">
+                                                        <Image src={item.content} width={400} height={230} style={{objectFit: 'cover', borderRadius: '20px'}}/>
+                                                        <div className="flex-end w-100 time">{getChatTime(item.createdAt)}</div>
                                                 </div>
-                                            
-                                            </div>
-                                        )
-                                    }else{
-                                        return (
-                                            <div key={item._id} className="sendChatBox">
-                                                <div className="sendChat">
-                                                <span> {item.content}</span>
-                                                        <div className="flex-end time">{getChatTime(item.createdAt)}</div>
+                                                </div>
+                                            )}else{
+                                            return (
+                                                <div key={item._id} className="myChatBox">
+                                                    <div className="myChat">
+                                                        <span>{item.content}</span>
+                                                    <div className="flex-end time">{getChatTime(item.createdAt)}</div>
                                                     </div>
-                                            
+                                                
+                                                </div>
+                                            )
+                                        }
+                                    }
+                                    else{
+                                        if(chat.chatType == 'multi'){
+                                            if(item.typeMessage == 2){
+                                                return (
+                                                    <div key={item._id} className="sendChatBox mb-1">
+                                                        <img src={member.filter(mem => mem.userName === item.createdBy)[0]?.avatar} width={30} height={30} style={{borderRadius: '100%', marginRight: '10px'}} />
+                                                    <div className="column-start">
+                                                            <Typography.Text style={{fontSize: '12px', color: 'orange'}}>{item.createdBy}</Typography.Text>
+                                                            <Image src={item.content} width={400} height={230} style={{objectFit: 'cover', borderRadius: '20px'}}/>
+                                                            <div className="flex-end w-100 time">{getChatTime(item.createdAt)}</div>
+                                                    </div>
+                                                    </div>
+                                                 )}
+                                            else{
+                                                return (
+                                                    <div key={item._id} className="sendChatBox">
+                                                        <img   src={member.filter(mem => mem.userName === item.createdBy)[0]?.avatar} width={30} height={30} style={{borderRadius: '100%', marginRight: '10px'}} />
+                                                    <div className="column-start ">
+                                                            <Typography.Text style={{fontSize: '12px', color: 'orange'}}>{item.createdBy}</Typography.Text>
+                                                            <div className="sendChat">
+                                                            <span> {item.content}</span>
+                                                            <div className="flex-end w-100 time">{getChatTime(item.createdAt)}</div>
+                                                            </div>
+                                                            
+                                                    </div>
+                                                    </div>
+                                                )
+                                            }
+                                        
+                                        }else{
+                                            return (
+                                                <div key={item._id} className="sendChatBox">
+                                                    <div className="sendChat">
+                                                    <span> {item.content}</span>
+                                                     <div className="flex-end w-100 time">{getChatTime(item.createdAt)}</div>
+                                                    </div>
                                             </div>
                                             )
+                                        }
+                                        
                                     }
                                 }
-                    
                                 })}
                             </>
                         ) : (
-                            <>Chua co tin nhan</>
+                            <Empty
+                                description={'No message yet received'}
+                            />
                         )}
                     </div>
                 </div>
