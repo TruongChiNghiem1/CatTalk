@@ -1,11 +1,8 @@
 import react, {useEffect, useState} from 'react';
 import {
-  ImageBackground,
   Text,
   View,
   TouchableOpacity,
-  ScrollView,
-  Alert,
 } from 'react-native';
 import {images, colors, fontSize} from '../../../constant';
 import {Image} from 'react-native';
@@ -14,7 +11,7 @@ import {deleteMessage} from '../../../service/chat'
 
 function RenderMyViewChatItem(res) {
   const [loading, setLoading] = useState(false);
-  const {data, socket,myUserName,chatId, setData} = res;
+  const {data, socket,myUserName,chatId, setData, onOpenModalForwardMessage} = res;
   const [avatar, setAvatar] = useState(
     'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
   );
@@ -43,6 +40,10 @@ function RenderMyViewChatItem(res) {
   const deleteMessageButton = async () => {
     setData(prevData => prevData.filter(item => item._id !== data._id));
     await deleteMessage(myUserName,data, chatId);
+  }
+
+  const forwardMessage = async () => {
+
   }
 
   let myChatItem = (
@@ -124,6 +125,7 @@ function RenderMyViewChatItem(res) {
             borderRadius: 13,
           }}>
           <TouchableOpacity
+            onPress={onOpenModalForwardMessage}
             style={{
               width: 250,
               paddingLeft: 10,
