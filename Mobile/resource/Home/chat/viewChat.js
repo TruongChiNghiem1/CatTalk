@@ -109,7 +109,7 @@ function RenderViewChat(res) {
   //Socket
   const route = useRoute();
   const [token, settoken] = useState('');
-  const [socket, setSocket] = useState(io.connect('http://192.168.1.22:2090'));
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.24:2090'));
 
   const onSubmitNewSendMessage = async (senderId, receiverId) => {
     socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
@@ -149,7 +149,11 @@ function RenderViewChat(res) {
   };
 
   const backDisconnect = async () => {
-    navigation.navigate('BasicTabBarExample');
+    // navigation.reset({
+    //   index: 0,
+    //   routes: [{ name: 'BasicTabBarExample' }],
+    // });
+    navigation.navigate('BasicTabBarExample',{navigation: 'blueTab'});
   };
 
   const fetchMessages = async () => {
@@ -170,7 +174,7 @@ function RenderViewChat(res) {
       var getToken = await AsyncStorage.getItem('token');
       settoken(getToken);
       const response = await axios.post(
-        'http://192.168.1.22:2080/messages-group',
+        'http://192.168.1.24:2080/messages-group',
         {
           senderId: user.userName,
           chatId: dataChat.objectChat._id,

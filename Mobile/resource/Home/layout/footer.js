@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {Text, View, ImageBackground} from 'react-native';
 import {SearchBar, TabBar} from '@ant-design/react-native';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
@@ -15,99 +15,96 @@ import RenderProfile from '../profile/profile';
 import Setting from '../setting/setting';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default class BasicTabBarExample extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedTab: 'greenTab',
-      user: null,
-      token: null,
-    };
-    const {navigation} = props;
-    this.navigation = navigation
-    const { route } = props;
+const BasicTabBarExample = ({ navigation }) => {
+  const [selectedTab, setSelectedTab] = useState('greenTab');
+  const [user, setUser] = useState(null);
 
-    this.getDataFromAsyncStorage();
-  }
+  useEffect(() => {
+    getDataFromAsyncStorage();
+  }, []);
 
-  getDataFromAsyncStorage = async () => {
+  const getDataFromAsyncStorage = async () => {
     try {
-      const token = await AsyncStorage.getItem('token');
-      const user = await AsyncStorage.getItem('user');
-      if (user) {
-        this.setState({ user: JSON.parse(user), token });
+      const storedToken = await AsyncStorage.getItem('token');
+      const storedUser = await AsyncStorage.getItem('user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+        setToken(storedToken);
       }
     } catch (error) {
       console.error('Error getting data from AsyncStorage:', error);
     }
   };
 
-  renderContent1(pageText) {
-    return <Chat user={this.state.user}></Chat>;
-  }
+  const renderContent1 = () => {
+    return <Chat user={user}></Chat>;
+  };
 
-  renderContent2(pageText) {
-    return <PhoneBookItem user={this.state.user}></PhoneBookItem>;
-  }
+  const renderContent2 = () => {
+    return <PhoneBookItem user={user}></PhoneBookItem>;
+  };
 
-  renderContent3(pageText) {
-    return <Welcome user={this.state.user}></Welcome>;
-  }
+  const renderContent3 = () => {
+    return <Welcome user={user}></Welcome>;
+  };
 
-  renderContent4(res) {
-    return <Setting  user={this.state.user}></Setting>;
-  }
+  const renderContent4 = () => {
+    return <Setting user={user}></Setting>;
+  };
 
-  renderContent(pageText) {
+  const renderContent = (pageText) => {
     return (
       <View style={{flex: 1, alignItems: 'center', backgroundColor: 'red'}}>
         <Text style={{margin: 50}}>{pageText}</Text>
       </View>
     );
-  }
+  };
 
-  onChangeTab(tabName) {
-    this.setState({
-      selectedTab: tabName,
-    });
-  }
+  const onChangeTab = (tabName) => {
+    setSelectedTab(tabName);
+  };
 
-  render() {
-    return (
-      <TabBar
-        unselectedTintColor="#949494"
-        tintColor="#33A3F4"
-        barTintColor="#f5f5f5">
-        <TabBar.Item
-          title="Tin nhắn"
-          icon={<FontAwesomeIcon icon={faArrowRightToBracket} />}
-          selected={this.state.selectedTab === 'blueTab'}
-          onPress={() => this.onChangeTab('blueTab')}>
-          {this.renderContent1('Life Tab')}
-        </TabBar.Item>
-        <TabBar.Item
-          icon={<FontAwesomeIcon icon={faAddressBook} />}
-          title="Danh bạ"
-          badge={2}
-          selected={this.state.selectedTab === 'redTab'}
-          onPress={() => this.onChangeTab('redTab')}>
-          {this.renderContent2('Koubei Tab')}
-        </TabBar.Item>
-        <TabBar.Item
-          icon={<FontAwesomeIcon icon={faStar} />}
-          title="Welcome"
-          selected={this.state.selectedTab === 'greenTab'}
-          onPress={() => this.onChangeTab('greenTab')}>
-          {this.renderContent3('Friend Tab')}
-        </TabBar.Item>
-        <TabBar.Item
-          icon={<FontAwesomeIcon icon={faUser} />}
-          title="Cá nhân"
-          selected={this.state.selectedTab === 'yellowTab'}
-          onPress={() => this.onChangeTab('yellowTab')}>
-          {this.renderContent4(this.navigation)}
-        </TabBar.Item>
-      </TabBar>
-    );
-  }
-}
+  return (
+    <TabBar
+      unselectedTintColor="#949494"
+      tintColor="#33A3F4"
+      barTintColor="#f5f5f5"
+    >
+      <TabBar.Item
+        title="Tin nhắn"
+        icon={<FontAwesomeIcon icon={faArrowRightToBracket} />}
+        selected={selectedTab === 'blueTab'}
+        onPress={() => onChangeTab('blueTab')}
+      >
+        {renderContent1('Life Tab')}
+      </TabBar.Item>
+      <TabBar.Item
+        icon={<FontAwesomeIcon icon={faAddressBook} />}
+        title="Danh bạ"
+        badge={2}
+        selected={selectedTab === 'redTab'}
+        onPress={() => onChangeTab('redTab')}
+      >
+        {renderContent2('Koubei Tab')}
+      </TabBar.Item>
+      <TabBar.Item
+        icon={<FontAwesomeIcon icon={faStar} />}
+        title="Welcome"
+        selected={selectedTab === 'greenTab'}
+        onPress={() => onChangeTab('greenTab')}
+      >
+        {renderContent3('Friend Tab')}
+      </TabBar.Item>
+      <TabBar.Item
+        icon={<FontAwesomeIcon icon={faUser} />}
+        title="Cá nhân"
+        selected={selectedTab === 'yellowTab'}
+        onPress={() => onChangeTab('yellowTab')}
+      >
+        {renderContent4()}
+      </TabBar.Item>
+    </TabBar>
+  );
+};
+
+export default BasicTabBarExample;
