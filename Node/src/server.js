@@ -13,6 +13,7 @@ const URI_DB = process.env.URI_DB
 const Message = require('./models/message')
 const Member = require('./models/member')
 const DeleteMessage = require('./models/DeleteMessage.js')
+const DeleteChat = require('./models/deleteChat.js')
 const { Server } = require("socket.io");
 const { addUser, removeUser,addUserNotify } = require("./models/userAddGroup");
 const s3 = require('./config/aws-helper.js')
@@ -237,9 +238,22 @@ app.post('/messages-group', async(req, res) => {
 
         const deletedMessageIds = deletedMessage.map(deletedMessage => new mongoose.Types.ObjectId(deletedMessage.messageId));
 
+        const deletedChat = await DeleteChat.findOne({ 
+            userName: senderId,
+            chatId: chatId,
+        })
+        
         const chatIdObject = new mongoose.Types.ObjectId(chatId);
         const messages = await Message.aggregate([
-            { $match: { chatId: chatIdObject, _id: {$nin: deletedMessageIds} } },
+            { 
+                $match: { 
+                    chatId: chatIdObject, 
+                    _id: {$nin: deletedMessageIds},
+                    $expr: {
+                        $gt: ["$createdAt", deletedChat.updatedAt]
+                    }
+                } 
+            },
             {
                 $lookup: {
                     from: 'users',
