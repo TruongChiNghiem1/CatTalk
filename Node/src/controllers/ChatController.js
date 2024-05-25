@@ -5,6 +5,7 @@ const Chat = require('../models/chat.js')
 const Member = require('../models/member.js')
 const Message = require('../models/message.js')
 const DeleteMessage = require('../models/DeleteMessage.js')
+const DeleteChat = require('../models/deleteChat.js')
 const { Mongoose } = require('mongoose')
 const { connect, default: mongoose } = require('mongoose')
 
@@ -15,7 +16,62 @@ const getAllChat = async (req, res) => {
         const decoded = jwt.verify(token, SECRET_CODE)
         const username = decoded.username
         
+        const deletedChat = await DeleteChat.find({ 
+            userName: username,
+        })
+
+        var deletedChatIds = [];
+
+for (const deleteChatItem of deletedChat) {
+  try {
+    const deletedMessage = await DeleteMessage.find({ 
+      chatId: deleteChatItem.chatId,
+      userName: username,
+    });
+    const deletedMessageIds = deletedMessage.map(deletedMessage => new mongoose.Types.ObjectId(deletedMessage.messageId));
+
+        const messages = await Message.aggregate([
+        { 
+            $match: { 
+            chatId: deleteChatItem.chatId, 
+            _id: { $nin: deletedMessageIds },
+            createdAt: {
+                $gt: deletedChat.updatedAt
+            }
+            } 
+        },
+        {
+            $lookup: {
+            from: 'users',
+            localField: 'createdBy',
+            foreignField: 'userName',
+            as: 'user'
+            }
+        },
+        {
+            $sort: {
+            updatedAt: -1
+            }
+        },
+        {
+            $limit: 1
+        }
+        ]);
+
+        if (!(messages && messages.length > 0)) {
+            deletedChatIds.push(deleteChatItem.chatId);
+            }
+        } catch (error) {
+            console.error(`Lỗi khi xử lý chatId ${deleteChatItem.chatId}:`, error);
+        }
+        }
+
         const chatss = await Chat.aggregate([
+            { $match: 
+                { 
+                    _id: {$nin: deletedChatIds} 
+                } 
+            },
             {
                 $lookup: {
                     from: 'members',
@@ -54,8 +110,17 @@ const getAllChat = async (req, res) => {
                 }}
             ])
 
+            const deletedMessage = await DeleteMessage.find({ 
+                chatId: chat._id,
+                userName: username,
+            })
+            const deletedMessageIds = deletedMessage.map(deletedMessage => new mongoose.Types.ObjectId(deletedMessage.messageId));
+
             const message = await Message.findOne(
-                {chatId: chat._id}
+                { 
+                    chatId: chat._id, 
+                    _id: {$nin: deletedMessageIds}
+                }
             ).sort({ createdAt: -1 })
 
             if(message){
@@ -406,12 +471,12 @@ const deleteMessage = async (req, res) => {
         if (!deleteMessage) {
             return res.json({
                 status: 500,
-                message: "Can't delete message, please try again",
+                message: "Can't delete member, please try again",
             })
         }
         return res.json({
             status: 200,
-            message: 'Delete successful message',
+            message: 'Delete successful member',
         })
     } catch (error) {
         return res.json({
@@ -475,5 +540,6 @@ module.exports = {
     deleteMember,
     getMemberInGroup,
     deleteMessage,
-    getOneChat
+    getOneChat,
+    deleteChat
  }

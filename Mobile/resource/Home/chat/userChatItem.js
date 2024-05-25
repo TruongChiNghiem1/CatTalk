@@ -17,6 +17,8 @@ import {Button, Icon, WhiteSpace, WingBlank} from '@ant-design/react-native';
 import RenderViewChat from './viewChat';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
 import {io} from 'socket.io-client';
+import {deleteChat} from '../../../service/chat'
+
 function UserChatItem(props) {
   // const [socket, setSocket] = useState(io.connect('http://192.168.0.173:2090'));
 
@@ -26,7 +28,7 @@ function UserChatItem(props) {
   //   });
   // }, []);
 
-  var {data, myUserName, newMessageIO} = props;
+  var {data, myUserName, newMessageIO, setData} = props;
   const navigation = useNavigation();
   const [avatarChat, setAvatarChat] = useState(
     'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
@@ -116,8 +118,10 @@ function UserChatItem(props) {
         });
   };
 
-  const deleteMessageButton = async () => {};
-
+  const deleteChatButton = async () => {
+    setData(prevData => prevData.filter(item => item.objectChat._id !== data.objectChat._id));
+    await deleteChat({myUserName: myUserName, chatId: data.objectChat._id});
+  }
   return (
     <View>
       <View
@@ -217,7 +221,7 @@ function UserChatItem(props) {
             borderRadius: 13,
           }}>
           <TouchableOpacity
-            onPress={deleteMessageButton}
+            onPress={deleteChatButton}
             style={{
               width: 250,
               height: 30,

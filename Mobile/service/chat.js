@@ -53,3 +53,10 @@ export const deleteMessage = async (myUserName, data,chatId) => {
     {data,chatId,myUserName},
   );
 };
+
+export const deleteChat = async (dataChatDelete) => {
+  return await axios.post(
+  `${url}/chat/delete-chat`,
+  {dataChatDelete},
+);
+};

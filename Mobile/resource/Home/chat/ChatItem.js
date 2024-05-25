@@ -126,6 +126,7 @@ const ChatItem = ({ user }) => {
                 {data.map(item => (
                   <UserChatItem
                     // key={item.objectChat._id}
+                    setData={setData}
                     data={item}
                     myUserName={myUserName}
                   // newMessageIO={newMessageNotify.newMessage && (newMessageNotify.newMessage.chatId == item.objectChat._id) ? newMessageNotify.newMessage : ''}
