@@ -62,6 +62,10 @@ const userSchema = new mongoose.Schema({
     },
     inThisGroup: {
         type: Number,
+    },
+    private: {
+        type: Number, 
+        default: 0
     }
 },
     {

@@ -2,6 +2,8 @@ const User = require('../models/user.js')
 const Chat = require('../models/chat.js')
 const Member = require('../models/member.js')
 const Message = require('../models/message.js')
+const Notify = require("../models/notify");
+const mongoose = require('mongoose');
 const {
     signUpValid,
     signInValid,
@@ -523,92 +525,6 @@ const updateAboutUs = async (req, res) => {
     }
 }
 
-const testData = async (req, res) => {
-    try {
-        const data = [
-            {
-                name: 'Trương Chí Nghiệm',
-                avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzVzoUQXLR61QEJa7ZlHUEVt1YtBkXc7wRhA&usqp=CAU',
-                notify: 2,
-                contentNew: 'Em ăn gì chưa?',
-            },
-            {
-                name: 'Nguyễn Uyển Quyên',
-                avatar: 'https://thoibaotaichinhvietnam.vn/stores/news_dataimages/thoibaotaichinhvietnamvn/122015/03/11/10-nguoi-quyen-luc-nhat-lang-cong-nghe-the-gioi-03-.8340.jpg',
-                notify: 2,
-                contentNew: 'Ủa em',
-            },
-            {
-                name: 'Vũ Đăng Khôi',
-                avatar: 'https://thoibaotaichinhvietnam.vn/stores/news_dataimages/thoibaotaichinhvietnamvn/122015/03/11/10-nguoi-quyen-luc-nhat-lang-cong-nghe-the-gioi-12-.0831.jpg',
-                notify: 2,
-                contentNew: 'Chổ đó hôm qua sao rồi',
-            },
-            {
-                name: 'Trần Văn Nam',
-                avatar: 'https://thoibaotaichinhvietnam.vn/stores/news_dataimages/thoibaotaichinhvietnamvn/122015/03/11/10-nguoi-quyen-luc-nhat-lang-cong-nghe-the-gioi-12-.2508.jpg',
-                notify: 2,
-                contentNew: 'T chuyển cho m rồi',
-            },
-            {
-                name: 'Nguyễn Đức Thịnh',
-                avatar: 'https://thoibaotaichinhvietnam.vn/stores/news_dataimages/thoibaotaichinhvietnamvn/122015/03/11/10-nguoi-quyen-luc-nhat-lang-cong-nghe-the-gioi-03-.9139.jpg',
-                notify: 2,
-                contentNew: 'Chết rồi, t quên mất tiêu',
-            },
-            {
-                name: 'Co be khoc nhe',
-                avatar: 'https://cafefcdn.com/2019/7/5/photo-1-15622920117161385854940.jpg',
-                notify: 2,
-                contentNew: 'Oki a',
-            },
-            {
-                name: 'Trần Văn Lục',
-                avatar: 'https://vtv1.mediacdn.vn/2017/photo-2-1484589031686.jpg',
-                notify: 2,
-                contentNew: 'Dạ đr a',
-            },
-            {
-                name: 'Nguyễn Lê Vi Thanh',
-                avatar: 'https://nld.mediacdn.vn/2019/6/6/photo-1-15598019716201065303494.jpg',
-                notify: 2,
-                contentNew: 'Oki tks u',
-            },
-            {
-                name: 'Trần Đỉnh Chi',
-                avatar: 'https://static.tuoitre.vn/tto/i/s626/2016/05/25/obama-hanoi5-4read-only-1464133884.jpg',
-                notify: 2,
-                contentNew: 'À vậy hả, tks ô nha',
-            },
-            {
-                name: 'Nguyễn Trấn Thành',
-                avatar: 'https://cafebiz.cafebizcdn.vn/2019/5/17/photo-2-15580579930601897948260.jpg',
-                notify: 2,
-                contentNew: 'Chết rồi, t quên mất tiêu',
-            },
-
-            {
-                name: 'Bill gate',
-                avatar: 'https://topviecit.vn/blog/wp-content/uploads/2023/01/review-nganh-cong-nghe-thong-tin-topcv1.jpg',
-                notify: 2,
-                contentNew: 'Hôm qua cô có giao bài tập gì hong',
-            },
-        ]
-
-        return res.json({
-            status: 200,
-            message: 'Data test message',
-            data: data,
-        })
-    } catch (error) {
-        console.log(error)
-        return res.json({
-            status: 500,
-            message: 'Opps, somthing went wrong!!!',
-        })
-    }
-}
-
 const searchUser = async (req, res) => {
     try {
         const token = req.headers.authorization.split(' ')[1]
@@ -633,7 +549,7 @@ const searchUser = async (req, res) => {
                 userName: 1,
                 avatar: 1,
                 background: 1,
-                _id: 0,
+                _id: 1,
             }
         )
 
@@ -746,6 +662,24 @@ const addFriend = async (req, res) => {
         }
 
         createChat11(username, userNameAdd)
+
+        const userAddedNotify = {
+            userName: userNameAdd,
+            content: `You and ${user.firstName} ${user.lastName} have become friends!`,
+            view: 0,
+            image: user.avatar
+        }
+        
+        const notifyAdded = await Notify.create(userAddedNotify)
+
+        const userAddNotify = {
+            userName: username,
+            content: `You and ${dataUpdateFriend.firstName} ${dataUpdateFriend.lastName} have become friends!`,
+            view: 0,
+            image: dataUpdateFriend.avatar
+        }
+
+        const notifyAdd = await Notify.create(userAddNotify)
 
         return res.json({
             status: 200,
@@ -1079,6 +1013,102 @@ const getFriendAddGroup = async (req, res) => {
         })
     }
 }
+
+
+const getInfoOtherUser = async(req, res) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1]
+        const decoded = jwt.verify(token, SECRET_CODE)
+        const username = decoded.username
+
+        const {userId} = req.body;
+        const user = await User.findOne({ _id: new mongoose.Types.ObjectId(userId) })
+
+        if(!user){
+            return res.json({
+                status: 500,
+                message: 'User does not exist!',
+            })
+        } 
+
+        let isMyFriend = user.friends.filter((userFriend) => userFriend === username).length > 0 ? 1 : 0;
+        let chatId = null;
+        if(isMyFriend){
+            chatId = await Chat.aggregate([
+                {
+                    $lookup: {
+                        from: 'members',
+                        localField: '_id',
+                        foreignField: 'chatId',
+                        as: 'members'
+                    }
+                },
+                {
+                    $match: {
+                        'members.userName': { $all: [username, user.userName] },
+                        'members.chatType': 'single'
+                    }
+                }
+            ]);
+        }
+
+        return res.json({
+            status: 200,
+            info: user,
+            isMyFriend: isMyFriend, 
+            chatId: chatId ? chatId[0]._id : null,
+        })
+
+
+    } catch (error) {
+        console.log(error)
+        return res.json({
+            status: 500,
+            message: 'Opps, somthing went wrong!!!',
+        })
+    }
+}
+
+
+const changePrivateProfile = async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1]
+        const decoded = jwt.verify(token, SECRET_CODE)
+        const username = decoded.username
+
+        const { private } = req.body;
+
+        const user = await User.findOneAndUpdate(
+            { userName: username },
+            { private: Number(private) },
+        )
+
+        if (!user) {
+            return res.json({
+                status: 500,
+                message: 'User does not exist!',
+            })
+        } 
+
+        return res.json({
+            private: private,
+            status: 200,
+            message: private == 1 ? 'Private profile updated' : 'Public profile updated'
+        })
+
+
+
+
+    } catch (error) {
+        console.log(error)
+        return res.json({
+            status: 500,
+            message: 'Opps, somthing went wrong!!!',
+        })
+    }
+}
+
+
 module.exports = {
     signUp,
     mailConfirm,
@@ -1089,7 +1119,6 @@ module.exports = {
     uploadAvatar,
     updateAboutUs,
     uploadBackground,
-    testData,
     searchUser,
     changeTheme,
     addFriend,
@@ -1101,4 +1130,6 @@ module.exports = {
     getUser,
     searchFriend,
     uploadAvatarMobile,
+    getInfoOtherUser,
+    changePrivateProfile
 }

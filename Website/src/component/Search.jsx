@@ -6,6 +6,7 @@ import { AppContext } from '../context/AppContext';
 import { useCookies } from 'react-cookie';
 import { searchUser } from '../service/user';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { Link } from 'react-router-dom';
 
 const {Content } = Layout;
 const Search = () => {
@@ -15,7 +16,7 @@ const Search = () => {
   const {setOpenSearch} = useContext(AppContext)
   const [cookies] = useCookies('loginToken')
   const [users, setUsers] = useState([])
-  const [hasMore,setHasMore] = useState(false)
+  const [hasMore, setHasMore] = useState(false)
   const [searchValue, setSearchValue] = useState('')
   const [searched, setSearched] = useState(false)
   const [recents, setRecents] = useState(JSON.parse(localStorage.getItem('recents')) ?? [])
@@ -149,7 +150,7 @@ const Search = () => {
                     <List.Item key={item.userName}>
                       <List.Item.Meta
                         avatar={<Avatar src={item.avatar} size='large' />}
-                        title={<a href="">{item.firstName}{" "}{item.lastName}</a>}
+                        title={<Link to={`user/${item._id}`}>{item.firstName}{" "}{item.lastName}</Link>}
                         description={item.userName}
                       />
                     </List.Item>

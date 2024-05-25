@@ -1,5 +1,5 @@
 import './App.scss'
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, Skeleton } from 'antd';
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { HappyProvider } from '@ant-design/happy-work-theme';
 import Login from './page/Login'
@@ -13,6 +13,7 @@ import Redirect from './page/Redirect.jsx';
 import AppProvider from './context/AppContext.jsx';
 import PrivateWrapper from './page/PrivateWrapper.jsx';
 import { useCookies } from 'react-cookie';
+import ProfileFriend from './page/ProfileFriend.jsx';
 
 function App() {
   const [cookies] = useCookies('user')
@@ -37,15 +38,13 @@ function App() {
         colorPrimaryText: 'black', 
         colorIcon: '#36a7b6', 
         colorLink: 'orange',
-
-        colorFillSecondary: '#FFBD59',
         colorTextSecondary: '#FFF5EB',
         
         paragraph: {
             color: 'red',
             fontSize: '14px',
-    }
-      }
+        }
+      },
   }
 
   const darkTheme = { 
@@ -76,6 +75,7 @@ function App() {
             <Route path="home" element={<Home />} />
             <Route path="redirect/:id" element={<Redirect/>} />
             <Route path="profile" element={<Profile/>} />
+            <Route path="user/:id" element={<ProfileFriend/>} />
           </Route>
         </Route>  
         <Route path="*" element={<NotFound/>} />
