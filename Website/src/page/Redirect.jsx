@@ -2,6 +2,7 @@
 import { Layout, theme, Typography, Row, Col} from 'antd';
 import ChatList from '../component/redirect/ChatList';
 import ChatBox from '../component/redirect/ChatBox';
+import {LockOutlined} from '@ant-design/icons'
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getAllChat } from '../service/redirect';
@@ -66,10 +67,13 @@ const Redirect = () => {
               />
             ): (
                 <Col span={18}>
-                  <div className="chat_box">
+                  <div className="chat_box h-100">
                     <div className="h-100 w-100 flex-center">
                         <img style={{width: '20rem'}} src={img}/>
-                        <Typography.Title>Let's start</Typography.Title>
+                        <div>
+                            <Typography.Title style={{color: 'orange', fontWeight: 'bold',marginBottom: '.2rem'}}>Your Chat Box</Typography.Title>
+                            <Typography.Title level={3} style={{margin: '0 0 0 3rem'}}><LockOutlined /> Send private photo and messages to a friend or group</Typography.Title>
+                        </div>
                     </div>
                   </div>
                 </Col>

@@ -1032,12 +1032,31 @@ const getInfoOtherUser = async(req, res) => {
         } 
 
         let isMyFriend = user.friends.filter((userFriend) => userFriend === username).length > 0 ? 1 : 0;
-
+        let chatId = null;
+        if(isMyFriend){
+            chatId = await Chat.aggregate([
+                {
+                    $lookup: {
+                        from: 'members',
+                        localField: '_id',
+                        foreignField: 'chatId',
+                        as: 'members'
+                    }
+                },
+                {
+                    $match: {
+                        'members.userName': { $all: [username, user.userName] },
+                        'members.chatType': 'single'
+                    }
+                }
+            ]);
+        }
 
         return res.json({
             status: 200,
             info: user,
-            isMyFriend: isMyFriend
+            isMyFriend: isMyFriend, 
+            chatId: chatId ? chatId[0]._id : null,
         })
 
 
