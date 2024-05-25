@@ -1,5 +1,5 @@
 import './App.scss'
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, Skeleton } from 'antd';
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { HappyProvider } from '@ant-design/happy-work-theme';
 import Login from './page/Login'
@@ -38,15 +38,13 @@ function App() {
         colorPrimaryText: 'black', 
         colorIcon: '#36a7b6', 
         colorLink: 'orange',
-
-        colorFillSecondary: '#FFBD59',
         colorTextSecondary: '#FFF5EB',
         
         paragraph: {
             color: 'red',
             fontSize: '14px',
-    }
-      }
+        }
+      },
   }
 
   const darkTheme = { 

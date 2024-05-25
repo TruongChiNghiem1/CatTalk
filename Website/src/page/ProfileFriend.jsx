@@ -13,6 +13,7 @@ const ProfileFriend = () => {
     const [loading, setLoading] = useState(true);
     const [userInfo, setUserInfo] = useState([])
     const [isMyFriend, setIsMyFriend] = useState(0);
+    const [chatId, setChatId] = useState(null)
     const [loadingBtn, setLoadingBtn] = useState(false)
     let navigate = useNavigate()
     const {id} = useParams();
@@ -38,10 +39,10 @@ const ProfileFriend = () => {
     const handleGetDayaOtherUser = async () => {
         try {
             const res = await getInfoOtherUser(id, cookies.loginToken)
+            setChatId(res.data.chatId)
             setUserInfo(res.data.info)
             setIsMyFriend(res.data.isMyFriend)
             setLoading(false)
-            console.log(res.data.info);
         } catch (error) {
             console.log('Error: ', error.message);
         }
@@ -138,7 +139,7 @@ const ProfileFriend = () => {
                                      <Button 
                                         type='primary'
                                         size='large'
-                                        onClick={() => navigate('/redirect/0')}
+                                        onClick={() => navigate(`/redirect/${chatId}`)}
                                         icon={<MessageOutlined  size='large' />}>
                                         Chat now
                                     </Button>
