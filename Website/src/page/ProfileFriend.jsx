@@ -164,7 +164,7 @@ const ProfileFriend = () => {
                                             <img style={{width: '20rem'}} src={img}/>
                                             <div>
                                                 <Typography.Title level={4} style={{color: 'black', fontWeight: 'bold', marginBottom: '.5rem'}}>{userInfo.firstName}{' '}{userInfo.lastName} has hidden the display of personal information</Typography.Title>
-                                                <Typography.Title style={{color: 'orange', marginTop: 0}} level={2}>Let's get to know {`${userInfo.gender == 1 ? 'him' : userInfo.gender === 0 ? 'her' : 'their'}` } by chatting</Typography.Title>
+                                                <Typography.Title style={{color: 'orange', marginTop: 0}} level={2}>Let's get to know {`${userInfo.gender == 1 ? 'him' : userInfo.gender == 0 ? 'her' : 'their'}` } by chatting</Typography.Title>
                                             </div>
                                         </div>
                                     ) : (
@@ -193,7 +193,7 @@ const ProfileFriend = () => {
                                                                 label="Gender"
                                                                 style={{width: '30%'}}
                                                             >
-                                                                <Input value={userInfo.gender == 1 ? 'Male' : userInfo.gender === 0 ? 'Female' : 'Other'} readOnly></Input>
+                                                                <Input value={userInfo.gender == 1 ? 'Male' : userInfo.gender == 0 ? 'Female' : 'Other'} readOnly></Input>
                                                         
                                                             </Form.Item>
                                                         </div>
