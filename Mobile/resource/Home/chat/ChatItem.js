@@ -33,11 +33,10 @@ const ChatItem = ({user}) => {
     'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
   );
 
-  const [socket, setSocket] = useState(io.connect('http://192.168.1.24:2090'));
+  const [socket, setSocket] = useState(io.connect('http://192.168.0.147:2090'));
 
   useEffect(() => {
     socket.on('receiveNotify', newMessage => {
-      console.log('pppppp', data);
 
       setData(prevData =>
         prevData.map(item => {

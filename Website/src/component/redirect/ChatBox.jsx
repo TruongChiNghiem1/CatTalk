@@ -23,7 +23,7 @@ const ChatBox = (props) => {
     const [newMessageSend, setText] = useState('');
     const [openMenu, setOpenMenu] = useState(false);
     const chatRef = useRef(null);
-    const [socket, setSocket] = useState(io.connect('http://192.168.1.24:2090'))
+    const [socket, setSocket] = useState(io.connect('http://192.168.0.147:2090'))
     
 
     const handleSendMessage= async (senderId) => {

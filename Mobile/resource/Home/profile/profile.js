@@ -1,4 +1,4 @@
-import react, {useState} from 'react';
+import react, {useState, useEffect} from 'react';
 import {
   ImageBackground,
   Text,
@@ -20,6 +20,7 @@ import {faUserPlus} from '@fortawesome/free-solid-svg-icons/faUserPlus';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {addFriend, deleteFriend} from '../../../service/user';
+import {getOneChat} from '../../../service/chat';
 
 import {
   Button,
@@ -36,11 +37,33 @@ import {
 
 // import { DemoBlock } from './demo'
 function renderViewChatItem(prop) {
+  const navigation = useNavigation();
   const [message, setMessage] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [pressDeleteFriendUser, setPressDeleteFriendUser] = useState(false);
   const [modalVisibleDelete, setModalVisibleDelete] = useState(false);
   const [isFriendNow, setIsFriendNow] = useState(prop.isFriend);
+  const [myUserName, setMyUserName] = useState('');
+  const [dataChat, setDataChat] = useState([]);
+
+  const fetchData = async () => {
+    try {
+      const userStorage = await AsyncStorage.getItem('user');
+      const user = JSON.parse(userStorage);
+      setMyUserName(user.userName);
+
+      const token = await AsyncStorage.getItem('token');
+      const res = await getOneChat(token, prop.userName);
+      setDataChat(res.data.chat);
+    } catch (error) {
+      console.log('Error fetching the messages', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   const pressAddFriend = async userNameAdd => {
     try {
       const token = await AsyncStorage.getItem('token');
@@ -232,6 +255,12 @@ function renderViewChatItem(prop) {
               </TouchableOpacity>
             )}
             <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('RenderViewChat', {
+                  dataChat: dataChat,
+                  myUserNameOne: myUserName,
+                });
+              }}
               style={{
                 display: 'flex',
                 flexDirection: 'row',
