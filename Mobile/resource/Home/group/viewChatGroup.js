@@ -1,4 +1,4 @@
-import react, { useEffect, useState, useRef } from 'react';
+import react, {useEffect, useState, useRef} from 'react';
 import {
   ImageBackground,
   Text,
@@ -7,33 +7,33 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import { images, colors, fontSize } from '../../../constant';
-import { Image } from 'react-native';
-import { UIInput } from '../../../components';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft';
-import { faVideo } from '@fortawesome/free-solid-svg-icons/faVideo';
-import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons/faEllipsisVertical';
-import { faPaperclip } from '@fortawesome/free-solid-svg-icons/faPaperclip';
-import { faFaceSmile } from '@fortawesome/free-solid-svg-icons/faFaceSmile';
-import { faImage } from '@fortawesome/free-solid-svg-icons/faImage';
-import { faTrashCan } from '@fortawesome/free-solid-svg-icons/faTrashCan';
-import { faPaperPlane } from '@fortawesome/free-solid-svg-icons/faPaperPlane';
-import { height } from '@fortawesome/free-solid-svg-icons/faMugSaucer';
-import { AppRegistry } from 'react-native';
+import {images, colors, fontSize} from '../../../constant';
+import {Image} from 'react-native';
+import {UIInput} from '../../../components';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {faChevronLeft} from '@fortawesome/free-solid-svg-icons/faChevronLeft';
+import {faVideo} from '@fortawesome/free-solid-svg-icons/faVideo';
+import {faEllipsisVertical} from '@fortawesome/free-solid-svg-icons/faEllipsisVertical';
+import {faPaperclip} from '@fortawesome/free-solid-svg-icons/faPaperclip';
+import {faFaceSmile} from '@fortawesome/free-solid-svg-icons/faFaceSmile';
+import {faImage} from '@fortawesome/free-solid-svg-icons/faImage';
+import {faTrashCan} from '@fortawesome/free-solid-svg-icons/faTrashCan';
+import {faPaperPlane} from '@fortawesome/free-solid-svg-icons/faPaperPlane';
+import {height} from '@fortawesome/free-solid-svg-icons/faMugSaucer';
+import {AppRegistry} from 'react-native';
 import BasicTabBarExample from '../layout/footer';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import {useRoute, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getMessage } from '../../../service/chat';
+import {getMessage} from '../../../service/chat';
 import RenderMyViewChatItem from '../chat/myViewChatItem';
 import RenderSystemViewChatItem from '../chat/systemViewChatItem';
 import RenderViewChatGroupItem from '../chat/userViewChatItem';
-import { socket } from '../../../service/cattalk';
-import { io } from 'socket.io-client';
+import {socket} from '../../../service/cattalk';
+import {io} from 'socket.io-client';
 import axios from 'axios';
-import { faUserPlus } from '@fortawesome/free-solid-svg-icons/faUserPlus';
+import {faUserPlus} from '@fortawesome/free-solid-svg-icons/faUserPlus';
 // import * as ImagePicker from "expo-image-picker"
-import { launchImageLibrary } from 'react-native-image-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
 
 import {
   Button,
@@ -57,7 +57,7 @@ this.state = {
 function RenderViewChatGroup(res) {
   console.log('Chat group');
   const navigation = useNavigation();
-  var { dataChat, myUserNameOne } = res.route.params;
+  var {dataChat, myUserNameOne} = res.route.params;
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [myUserName, setMyUserName] = useState(myUserNameOne);
@@ -76,7 +76,7 @@ function RenderViewChatGroup(res) {
   //Socket
   const route = useRoute();
 
-  const [socket, setSocket] = useState(io.connect('http://192.168.0.143:2090'));
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.25:2090'));
 
   const onSubmitNewSendMessage = async () => {
     socket.emit('message', {
@@ -93,7 +93,7 @@ function RenderViewChatGroup(res) {
   };
 
   const scrollToBottom = async () => {
-    await scrollViewRef.current.scrollToEnd({ animated: true });
+    await scrollViewRef.current.scrollToEnd({animated: true});
   };
 
   const backDisconnect = async () => {
@@ -116,13 +116,13 @@ function RenderViewChatGroup(res) {
 
       const token = await AsyncStorage.getItem('token');
       const response = await axios.post(
-        'http://192.168.0.143:2080/messages-group',
+        'http://192.168.1.25:2080/messages-group',
         {
           senderId: user.userName,
           chatId: dataChat.objectChat._id,
         },
         {
-          headers: { authorization: `Bearer ${token}` },
+          headers: {authorization: `Bearer ${token}`},
         },
       );
       setData(response.data.messages);
@@ -233,14 +233,14 @@ function RenderViewChatGroup(res) {
               }}>
               <TouchableOpacity onPress={backDisconnect}>
                 <FontAwesomeIcon
-                  style={{ marginRight: 10 }}
+                  style={{marginRight: 10}}
                   color={colors.primary}
                   size={20}
                   icon={faChevronLeft}
                 />
               </TouchableOpacity>
               <Image
-                source={{ uri: avatar }}
+                source={{uri: avatar}}
                 style={{
                   marginRight: 10,
                   width: 40,
@@ -278,10 +278,10 @@ function RenderViewChatGroup(res) {
                   height: 23,
                 }}
                 onPress={() =>
-                  navigation.navigate('RenderMoreChatGroup', { data: dataChat })
+                  navigation.navigate('RenderMoreChatGroup', {data: dataChat})
                 }>
                 <FontAwesomeIcon
-                  style={{ marginHorizontal: 10 }}
+                  style={{marginHorizontal: 10}}
                   color={colors.primary}
                   size={20}
                   icon={faEllipsisVertical}
@@ -343,7 +343,7 @@ function RenderViewChatGroup(res) {
               }}>
               <FontAwesomeIcon
                 color={colors.primary}
-                style={{ marginLeft: 15, marginRight: 5 }}
+                style={{marginLeft: 15, marginRight: 5}}
                 size={20}
                 icon={faPaperclip}
               />
@@ -376,14 +376,14 @@ function RenderViewChatGroup(res) {
                 placeholder="Tin nhắn"
               />
               <FontAwesomeIcon
-                style={{ marginRight: 5 }}
+                style={{marginRight: 5}}
                 color={colors.primary}
                 size={20}
                 icon={faFaceSmile}
               />
               <TouchableOpacity onPress={chooseImage}>
                 <FontAwesomeIcon
-                  style={{ marginRight: 15 }}
+                  style={{marginRight: 15}}
                   color={colors.primary}
                   size={20}
                   icon={faImage}

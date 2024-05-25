@@ -242,15 +242,17 @@ app.post('/messages-group', async(req, res) => {
             userName: senderId,
             chatId: chatId,
         })
-        
         const chatIdObject = new mongoose.Types.ObjectId(chatId);
-        const messages = await Message.aggregate([
+        
+        var messages = [];
+        if(deletedChat){
+            messages = await Message.aggregate([
             { 
                 $match: { 
                     chatId: chatIdObject, 
                     _id: {$nin: deletedMessageIds},
-                    $expr: {
-                        $gt: ["$createdAt", deletedChat.updatedAt]
+                    createdAt: {
+                        $gt: deletedChat.updatedAt
                     }
                 } 
             },
@@ -275,6 +277,36 @@ app.post('/messages-group', async(req, res) => {
                 }
             }
         ])
+        } else {
+            messages = await Message.aggregate([
+                { 
+                    $match: { 
+                        chatId: chatIdObject, 
+                        _id: {$nin: deletedMessageIds},
+                    } 
+                },
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: 'createdBy',
+                        foreignField: 'userName',
+                        as: 'user'
+                    }
+                },
+                {
+                    $project: {
+                        chatId: 1,
+                        createdBy: 1,
+                        typeMessage: 1,
+                        content: 1,
+                        createdAt: 1,
+                        firstName: { $arrayElemAt: ['$user.firstName', 0] },
+                        lastName: { $arrayElemAt: ['$user.lastName', 0] },
+                        avatar: { $arrayElemAt: ['$user.avatar', 0] },
+                    }
+                }
+            ])
+        }
         res.status(200).json({ messages: messages })
     } catch (error) {
         console.log(error);
