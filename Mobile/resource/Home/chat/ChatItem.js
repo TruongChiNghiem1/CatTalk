@@ -37,7 +37,6 @@ const ChatItem = ({ user }) => {
 
   useEffect(() => {
     socket.on('receiveNotify', newMessage => {
-      console.log('pppppp', data);
 
       setData(prevData =>
         prevData.map(item => {

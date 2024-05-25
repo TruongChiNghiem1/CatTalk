@@ -7,6 +7,12 @@ export const getAllChat = async token => {
   });
 };
 
+export const getOneChat = async (token, userChat) => {
+  return await axios.get(`${url}/chat/one-chat?userChat=${userChat}`, {
+    headers: {authorization: `Bearer ${token}`},
+  });
+};
+
 export const getMessage = async (token, objectChat) => {
   return await axios.get(`${url}/chat/get-message?objectChat=${objectChat}`, {
     headers: {authorization: `Bearer ${token}`},

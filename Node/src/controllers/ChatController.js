@@ -85,6 +85,69 @@ const getAllChat = async (req, res) => {
     }
 }
 
+const getOneChat = async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1]
+        const decoded = jwt.verify(token, SECRET_CODE)
+        const myUsername = decoded.username
+        const {userChat} = req.query
+        
+        const chat = await Chat.aggregate([
+            {
+                $lookup: {
+                    from: 'members',
+                    localField: '_id',
+                    foreignField: 'chatId',
+                    as: 'members'
+                }
+            },
+            {
+                $match: {
+                    'members.userName': { $all: [myUsername, userChat] },
+                    'members.chatType': 'single'
+                }
+            }
+        ]);
+        let memberChat = await Member.aggregate([
+            {$match: {chatId: chat[0]._id, userName: {$ne: myUsername}}},
+            {$lookup: {
+                from: 'users',
+                localField: 'userName',
+                foreignField: 'userName',
+                as: 'user'
+            }},
+            {$project: {
+                userName: 1,
+                createdBy: 1,
+                notifyType: 1,
+                chatType: 1,
+                chatId: 1,
+                isNewChat: 1,
+                firstName: { $arrayElemAt: ['$user.firstName', 0]},
+                lastName: { $arrayElemAt: ['$user.lastName', 0]},
+                avatar: { $arrayElemAt: ['$user.avatar', 0]},
+                friends: { $arrayElemAt: ['$user.friends', 0]}
+            }}
+        ])
+        const newChat = {
+            member: memberChat,
+            objectChat: chat[0],
+        }
+        if (newChat) {
+            return res.json({
+                status: 200,
+                chat: newChat,
+            })
+        }
+    } catch (error) {
+        console.log(error)
+        return res.json({
+            status: 500,
+            message: error,
+        })
+    }
+}
+
 const getMessage = async (req, res) => {
     try {
         const token = req.headers.authorization.split(' ')[1]
@@ -122,7 +185,7 @@ const createThisGroup = async (req, res) => {
         const dataAddGroup = req.body
         const newChat = {
             chatType: 'multi',
-            groupName: dataAddGroup.nameGroup ?? username,
+            groupName: (dataAddGroup.nameGroup && dataAddGroup.nameGroup != '' ?  dataAddGroup.nameGroup : 'Nhóm của ' + username),
             lead: username,
             // avatar: username,
             createdBy: username,
@@ -411,5 +474,6 @@ module.exports = {
     createNewMemberGroup,
     deleteMember,
     getMemberInGroup,
-    deleteMessage
+    deleteMessage,
+    getOneChat
  }
