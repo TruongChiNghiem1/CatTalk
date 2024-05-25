@@ -8,12 +8,6 @@ const getAllNotify = async (req, res) => {
         const token = req.headers.authorization.split(" ")[1];
         const decoded = jwt.verify(token, SECRET_CODE);
         const username = decoded.username;
-        const makeNotify = {
-            userName: 'adminQuyen',
-            content: 'Trương Chí Nghiệm đã gửi lời mời kết bạn',
-            view: '1'
-        }
-
         const notifies = await Notify.find({ userName: username })
 
         if (notifies) {

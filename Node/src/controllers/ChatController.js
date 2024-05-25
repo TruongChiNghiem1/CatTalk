@@ -49,7 +49,8 @@ const getAllChat = async (req, res) => {
                     firstName: { $arrayElemAt: ['$user.firstName', 0]},
                     lastName: { $arrayElemAt: ['$user.lastName', 0]},
                     avatar: { $arrayElemAt: ['$user.avatar', 0]},
-                    friends: { $arrayElemAt: ['$user.friends', 0]}
+                    friends: { $arrayElemAt: ['$user.friends', 0]},
+                    userId: { $arrayElemAt: ['$user._id', 0] },
                 }}
             ])
 
@@ -182,26 +183,6 @@ const createThisGroup = async (req, res) => {
         const username = decoded.username
 
         const dataAddGroup = req.body
-        let createChat = createChatGroup(username, dataAddGroup)
-
-        if(createChat){
-            return res.json({
-                status: 200,
-                message: 'Create group is successful',
-            })
-        }
-    } catch (error) {
-        console.log(error);
-        return res.json({
-            status: 500,
-            message: error
-        });
-    }
-}
-
-const createChatGroup = async (username, dataAddGroup) => {
-    //Tạo chat
-    try {
         const newChat = {
             chatType: 'multi',
             groupName: (dataAddGroup.nameGroup && dataAddGroup.nameGroup != '' ?  dataAddGroup.nameGroup : 'Nhóm của ' + username),
@@ -244,7 +225,7 @@ const createChatGroup = async (username, dataAddGroup) => {
             })
         }
 
-        const nameUser = await User.findOne({userName: username})
+        const nameUser = await User.findOne({ userName: username })
         const fullNameUser = nameUser.firstName + ' ' + nameUser.lastName
 
         const newMessage = {
@@ -262,6 +243,12 @@ const createChatGroup = async (username, dataAddGroup) => {
                 status: 500,
                 message: "Can't create chat, please try again",
             })
+        }else{
+            return res.json({
+                newChat: chat,
+                status: 200,
+                message: 'Create group is successful',
+            })
         }
     } catch (error) {
         console.log(error);
@@ -270,7 +257,6 @@ const createChatGroup = async (username, dataAddGroup) => {
             message: error
         });
     }
-
 }
 
 
@@ -410,23 +396,22 @@ const deleteMember = async (req, res) => {
 const deleteMessage = async (req, res) => {
     try {
 
-        const { chatId, data,myUserName } = req.body
+        const { chatId, data, myUserName } = req.body
 
         const deleteMessage = await DeleteMessage.create({
             userName: myUserName,
             messageId: data._id,
             chatId: chatId,
         })
-
         if (!deleteMessage) {
             return res.json({
                 status: 500,
-                message: "Can't delete member, please try again",
+                message: "Can't delete message, please try again",
             })
         }
         return res.json({
             status: 200,
-            message: 'Delete successful member',
+            message: 'Delete successful message',
         })
     } catch (error) {
         return res.json({

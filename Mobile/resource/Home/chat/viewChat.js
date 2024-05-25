@@ -1,4 +1,4 @@
-import react, {useEffect, useState, useRef} from 'react';
+import react, { useEffect, useState, useRef } from 'react';
 import {
   ImageBackground,
   Text,
@@ -6,28 +6,28 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import {images, colors, fontSize} from '../../../constant';
-import {Image} from 'react-native';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faChevronLeft} from '@fortawesome/free-solid-svg-icons/faChevronLeft';
-import {faVideo} from '@fortawesome/free-solid-svg-icons/faVideo';
-import {faEllipsisVertical} from '@fortawesome/free-solid-svg-icons/faEllipsisVertical';
-import {faPaperclip} from '@fortawesome/free-solid-svg-icons/faPaperclip';
-import {faFaceSmile} from '@fortawesome/free-solid-svg-icons/faFaceSmile';
-import {faImage} from '@fortawesome/free-solid-svg-icons/faImage';
-import {faTrashCan} from '@fortawesome/free-solid-svg-icons/faTrashCan';
-import {faPaperPlane} from '@fortawesome/free-solid-svg-icons/faPaperPlane';
-import {height} from '@fortawesome/free-solid-svg-icons/faMugSaucer';
-import {useRoute, useNavigation} from '@react-navigation/native';
+import { images, colors, fontSize } from '../../../constant';
+import { Image } from 'react-native';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft';
+import { faVideo } from '@fortawesome/free-solid-svg-icons/faVideo';
+import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons/faEllipsisVertical';
+import { faPaperclip } from '@fortawesome/free-solid-svg-icons/faPaperclip';
+import { faFaceSmile } from '@fortawesome/free-solid-svg-icons/faFaceSmile';
+import { faImage } from '@fortawesome/free-solid-svg-icons/faImage';
+import { faTrashCan } from '@fortawesome/free-solid-svg-icons/faTrashCan';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons/faPaperPlane';
+import { height } from '@fortawesome/free-solid-svg-icons/faMugSaucer';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RenderMyViewChatItem from './myViewChatItem';
 import RenderSystemViewChatItem from './systemViewChatItem';
 import RenderViewChatItem from './userViewChatItem';
-import {socket} from '../../../service/cattalk';
-import {io} from 'socket.io-client';
+import { socket } from '../../../service/cattalk';
+import { io } from 'socket.io-client';
 import axios from 'axios';
-import {launchImageLibrary} from 'react-native-image-picker';
-import {UIInput} from '../../../components';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { UIInput } from '../../../components';
 import {
   Button,
   Icon,
@@ -43,8 +43,8 @@ import {
   Checkbox,
 } from '@ant-design/react-native';
 import ViewFriendItem from './viewFriendItem';
-import {getFriends} from '../../../service/user';
-import {faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons/faMagnifyingGlass';
+import { getFriends } from '../../../service/user';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons/faMagnifyingGlass';
 
 this.state = {
   value: '',
@@ -54,17 +54,17 @@ this.state = {
 
 const showActionSheet = () => {
   const BUTTONS = [
-    <View style={{width: 400}}>
+    <View style={{ width: 400 }}>
       <List.Item extra={<Switch />}>Mute message</List.Item>
     </View>,
     <Toch style={{}}>
       <View
-        style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
         <FontAwesomeIcon
-          style={{color: 'red', marginRight: 8}}
+          style={{ color: 'red', marginRight: 8 }}
           icon={faTrashCan}
         />
-        <Text style={{color: 'red', fontSize: fontSize.h3}}>Delete chat </Text>
+        <Text style={{ color: 'red', fontSize: fontSize.h3 }}>Delete chat </Text>
       </View>
     </Toch>,
   ];
@@ -85,7 +85,7 @@ const showActionSheet = () => {
 function RenderViewChat(res) {
   console.log('chat don');
   const navigation = useNavigation();
-  var {dataChat, myUserNameOne} = res.route.params;
+  var { dataChat, myUserNameOne } = res.route.params;
 
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -109,10 +109,10 @@ function RenderViewChat(res) {
   //Socket
   const route = useRoute();
   const [token, settoken] = useState('');
-  const [socket, setSocket] = useState(io.connect('http://192.168.0.147:2090'));
+  const [socket, setSocket] = useState(io.connect('http://192.168.1.24:2090'));
 
   const onSubmitNewSendMessage = async (senderId, receiverId) => {
-    socket.emit('message', {chatId, senderId, receiverId, newMessageSend});
+    socket.emit('message', { chatId, senderId, receiverId, newMessageSend });
     setNewMessageSend('');
     // call the fetchMessages() function to see the UI update
     setTimeout(() => {
@@ -145,7 +145,7 @@ function RenderViewChat(res) {
   };
 
   const scrollToBottom = async () => {
-    await scrollViewRef.current.scrollToEnd({animated: true});
+    await scrollViewRef.current.scrollToEnd({ animated: true });
   };
 
   const backDisconnect = async () => {
@@ -153,7 +153,7 @@ function RenderViewChat(res) {
     //   index: 0,
     //   routes: [{ name: 'BasicTabBarExample' }],
     // });
-    navigation.navigate('BasicTabBarExample', {navigation: 'blueTab'});
+    navigation.navigate('BasicTabBarExample',{navigation: 'blueTab'});
   };
 
   const fetchMessages = async () => {
@@ -174,13 +174,13 @@ function RenderViewChat(res) {
       var getToken = await AsyncStorage.getItem('token');
       settoken(getToken);
       const response = await axios.post(
-        'http://192.168.0.147:2080/messages-group',
+        'http://192.168.1.24:2080/messages-group',
         {
           senderId: user.userName,
           chatId: dataChat.objectChat._id,
         },
         {
-          headers: {authorization: `Bearer ${token}`},
+          headers: { authorization: `Bearer ${token}` },
         },
       );
 
@@ -282,14 +282,14 @@ function RenderViewChat(res) {
               }}>
               <TouchableOpacity onPress={backDisconnect}>
                 <FontAwesomeIcon
-                  style={{marginRight: 10}}
+                  style={{ marginRight: 10 }}
                   color={colors.primary}
                   size={20}
                   icon={faChevronLeft}
                 />
               </TouchableOpacity>
               <Image
-                source={{uri: avatar}}
+                source={{ uri: avatar }}
                 style={{
                   marginRight: 10,
                   width: 40,
@@ -328,7 +328,7 @@ function RenderViewChat(res) {
                 }}
                 onPress={showActionSheet}>
                 <FontAwesomeIcon
-                  style={{marginHorizontal: 10}}
+                  style={{ marginHorizontal: 10 }}
                   color={colors.primary}
                   size={20}
                   icon={faEllipsisVertical}
@@ -391,7 +391,7 @@ function RenderViewChat(res) {
               }}>
               <FontAwesomeIcon
                 color={colors.primary}
-                style={{marginLeft: 15, marginRight: 5}}
+                style={{ marginLeft: 15, marginRight: 5 }}
                 size={20}
                 icon={faPaperclip}
               />
@@ -424,14 +424,14 @@ function RenderViewChat(res) {
                 placeholder="Tin nhắn"
               />
               <FontAwesomeIcon
-                style={{marginRight: 5}}
+                style={{ marginRight: 5 }}
                 color={colors.primary}
                 size={20}
                 icon={faFaceSmile}
               />
               <TouchableOpacity onPress={chooseImage}>
                 <FontAwesomeIcon
-                  style={{marginRight: 15}}
+                  style={{ marginRight: 15 }}
                   color={colors.primary}
                   size={20}
                   icon={faImage}
@@ -513,7 +513,7 @@ function RenderViewChat(res) {
                 {dataFriend && dataFriend.length ? (
                   <>
                     {dataFriend.map(item => (
-                      <View style={{height: 80}}>
+                      <View style={{ height: 80 }}>
                         <ViewFriendItem data={item} />
                       </View>
                     ))}

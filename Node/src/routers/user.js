@@ -10,7 +10,6 @@ const {
     updateAboutUs,
     uploadBackground,
     searchUser,
-    testData,
     changeTheme,
     addFriend,
     getMyUser,
@@ -21,6 +20,8 @@ const {
     getUser,
     searchFriend,
     uploadAvatarMobile,
+    getInfoOtherUser,
+    changePrivateProfile
 } = require('../controllers/UserController')
 const checkLogin = require('../middlewares/auth')
 // const uploadImage = require('../middlewares/uploadImage')
@@ -49,7 +50,6 @@ routerUser.post(
 routerUser.post('/update-about-us', updateAboutUs)
 routerUser.get('/search', searchUser)
 routerUser.get('/change-theme/:nightMode', changeTheme)
-routerUser.get('/test-data', testData)
 routerUser.post('/change-password', changePassword)
 
 //Add friend
@@ -61,5 +61,8 @@ routerUser.get('/search', searchUser)
 routerUser.post('/add-friend', addFriend)
 routerUser.post('/delete-friend', deleteFriend)
 routerUser.post('/user-find-one', getMyUser)
+routerUser.post('/get-info-other-user', getInfoOtherUser)
+routerUser.post('/change-private-user', changePrivateProfile)
+
 
 module.exports = routerUser

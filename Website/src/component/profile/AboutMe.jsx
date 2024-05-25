@@ -79,6 +79,7 @@ const AboutMe = (props) => {
     return (
         <Content className='column-start'>
             <Form
+              className="w-100"
                 form={form}
                 layout="horizontal"
                 labelCol={{
@@ -107,11 +108,6 @@ const AboutMe = (props) => {
                         }}
                         options={options}
                     />
-                </Form.Item>
-                <Form.Item
-                    label='Show your hobbies'
-                >
-                    <Switch defaultChecked disabled={!props.isEdit}/>
                 </Form.Item>
                {props.isEdit && (
                  <div className="w-100 flex-center"> 

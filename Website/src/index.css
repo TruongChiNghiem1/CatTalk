@@ -86,8 +86,19 @@ body {
   align-items: center;
 }
 
+.column-start{
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center ;
+}
+
 .p-2{
   padding: 0.125rem !important;
+}
+
+.px-3{
+  padding: 0 1.25rem !important;
 }
 
 .m-0{

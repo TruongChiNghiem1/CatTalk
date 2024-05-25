@@ -20,3 +20,9 @@ export const createGroup = async(token, dataAddGroup) => {
 
     });
 }
+
+export const deleteMessage = async(token, data) => {
+    return await axios.post(`${url}/chat/delete-message`, data, {
+        headers: { authorization: `Bearer ${token}`},
+    })
+}

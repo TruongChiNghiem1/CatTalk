@@ -13,6 +13,7 @@ import Redirect from './page/Redirect.jsx';
 import AppProvider from './context/AppContext.jsx';
 import PrivateWrapper from './page/PrivateWrapper.jsx';
 import { useCookies } from 'react-cookie';
+import ProfileFriend from './page/ProfileFriend.jsx';
 
 function App() {
   const [cookies] = useCookies('user')
@@ -76,6 +77,7 @@ function App() {
             <Route path="home" element={<Home />} />
             <Route path="redirect/:id" element={<Redirect/>} />
             <Route path="profile" element={<Profile/>} />
+            <Route path="user/:id" element={<ProfileFriend/>} />
           </Route>
         </Route>  
         <Route path="*" element={<NotFound/>} />

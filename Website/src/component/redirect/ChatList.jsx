@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Avatar, Col, List, Skeleton, Typography, Button, Dropdown} from 'antd';
 import {PlusOutlined, MoreOutlined ,PushpinOutlined,DeleteOutlined} from '@ant-design/icons'
-import { getAllChat } from '../../service/redirect';
+import { deleteMessage, getAllChat } from '../../service/redirect';
 import { useCookies } from 'react-cookie';
 import { AppContext } from '../../context/AppContext';
 import CreateChat from './CreateChat';
@@ -10,7 +10,7 @@ import getHumanReadableDate from '../../helper/getHumanReadableDate';
 import { MuteIcon } from '../../helper/CustomIcon';
 import { useNavigate } from 'react-router-dom';
 const ChatList = (props) => {
-    const {user} = useContext(AppContext);
+    const {user, cookies} = useContext(AppContext);
     const [loading, setLoading] = useState(props.loading);
     const [data, setData] = useState(props.chats);
     
@@ -60,16 +60,22 @@ const ChatList = (props) => {
         xl={6}
         id="chatList"
         style={{
-            height: '93%',
-            overflow: 'auto',
-            paddingRight: '1rem'
+            paddingRight: 12
         }}
         >
         <div className='w-100 flex-between'>
-                <Typography.Title className='mt-0 title_feature'>{user.userName}</Typography.Title>
-                <Button icon={<PlusOutlined />} type='primary' onClick={toggleOpenCreate}></Button>
+            <Typography.Title className='mt-0 title_feature'>{user.userName}</Typography.Title>
+            <Button icon={<PlusOutlined />} type='primary' onClick={toggleOpenCreate}></Button>
         </div>
-        <Typography.Text style={{fontSize: '18px', fontWeight: 'bold', marginTop: '1.5rem'}}>Messages</Typography.Text>
+        <div 
+            style={{
+                 boxShadow: '0 3px 2px rgba(100, 185, 178, 0.1)',
+                 paddingBottom: '.5rem',
+
+            }}
+            >
+             <Typography.Text style={{fontSize: '18px', fontWeight: 'bold', marginTop: '1.5rem'}}>Messages</Typography.Text>
+        </div>
         <InfiniteScroll
             dataLength={data.length}
             next={() => {}}
@@ -174,7 +180,12 @@ const ChatList = (props) => {
                 />
             )}
         </InfiniteScroll>
-        {createChat && (<CreateChat handleClose={toggleOpenCreate}/>)}
+        {createChat && (
+            <CreateChat 
+                handleClose={toggleOpenCreate}
+                refresh={props.refresh}  
+            />
+            )}
         </Col>
     )
 }

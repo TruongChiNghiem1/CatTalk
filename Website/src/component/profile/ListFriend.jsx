@@ -1,23 +1,14 @@
-import {Row, Col , Layout, Image, Dropdown, Empty, theme, Typography} from 'antd'
+import {Row, Col , Layout, Image, Dropdown, Empty, theme, Typography, message, Popconfirm, Button} from 'antd'
 import {MoreOutlined} from '@ant-design/icons'
 import { useCookies } from 'react-cookie';
 import { useEffect, useState } from 'react';
-import { getFriends } from '../../service/user';
+import { deleteFriend, getFriends } from '../../service/user';
+import { Link, useNavigate } from 'react-router-dom';
 const {Content} = Layout
-
-const items = [
-  {
-    label: <a href="https://www.antgroup.com">View profile</a>,
-    key: '0',
-  },
-  {
-    label: <a href="https://www.aliyun.com">Unfollow</a>,
-    key: '1',
-  },
-];
 
 const ListFriend = () => {
     const [cookies] = useCookies('loginToken')
+    const navigate = useNavigate()
     const [listFriend, setListFriend] = useState([])
 
     const { token: { colorBoldSecondary }, } = theme.useToken();
@@ -27,6 +18,22 @@ const ListFriend = () => {
             setListFriend(items.data.data)
         } catch (error) {   
             console.log('Error: ', error.message);
+        }
+    }
+
+
+    const handleDeleteFriend = async (userNameDelete) => {
+        try {
+            const res = await deleteFriend(userNameDelete, cookies.loginToken)
+            if(res.data.status === 200){
+                message.success(res.data.message)
+                const updateFriend = listFriend.filter(item => item.userName !== userNameDelete)
+                setListFriend(updateFriend)
+            }else{
+                message.error(res.data.message)
+            }
+        } catch (error) {
+            console.log('Error: ', error.message)
         }
     }
 
@@ -51,13 +58,33 @@ const ListFriend = () => {
                                     <div className='box_friend'>
                                         <Image src={item.avatar} className='avt_friend'/>
                                         <span className='info_friend'>
-                                            <h4 style={{color: colorBoldSecondary}}>{item.firstName} {item.lastName}</h4>
+                                            <Link to={`/user/${item._id}`} style={{color: colorBoldSecondary}}>{item.firstName} {item.lastName}</Link>
                                             <Typography.Text >Có 7 bạn chung</Typography.Text >
                                         </span>
 
                                         <Dropdown
                                             menu={{ 
-                                            items,
+                                            items: [
+                                                {
+                                                    label: <span>View profile</span>,
+                                                    key: '0',
+                                                    onClick: () => navigate(`/user/${item._id}`)
+                                                },
+                                                {
+                                                
+                                                    label: <Popconfirm
+                                                                title="Confirm to delete friend"
+                                                                description="Are you sure to delete this friend?"
+                                                                onConfirm={()=> handleDeleteFriend(item.userName)}
+                                                                // onCancel={}
+                                                                okText="Yes"
+                                                                cancelText="No"
+                                                            >
+                                                                <span>Delete</span>
+                                                            </Popconfirm>,
+                                                    key: '1',
+                                                },
+                                            ],
                                             }}
                                             trigger={['click']}
                                         >

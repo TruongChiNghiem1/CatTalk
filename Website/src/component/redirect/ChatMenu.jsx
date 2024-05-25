@@ -3,6 +3,7 @@ import { useSpring, animated } from "react-spring"
 import {BellOutlined, DeleteOutlined, LogoutOutlined, ExclamationCircleFilled} from '@ant-design/icons';
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 const { confirm } = Modal;
 const ChatMenu = (props) => {
     const {token: { colorBgContainer }} = theme.useToken();
@@ -98,7 +99,7 @@ const ChatMenu = (props) => {
                                                 avatar={<Avatar src={item.avatar} size='large'/>}
                                                 title={
                                                     <div className='w-100 flex-between'>
-                                                        <span>{item.firstName} {item.lastName}</span>
+                                                        <Link to={`/user/${item.userId}`} >{item.firstName} {item.lastName}</Link>
                                                         {/* <Dropdown
                                                             menu={{items}}
                                                             trigger={['click']}    

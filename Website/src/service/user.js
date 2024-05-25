@@ -80,3 +80,31 @@ export const changePassword = async (data, token) => {
         headers: { authorization: `Bearer ${token}` }
     });
 }
+
+export const getInfoOtherUser  = async (userId, token) => {
+    return await axios.post(`${url}/user/get-info-other-user`, {userId: userId}, {
+        headers: { authorization: `Bearer ${token}` }
+    });
+}
+
+export const addFriend = async (userNameAdd, token) => {
+    return await axios.post(`${url}/user/add-friend`, 
+        { userNameAdd: userNameAdd }, {
+        headers: { authorization: `Bearer ${token}` }
+    })
+}
+
+export const deleteFriend = async (userNameDelete, token) => {
+    return await axios.post(`${url}/user/delete-friend`,
+        { userNameDelete: userNameDelete }, {
+        headers: { authorization: `Bearer ${token}` }
+    })
+}
+
+
+export const changePrivateAccount = async (privateValue, token) => {
+    return await axios.post(`${url}/user/change-private-user`,
+        { private: privateValue }, {
+        headers: { authorization: `Bearer ${token}` }
+    })
+}
