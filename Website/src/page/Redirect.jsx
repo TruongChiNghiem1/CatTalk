@@ -21,6 +21,7 @@ const Redirect = () => {
   const [loading, setLoading] = useState(true)
 
     const handleGetAllChat = async () => {
+      setLoading(true)
         try {
             const res = await getAllChat(cookies.loginToken)
             if(res.data.status === 200){
@@ -52,6 +53,7 @@ const Redirect = () => {
         >
         <Row>
           <ChatList 
+            refresh={handleGetAllChat}
             loading={loading}
             chats={chats}
             setMember={setMember}

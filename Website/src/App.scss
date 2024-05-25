@@ -491,7 +491,10 @@
 }
 #chatList{
   .infinite-scroll-component{
-    overflow: hidden !important;
+    max-height: 80vh !important;
+    overflow-y: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
   }
   .chat_list_item{
     padding: 1rem .5rem;
@@ -562,6 +565,7 @@
 .myChatBox{
   display: flex;
   width: 100%;
+  align-items: center;;
   justify-content: end;
   padding-right: 1rem;
   .myChat {
@@ -572,6 +576,7 @@
       max-width: 50%;
       border-radius: 20px;
       margin-bottom: .3rem;
+      margin-left: .5rem;
     }
     .myChat:hover{
       background: rgb(255, 243, 221, 0.692);
@@ -582,7 +587,8 @@
 .sendChatBox{
   display: flex;
   width: 100%;
-    max-width: 50%;
+  max-width: 50%;
+  align-items: center;
   justify-content: start;
   padding-left: 1rem;
   .sendChat {
@@ -601,4 +607,21 @@
 
 .create_chat_modal .ant-modal-body{
   min-height: 40vh;
+}
+
+
+#other-user{
+  .background {
+    .ant-image {
+      width: 100% !important;
+    }
+
+    .ant-image-mask{
+      border-radius: 20px !important;
+    }
+}
+
+ .avatar .ant-image-mask {
+   border-radius: 100% !important;
+ }
 }

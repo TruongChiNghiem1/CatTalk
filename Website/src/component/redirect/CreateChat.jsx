@@ -1,4 +1,4 @@
-import {Button, List, Modal, Empty, Skeleton, Avatar, Checkbox, theme, Flex, Tag, Row, Col, Input} from 'antd'
+import {Button, List, Modal, Empty, Skeleton, Avatar, Checkbox, theme, Flex, Tag, Row, Col, Input, message} from 'antd'
 import {PlusOutlined, SearchOutlined} from '@ant-design/icons'
 import { useEffect, useState } from 'react'
 import { getFriends } from '../../service/user'
@@ -54,7 +54,13 @@ const CreateChat = (props) => {
            userNameAdd : selectedUsers
         }
         const res = await createGroup(cookies.loginToken, dataGroup);
-        console.log(res.data.message);
+        if(res.data.status === 200){
+          props.refresh()
+          message.success(res.data.message)
+          props.handleClose();
+        }else{
+           message.error(res.data.message)
+        }
       } catch (error) {
         console.log('Error: ', error.message);
       }
@@ -75,13 +81,15 @@ const CreateChat = (props) => {
     return(
         <Modal
           className='create_chat_modal'
-           title="New chat"
+           title="New chat group"
            open={true}
            width={800}
            centered
            onCancel={() => props.handleClose()}
            footer={
             <Button 
+              type='primary'
+              disabled={selectedUsers.length < 2}
               icon={<PlusOutlined/>}
               onClick={handleCreateGroup}
             >Create</Button>

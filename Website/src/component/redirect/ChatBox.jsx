@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useContext } from "react";
-import { Button, Col, Empty, Typography, Image} from "antd";
-import {VideoCameraOutlined, MoreOutlined, SendOutlined,PaperClipOutlined} from '@ant-design/icons';
+import { Button, Col, Empty, Typography, Image, Dropdown, message} from "antd";
+import {VideoCameraOutlined, MoreOutlined, SendOutlined,PaperClipOutlined, EllipsisOutlined} from '@ant-design/icons';
 import InputEmoji from "react-input-emoji";
 import getChatTime from "../../helper/getChatTime";
 import {io} from 'socket.io-client';
 import { AppContext } from "../../context/AppContext";
-import { getMessage } from "../../service/redirect";
+import { deleteMessage, getMessage } from "../../service/redirect";
 import ChatMenu from "./ChatMenu";
 import { useParams } from "react-router-dom";
 
@@ -17,14 +17,11 @@ const ChatBox = (props) => {
     const [chat, setChat] = useState(props.chat)
     const [member, setMember] = useState(props.member)
     const [chatId, setChatId] = useState(id)
-
-    console.log(props.member);
-
     const [newMessageSend, setText] = useState('');
     const [openMenu, setOpenMenu] = useState(false);
     const chatRef = useRef(null);
-    const [socket, setSocket] = useState(io.connect('http://192.168.1.24:2090'))
-    
+    const [socket, setSocket] = useState(io.connect('http://192.168.0.143:2090'))
+
 
     const handleSendMessage= async (senderId) => {
         console.log('gui ne');
@@ -42,7 +39,7 @@ const ChatBox = (props) => {
 
     const handelGetMessages = async() => {
         try {
-            const chat = await getMessage(cookies.loginToken, { chatId: id})
+            const chat = await getMessage(cookies.loginToken, { chatId: id, senderId: user.userName})
             .then(res => {
                 setMessages(res.data.messages)
             })
@@ -71,13 +68,33 @@ const ChatBox = (props) => {
 
     useEffect(() => {
         handelGetMessages()
-    }, [])
+    }, [chatId])
 
     
     useEffect(()=> {
         setChat(props.chat)
         setMember(props.member)
     }, [props.user, props.chat, props.member])
+
+    const handleDeleteMessage = async (data) => {
+        try {
+            const res = await deleteMessage(cookies.loginToken, {
+                myUserName: user.userName,
+                chatId: chatId,
+                data: data
+            })
+
+            if(res.data.status === 200){
+                message.success(res.data.message)
+                const updateMessage = messages.filter(item => item._id !== data._id);
+                setMessages(updateMessage)
+            }else{
+                message.error(res.data.message)
+            }
+        } catch (error) {
+            console.log('Error: ', error.message);
+        }
+    }
     
     return (
         <>
@@ -111,60 +128,131 @@ const ChatBox = (props) => {
                         {messages && messages.length > 0 ? (
                             <>
                              {messages.map(item =>{
-                                if(item.typeMessage === 0){
-                                        return (
-                                            <div key={item._id} className="sendChatBox mb-1 flex-center">
+                                if(item.typeMessage == 0){
+                                    //Tin nhắn hệ thống
+                                       if(item.createdBy !== user.userName){
+                                         return (
+                                    
+                                            <div key={item._id} className="w-100 mb-1 flex-center">
                                                 <span style={{color: '#2b7b7ec3', fontSize: '12px'}}>{item.content}</span>
                                             </div>
                                         )
+                                       }
                                 }
                                 else{
+                                    //Tin nhắn của tôi
                                     if(item.createdBy === user.userName){
                                         if(item.typeMessage == 2){
+                                            //Tin nhắn hình ảnh
                                             return (
                                                 <div key={item._id} className="myChatBox mb-1">
-                                                <div className="column-end">
+                                                   <Dropdown
+                                                        menu={{
+                                                           items: [
+                                                                     {
+                                                                        label: <span >Recall message</span>,
+                                                                        key: '0',
+                                                                    },
+                                                                    {
+                                                                        label: <span onClick={() => handleDeleteMessage(item)}>Delete message</span>,
+                                                                        key: '1',
+                                                                    },
+                                                                ],
+                                                        }}
+                                                        trigger={['click']}
+                                                    >
+                                                        <a onClick={(e) => e.preventDefault()}><EllipsisOutlined/></a>
+                                                    </Dropdown>
+                                                    <div className="column-end">
                                                         <Image src={item.content} width={400} height={230} style={{objectFit: 'cover', borderRadius: '20px'}}/>
                                                         <div className="flex-end w-100 time">{getChatTime(item.createdAt)}</div>
-                                                </div>
+                                                    </div>
                                                 </div>
                                             )}else{
-                                            return (
-                                                <div key={item._id} className="myChatBox">
-                                                    <div className="myChat">
-                                                        <span>{item.content}</span>
-                                                    <div className="flex-end time">{getChatTime(item.createdAt)}</div>
+                                                //Tin nhắn text
+                                                return (
+                                                    <div key={item._id} className="myChatBox">
+                                                        <Dropdown
+                                                        
+                                                            menu={{
+                                                                items: [
+                                                                     {
+                                                                        label: <span >Recall message</span>,
+                                                                        key: '0',
+                                                                    },
+                                                                    {
+                                                                        label: <span onClick={() => handleDeleteMessage(item)} >Delete message</span>,
+                                                                        key: '1',
+                                                                    },
+                                                                ],
+                                                            }}
+                                                            trigger={['click']}
+                                                        >
+                                                            <a onClick={(e) => e.preventDefault()}><EllipsisOutlined /></a>
+                                                        </Dropdown>
+                                                        <div className="myChat">
+                                                            <span>{item.content}</span>
+                                                        <div className="flex-end time">{getChatTime(item.createdAt)}</div>
+                                                        </div>
+                                                    
                                                     </div>
-                                                
-                                                </div>
-                                            )
+                                                )
                                         }
                                     }
                                     else{
+                                        //Đoạn chat group và tin nhắn khác
                                         if(chat.chatType == 'multi'){
                                             if(item.typeMessage == 2){
+                                                //Tin nhắn hình ảnh
                                                 return (
                                                     <div key={item._id} className="sendChatBox mb-1">
                                                         <img src={member.filter(mem => mem.userName === item.createdBy)[0]?.avatar} width={30} height={30} style={{borderRadius: '100%', marginRight: '10px'}} />
-                                                    <div className="column-start">
+                                                        <div className="column-start mr-1">
                                                             <Typography.Text style={{fontSize: '12px', color: 'orange'}}>{item.createdBy}</Typography.Text>
                                                             <Image src={item.content} width={400} height={230} style={{objectFit: 'cover', borderRadius: '20px'}}/>
-                                                            <div className="flex-end w-100 time">{getChatTime(item.createdAt)}</div>
-                                                    </div>
+                                                            <div className="flex-end w-75 time">{getChatTime(item.createdAt)}</div>
+                                                        </div>
+                                                          <Dropdown
+                                                            menu={{
+                                                                items: [
+                                                                    {
+                                                                        label: <span onClick={() => handleDeleteMessage(item)}>Delete message</span>,
+                                                                        key: '1',
+                                                                    },
+                                                                ],
+                                                            }}
+                                                            trigger={['click']}
+                                                        >
+                                                            <a onClick={(e) => e.preventDefault()}><EllipsisOutlined /></a>
+                                                        </Dropdown>
                                                     </div>
                                                  )}
                                             else{
+                                                //Tin nhắn text
                                                 return (
                                                     <div key={item._id} className="sendChatBox">
                                                         <img   src={member.filter(mem => mem.userName === item.createdBy)[0]?.avatar} width={30} height={30} style={{borderRadius: '100%', marginRight: '10px'}} />
-                                                    <div className="column-start ">
+                                                        <div className="column-start">
                                                             <Typography.Text style={{fontSize: '12px', color: 'orange'}}>{item.createdBy}</Typography.Text>
                                                             <div className="sendChat">
-                                                            <span> {item.content}</span>
+                                                                <span> {item.content}</span>
                                                             <div className="flex-end w-100 time">{getChatTime(item.createdAt)}</div>
-                                                            </div>
-                                                            
-                                                    </div>
+                                                        </div>
+                                                        
+                                                        </div>
+                                                        <Dropdown
+                                                                menu={{
+                                                                   items: [
+                                                                    {
+                                                                        label: <span >Delete message</span>,
+                                                                        key: '1',
+                                                                    },
+                                                                ],
+                                                                }}
+                                                                trigger={['click']}
+                                                            >
+                                                                <a onClick={(e) => e.preventDefault()}><EllipsisOutlined /></a>
+                                                            </Dropdown>
                                                     </div>
                                                 )
                                             }
@@ -173,9 +261,10 @@ const ChatBox = (props) => {
                                             return (
                                                 <div key={item._id} className="sendChatBox">
                                                     <div className="sendChat">
-                                                    <span> {item.content}</span>
-                                                     <div className="flex-end w-100 time">{getChatTime(item.createdAt)}</div>
-                                                    </div>
+                                                        <span> {item.content}</span>
+                                                    <div className="flex-end w-100 time">{getChatTime(item.createdAt)}</div>
+                                                   
+                                                </div>
                                             </div>
                                             )
                                         }

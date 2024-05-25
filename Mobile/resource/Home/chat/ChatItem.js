@@ -1,4 +1,4 @@
-import react, {useEffect, useState} from 'react';
+import react, { useEffect, useState } from 'react';
 import {
   ImageBackground,
   Text,
@@ -6,24 +6,24 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import {images, colors, fontSize} from '../../../constant';
-import {Image} from 'react-native';
-import {UIInput} from '../../../components';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faArrowRightToBracket} from '@fortawesome/free-solid-svg-icons/faArrowRightToBracket';
-import {height} from '@fortawesome/free-solid-svg-icons/faMugSaucer';
-import {AppRegistry} from 'react-native';
-import {Button, Icon, WhiteSpace, WingBlank} from '@ant-design/react-native';
+import { images, colors, fontSize } from '../../../constant';
+import { Image } from 'react-native';
+import { UIInput } from '../../../components';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons/faArrowRightToBracket';
+import { height } from '@fortawesome/free-solid-svg-icons/faMugSaucer';
+import { AppRegistry } from 'react-native';
+import { Button, Icon, WhiteSpace, WingBlank } from '@ant-design/react-native';
 import UserChatItem from './userChatItem';
 import axios from 'axios';
-import {url} from '../../../service/cattalk';
+import { url } from '../../../service/cattalk';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {getAllChat} from '../../../service/chat';
-import {io} from 'socket.io-client';
+import { getAllChat } from '../../../service/chat';
+import { io } from 'socket.io-client';
 
 // import { DemoBlock } from './demo'
 
-const ChatItem = ({user}) => {
+const ChatItem = ({ user }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newMessageNotify, setNewMessageNotify] = useState([]);
@@ -33,7 +33,7 @@ const ChatItem = ({user}) => {
     'https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg',
   );
 
-  const [socket, setSocket] = useState(io.connect('http://192.168.1.24:2090'));
+  const [socket, setSocket] = useState(io.connect('http://192.168.0.143:2090'));
 
   useEffect(() => {
     socket.on('receiveNotify', newMessage => {
@@ -42,7 +42,7 @@ const ChatItem = ({user}) => {
       setData(prevData =>
         prevData.map(item => {
           if (item.newMessage && item.newMessage.chatId === newMessage.chatId) {
-            return {...item.newMessage, content: newMessage.content}; // Thay đổi thuộc tính content thành giá trị mới
+            return { ...item.newMessage, content: newMessage.content }; // Thay đổi thuộc tính content thành giá trị mới
           }
           return item;
         }),
@@ -110,7 +110,7 @@ const ChatItem = ({user}) => {
               height: 40,
             }}></Image>
           <Image
-            source={{uri: avatar}}
+            source={{ uri: avatar }}
             style={{
               marginRight: 10,
               width: 40,
@@ -129,7 +129,7 @@ const ChatItem = ({user}) => {
                     // key={item.objectChat._id}
                     data={item}
                     myUserName={myUserName}
-                    // newMessageIO={newMessageNotify.newMessage && (newMessageNotify.newMessage.chatId == item.objectChat._id) ? newMessageNotify.newMessage : ''}
+                  // newMessageIO={newMessageNotify.newMessage && (newMessageNotify.newMessage.chatId == item.objectChat._id) ? newMessageNotify.newMessage : ''}
                   />
                 ))}
               </>

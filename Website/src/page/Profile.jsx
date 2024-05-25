@@ -1,4 +1,4 @@
-import { Image ,theme, Layout, Button, message, Menu, Modal,Slider, Typography, Spin} from 'antd';
+import { Image ,theme, Layout, Button, message, Menu, Modal,Slider, Typography, Spin, Switch} from 'antd';
 import { createRef, useContext, useState } from 'react';
 import { AppContext } from '../context/AppContext';
 import {EditOutlined, SwapLeftOutlined, SaveOutlined, UserOutlined,TeamOutlined, CoffeeOutlined,CameraOutlined, CloseCircleOutlined, SettingOutlined} from '@ant-design/icons'
@@ -6,7 +6,7 @@ import qr from '../assets/qr_default.png'
 import FormInfo from '../component/profile/FormInfo';
 import ListFriend from '../component/profile/ListFriend';
 import AboutMe from '../component/profile/AboutMe';
-import { uploadAvatar, uploadBackground} from '../service/user';
+import { changePrivateAccount, uploadAvatar, uploadBackground} from '../service/user';
 import AvatarEditor from 'react-avatar-editor'
 import Account from '../component/profile/Account';
 const {Content } = Layout;
@@ -51,6 +51,8 @@ const Profile = () =>{
 
     const [loading, setLoading] = useState(false);
     const [bgLoad, setBgLoad] = useState(false);
+
+    const [privateLoad, setPrivateLoad] = useState(false);
 
     const editorRef = createRef();
     const bgRef = createRef();
@@ -173,6 +175,20 @@ const Profile = () =>{
         setSelectedBg(null)
     }
 
+    const handleChangePrivateAccount = async (value) => {
+        setPrivateLoad(true)
+        try{
+            let privateValue = value ? 1 : 0;
+            const res = await changePrivateAccount(privateValue, cookies.loginToken)
+            setUser({...user, private: res.data.private})
+            setCookie('user', JSON.stringify({ ...cookies.user, private: res.data.private }));
+            setPrivateLoad(false)
+        }catch (e) {
+            console.log("Error: " + e.message);
+        }
+    }   
+
+    console.log(user);
     
 
     return(
@@ -249,7 +265,14 @@ const Profile = () =>{
             </div>
            
             <h2 className='userName'>{user.userName}</h2>
-            <Typography.Paragraph className='mt-0'>{user.description}</Typography.Paragraph>
+            <div className='flex-center mt-1 mb-1'>
+                <Switch 
+                    checked={user.private == 1 ? true : false} 
+                    loading={privateLoad}
+                    onChange={handleChangePrivateAccount}/>
+                <Typography.Title level={5} style={{color: '#44bccc', margin: '0 0 0 8px',}}>Private account</Typography.Title>
+            </div>
+           
             <img src={qr} width={250}/>     
         </div>
            <div className='main_info'>
