@@ -471,6 +471,45 @@ const deleteMessage = async (req, res) => {
         if (!deleteMessage) {
             return res.json({
                 status: 500,
+                message: "Can't delete message, please try again",
+            })
+        }
+        return res.json({
+            status: 200,
+            message: 'Delete successful message',
+        })
+    } catch (error) {
+        return res.json({
+            status: 500,
+            message: 'Opps, somthing went wrong!!!',
+        })
+    }
+}
+
+const deleteChat = async (req, res) => {
+    try {
+        const { dataChatDelete } = req.body
+        const {myUserName, chatId} = dataChatDelete;
+        // Kiểm tra xem đã có bản ghi trong bảng DeleteChat chưa
+        const existingRecord = await DeleteChat.findOne({ 
+            userName: myUserName,
+            chatId: chatId 
+        });
+        const deleteChatItem = [];
+        if (existingRecord) {
+            // Nếu đã có bản ghi, cập nhật trường updatedAt
+            deleteChatItem = await existingRecord.update({ updatedAt: new Date() });
+        } else {
+            // Nếu chưa có bản ghi, tạo mới
+            deleteChatItem = await DeleteChat.create({ 
+                userName: myUserName,
+                chatId: chatId
+            });
+        }
+
+        if (!deleteChatItem) {
+            return res.json({
+                status: 500,
                 message: "Can't delete member, please try again",
             })
         }
@@ -485,7 +524,6 @@ const deleteMessage = async (req, res) => {
         })
     }
 }
-
 const getMemberInGroup = async (req, res) => {
     try {
         const { chatId } = req.query
@@ -511,8 +549,6 @@ const getMemberInGroup = async (req, res) => {
                 friends: { $arrayElemAt: ['$user.friends', 0]}
             }}
         ])
-
-
         if (!memberChat) {
             return res.json({
                 status: 500,
@@ -530,8 +566,6 @@ const getMemberInGroup = async (req, res) => {
         })
     }
 }
-
-
 module.exports = { 
     getAllChat, 
     getMessage,
