@@ -21,7 +21,7 @@ import {io} from 'socket.io-client';
 function ViewPhoneBookItem(props) {
   var {data} = props;
   const navigation = useNavigation();
-  const [socket, setSocket] = useState(io.connect('http://192.168.1.24:2090'));
+  const [socket, setSocket] = useState(io.connect('http://192.168.0.147:2090'));
 
   useEffect(() => {
     socket.on('connection', () => {
