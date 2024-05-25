@@ -204,7 +204,7 @@ const createChatGroup = async (username, dataAddGroup) => {
     try {
         const newChat = {
             chatType: 'multi',
-            groupName: dataAddGroup.nameGroup ?? username,
+            groupName: (dataAddGroup.nameGroup && dataAddGroup.nameGroup != '' ?  dataAddGroup.nameGroup : 'Nhóm của ' + username),
             lead: username,
             // avatar: username,
             createdBy: username,
