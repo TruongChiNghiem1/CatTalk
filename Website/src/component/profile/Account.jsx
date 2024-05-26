@@ -22,10 +22,10 @@ const Account = (props) => {
                 message.success(res.data.message);
                 removeCookie('loginToken')
                 navigate('/login')
-                setLoading(false);
             }else{
                 message.error(res.data.message);
             }   
+                setLoading(false);
     }
 
      return (

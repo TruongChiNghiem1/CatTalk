@@ -5,8 +5,6 @@ import cat_01 from '../assets/cat_01.png';
 import {MessageOutlined} from '@ant-design/icons';
 import { useContext } from 'react';
 import { AppContext} from '../context/AppContext';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { EffectFade, Autoplay, Navigation, Pagination  } from 'swiper/modules';
 import 'swiper/css';
 import "swiper/css/effect-fade"
 
@@ -23,26 +21,6 @@ const Home = () => {
             background: colorBgContainer,
           }}
         >
-
-{/* <Swiper
-     spaceBetween={30}
-        slidesPerView={1}
-        navigation={true}
-        effect={"fade"}
-        speed={1500}
-        autoplay={{delay: 5500}}
-        pagination={{
-        clickable: true,
-        }}
-        loop={true}
-        modules={[Navigation, Pagination, Autoplay, EffectFade]}
-    >
-      <SwiperSlide style={{background: 'red'}}>Slide 1</SwiperSlide>
-      <SwiperSlide style={{background: 'red'}}>Slide 2</SwiperSlide>
-      <SwiperSlide style={{background: 'red'}}>Slide 3</SwiperSlide>
-      <SwiperSlide style={{background: 'red'}}>Slide 4</SwiperSlide>
-      ...
-    </Swiper> */}
           <div className='position-relative'>
             <div className="circle1">
               <svg xmlns="http://www.w3.org/2000/svg" width="830" height="732" viewBox="0 0 1254 972" fill="none">
@@ -56,9 +34,13 @@ const Home = () => {
             </div>
             <div className='main_home flex-column-center'>
               <img src={cat_01}/>
-              <Typography.Paragraph className='home_title'>Good morning, <span className='user_name'>{user.firstName}</span> !</Typography.Paragraph>
+              <Typography.Paragraph className='home_title'>Good morning, <span className='user_name'>{user.lastName}</span> !</Typography.Paragraph>
               <Typography.Text className='feature_title'>Greet someone to start the day ^^</Typography.Text>
-              <Button onClick={() => {navigate('/redirect/0'), setActiveMenu('redirect')}} icon={<MessageOutlined />} type='primary' size='large'></Button>
+              <Button 
+                onClick={() => {navigate('/redirect/0'), setActiveMenu('redirect')}} 
+                icon={<MessageOutlined size='large'/>} 
+                type='primary'  
+                size='large'></Button>
             </div>
             
           </div>

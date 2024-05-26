@@ -5,10 +5,9 @@ import { useForm } from 'antd/es/form/Form';
 import { LoginOutlined,LogoutOutlined, DoubleRightOutlined} from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import cat_hello from '../assets/cat_hello.png';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { mailConfirm, signUp, authEmail} from '../service/user';
 import { useCookies } from 'react-cookie';
-
 const SignUpForm = () => {
         const {
     token: { baseColor },
@@ -16,9 +15,11 @@ const SignUpForm = () => {
     const [form] = useForm()
     const navigate = useNavigate()
     const [count, setCount] = useState(60) 
-    const [step, setStep] = useState(1)
+    const [searchParams, setSearchParams] = useSearchParams()
+    const [step, setStep] = useState(searchParams.get('step'))
     const [cookies,setCookie] = useCookies(['token']);
     const [loading, setLoading] = useState(false)
+
 
     const getOTP = async () =>{
         try {
@@ -27,7 +28,8 @@ const SignUpForm = () => {
             const res = await mailConfirm(value.email);
             if(res.data.status === 200){
                 message.success(res.data.message) 
-                setStep(2)
+                 setSearchParams({step: '2'})
+                 setStep(2)
                 localStorage.setItem('email', value.email)
             }
             else{
@@ -41,12 +43,15 @@ const SignUpForm = () => {
 
     useEffect(() => {
         if (step == 2) {
-            const interval = setInterval(() => {
-            setCount(prevCount => prevCount - 1);
-            }, 1000);
-            return () => {
-            clearInterval(interval);
-            };
+            let interval;
+            if (count > 0) {
+                interval = setInterval(() => {
+                    setCount(prevCount => prevCount - 1);
+                }, 1000);
+            } else {
+                clearInterval(interval);
+            }
+        return () => clearInterval(interval);
         }
     }, [step]);
 
@@ -58,7 +63,8 @@ const SignUpForm = () => {
             values['token'] = cookies.token;
             const res = await signUp(values);
             if (res.data.status == 200) {
-                setStep(4)
+                setSearchParams({step: '4'})
+                  setStep(4)
                 message.success(res.data.message)
             }else if(res.data.status === 400){
                  res.data.message.map(item => ( message.warning(item)))
@@ -80,7 +86,8 @@ const SignUpForm = () => {
             const auth = await authEmail(value)
             if(auth.data.status === 200){
                 setCookie('token', auth.data.token)
-                setStep(3)
+               setSearchParams({step: '3'})
+                 setStep(3)
             }else {
                 message.error(auth.data.message)
             }
@@ -92,10 +99,10 @@ const SignUpForm = () => {
 
 
     return(
-        <div className='flex-between' style={{padding: '24px'}}>
-                <Carousel autoplay style={{width: '20vw', overflow:'hidden'}}>
+        <div className='flex-center ' style={{padding: '24px 30px 24px 24px'}}>
+                <Carousel autoplay style={{width: '25vw', overflow:'hidden'}}>
                 <div>
-                    <img style={{width: '20vw', objectFit: 'cover'}} src={signup}/>
+                    <img style={{width: '25vw', objectFit: 'cover'}} src={signup}/>
                 </div>
             </Carousel>
             <div className='flex-column-start signup_box' style={{background: baseColor}} >
@@ -134,14 +141,17 @@ const SignUpForm = () => {
                             className='mail'
                             rules={[
                             {
-                                required: true,
-                                message: 'Email is required'
-                            },
+                                    type: 'email',
+                                    message: 'The input is not valid E-mail!',
+                                },
+                                {
+                                    required: true,
+                                    message: 'Please input your E-mail!',
+                                },
                             ]}
                         >
                             <Input 
                                 placeholder='example@gmail.com'
-                                type='mail'
                             />
                         </Form.Item>
                     </Form>

@@ -54,7 +54,7 @@ const ProfileFriend = () => {
         
 
     const tagRender = (props) => {
-        const { label, value, closable, onClose } = props;
+        const { label, value } = props;
         const onPreventMouseDown = (event) => {
             event.preventDefault();
             event.stopPropagation();
@@ -63,8 +63,6 @@ const ProfileFriend = () => {
             <Tag
             color={value}
             onMouseDown={onPreventMouseDown}
-            closable={closable}
-            onClose={onClose}
             style={{
                 marginRight: 3,
             }}
@@ -181,7 +179,7 @@ const ProfileFriend = () => {
                                                 {
                                                     children:(
                                                         <>
-                                                        <Typography.Title level={5}>User infomation</Typography.Title>
+                                                        <Typography.Title level={5} style={{color: 'orange'}}>User infomation</Typography.Title>
                                                         <div className='flex-between w-100'>
                                                             <Form.Item
                                                                 label="Birthday"
@@ -227,7 +225,7 @@ const ProfileFriend = () => {
                                                 {
                                                     children:(
                                                         <>
-                                                            <Typography.Title level={5}>About {`${userInfo.gender == 1 ? 'him' : userInfo.gender === 0 ? 'her' : 'their'}`}</Typography.Title>
+                                                            <Typography.Title level={5} style={{color: 'orange'}}>About {`${userInfo.gender == 1 ? 'him' : userInfo.gender === 0 ? 'her' : 'their'}`}</Typography.Title>
                                                              <div className='flex-between w-100'>
                                                                 <Form.Item
                                                                     label='Description: '

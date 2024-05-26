@@ -2,12 +2,12 @@ const Joi = require('joi');
 
 const signUpValid = Joi.object(
     {
-        firstName: Joi.string().required().min(3).messages({
+        firstName: Joi.string().required().messages({
             "string.empty": "First name is required",
             "any.required": "First name is required",
             "string.min": "First name must be at least 3 characters"
         }),
-        lastName: Joi.string().required().min(3).messages({
+        lastName: Joi.string().required().messages({
             "string.empty": "Last name is required",
             "any.required": "Last name is required",
             "string.min": "Last name must be at least 3 characters"
@@ -20,7 +20,7 @@ const signUpValid = Joi.object(
         password: Joi.string().required().min(8).messages({
             "string.empty": "Password is required",
             "any.required": "Password is required",
-            "string.min": "Password must be at least 6 characters",
+            "string.min": "Password must be at least 8 characters",
         }),
         confirmPassword: Joi.string().required().min(8).valid(Joi.ref("password")).messages({
             "any.required": "Confirm password is required",
@@ -40,18 +40,18 @@ const signInValid = Joi.object(
         password: Joi.string().required().min(8).messages({
             "string.empty": "Password is required",
             "any.required": "Password is required",
-            "string.min": "Password must be at least 6 characters",
+            "string.min": "Password must be at least 8 characters",
         }),
     });
 
 const updatValid = Joi.object(
     {
-        firstName: Joi.string().required().min(3).messages({
+        firstName: Joi.string().required().messages({
             "string.empty": "First name is required",
             "any.required": "First name is required",
             "string.min": "First name must be at least 3 characters"
         }),
-        lastName: Joi.string().required().min(3).messages({
+        lastName: Joi.string().required().messages({
             "string.empty": "Last name is required",
             "any.required": "Last name is required",
             "string.min": "Last name must be at least 3 characters"
@@ -64,7 +64,7 @@ const updatValid = Joi.object(
         password: Joi.string().required().min(8).messages({
             "string.empty": "Password is required",
             "any.required": "Password is required",
-            "string.min": "Password must be at least 6 characters",
+            "string.min": "Password must be at least 8 characters",
         }),
         birthday: Joi.string(),
         hometown: Joi.string(),

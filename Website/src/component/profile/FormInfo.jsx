@@ -38,8 +38,8 @@ const FormInfo = (props) => {
             setLoadSave(true)
             const res = await editProfile(values, cookies.loginToken)
                 if(res.data.status == 200){
-                    setUser(res.data.user)
-                    setCookie('user', res.data.user);
+                    setUser({...user, birthday: values.birthday, gender: values.gender, hometown: values.hometown})
+                    setCookie('user', JSON.stringify({ ...cookies.user,  birthday: values.birthday, gender: values.gender, hometown: values.hometown}));
                     message.success(res.data.message)    
                 }else {
                     message.error(res.data.message)   
@@ -145,13 +145,28 @@ const FormInfo = (props) => {
                         name="password"
                         label="Password"
                         style={{width: '49%'}}
+                        rules={[
+                        {
+                            required: props.isEdit,
+                            message: 'Password is required'
+                        },
+                        ]}
                     >
                         <Input.Password placeholder='Password'/>
                     </Form.Item>
                     </div>
                     )}
                 <div className="w-100 flex-center">
-                    {props.isEdit && (<Button icon={<SaveOutlined />} loading={loadSave} onClick={handleChangeInfo}>Save</Button>)}
+                    {props.isEdit && (
+                        <Button 
+                            type='primary'
+                            icon={<SaveOutlined />} 
+                            loading={loadSave} 
+                            onClick={handleChangeInfo}
+                            >
+                                Save
+                        </Button>
+                    )}
                 </div>
             </Form>
     )
