@@ -312,12 +312,15 @@ function RenderViewChat(res) {
                 alignItems: 'center',
                 marginHorizontal: 10,
               }}>
-              <FontAwesomeIcon
-                style={{}}
-                size={23}
-                color={colors.primary}
-                icon={faVideo}
-              />
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('VoiceCallPage', {myUserNameOne, chatId, nameUserChat})}>
+                  <FontAwesomeIcon
+                    style={{}}
+                    size={23}
+                    color={colors.primary}
+                    icon={faVideo}
+                  />
+                </TouchableOpacity>
               <Button
                 style={{
                   backgroundColor: colors.bgHeader,

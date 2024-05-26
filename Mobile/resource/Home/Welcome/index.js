@@ -9,18 +9,27 @@ import {height} from '@fortawesome/free-solid-svg-icons/faMugSaucer';
 import {AppRegistry} from 'react-native';
 import {Button, Icon, WhiteSpace, WingBlank} from '@ant-design/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useRoute, useNavigation} from '@react-navigation/native';
 
 // import { DemoBlock } from './demo'
 function Welcome(res) {
   const [fullname, setFullname] = useState('')
   const [avatar, setAvatar] = useState('https://static.vecteezy.com/system/resources/previews/024/766/958/original/default-male-avatar-profile-icon-social-media-user-free-vector.jpg')
-
+  const navigation = useNavigation();
   async function getData() {
     const userStorage = await AsyncStorage.getItem('user');
     const user = JSON.parse(userStorage);
     setFullname(user.firstName + ' ' + user.lastName)
     setAvatar(user.avatar)
   }
+
+  const runTestVideoCall = async () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'VoiceCallPage' }],
+    });
+    // navigation.navigate('BasicTabBarExample', {navigation: 'blueTab'});
+  };
 
   useEffect(() => {
     getData();
@@ -117,9 +126,7 @@ function Welcome(res) {
             Greet someone to start the day ^^
           </Text>
           <TouchableOpacity
-            onPress={() => {
-              alert('You login');
-            }}
+            // onPress={runTestVideoCall}
             style={{
               width: 60,
               height: 60,

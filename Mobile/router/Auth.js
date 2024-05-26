@@ -15,6 +15,8 @@ import RenderMyProfile from '../resource/Home/profile/myProfile';
 import RenderViewChatGroup from '../resource/Home/group/viewChatGroup';
 import RenderMoreChatGroup from '../resource/Home/group/moreChatGroup';
 import CreateMemberThisGroup from '../resource/Home/group/createMemberThisGroup';
+import VoiceCallPage from '../resource/Home/videoCall/videoCall';
+import VoiceCallPageGroup from '../resource/Home/videoCall/videoCallGroup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
@@ -77,6 +79,8 @@ const App = () => {
       <Stack.Screen name="RenderViewChatGroup" component={RenderViewChatGroup} />
       <Stack.Screen name="RenderMoreChatGroup" component={RenderMoreChatGroup} />
       <Stack.Screen name="CreateMemberThisGroup" component={CreateMemberThisGroup} />
+      <Stack.Screen name="VoiceCallPage" component={VoiceCallPage} />
+      <Stack.Screen name="VoiceCallPageGroup" component={VoiceCallPageGroup} />
     </Stack.Navigator>
   );
 };
