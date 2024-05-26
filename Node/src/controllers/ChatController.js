@@ -22,49 +22,50 @@ const getAllChat = async (req, res) => {
 
         var deletedChatIds = [];
 
-for (const deleteChatItem of deletedChat) {
-  try {
-    const deletedMessage = await DeleteMessage.find({ 
-      chatId: deleteChatItem.chatId,
-      userName: username,
-    });
-    const deletedMessageIds = deletedMessage.map(deletedMessage => new mongoose.Types.ObjectId(deletedMessage.messageId));
+        for (const deleteChatItem of deletedChat) {
+            try {
+                const deletedMessage = await DeleteMessage.find({ 
+                chatId: deleteChatItem.chatId,
+                userName: username,
+                });
+                const deletedMessageIds = deletedMessage.map(deletedMessage => new mongoose.Types.ObjectId(deletedMessage.messageId));
+                var messages = '';
+                messages = await Message.aggregate([
+                    { 
+                        $match: { 
+                            chatId: deleteChatItem.chatId, 
+                            _id: { $nin: deletedMessageIds },
+                            createdAt: {
+                                $gt: deleteChatItem.updatedAt
+                            }
+                        } 
+                    },
+                    {
+                        $lookup: {
+                            from: 'users',
+                            localField: 'createdBy',
+                            foreignField: 'userName',
+                            as: 'user'
+                        }
+                    },
+                    {
+                        $sort: {
+                        updatedAt: -1
+                        }
+                    },
+                    {
+                        $limit: 1
+                    }
+                ]);
+                if (!messages || messages == '') {
+                    deletedChatIds.push(deleteChatItem.chatId);
+                }
+            } catch (error) {
+                console.error(`Lỗi khi xử lý chatId ${deleteChatItem.chatId}:`, error);
+            }
+        }
 
-        const messages = await Message.aggregate([
-        { 
-            $match: { 
-            chatId: deleteChatItem.chatId, 
-            _id: { $nin: deletedMessageIds },
-            createdAt: {
-                $gt: deletedChat.updatedAt
-            }
-            } 
-        },
-        {
-            $lookup: {
-            from: 'users',
-            localField: 'createdBy',
-            foreignField: 'userName',
-            as: 'user'
-            }
-        },
-        {
-            $sort: {
-            updatedAt: -1
-            }
-        },
-        {
-            $limit: 1
-        }
-        ]);
-
-        if (!(messages && messages.length > 0)) {
-            deletedChatIds.push(deleteChatItem.chatId);
-            }
-        } catch (error) {
-            console.error(`Lỗi khi xử lý chatId ${deleteChatItem.chatId}:`, error);
-        }
-        }
+        console.log('aaaaaaaaaaa',deletedChatIds);
 
         const chatss = await Chat.aggregate([
             { $match: 

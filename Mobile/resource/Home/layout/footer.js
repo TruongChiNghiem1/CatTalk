@@ -18,7 +18,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const BasicTabBarExample = ({ navigation }) => {
   const [selectedTab, setSelectedTab] = useState('greenTab');
   const [user, setUser] = useState(null);
-
+  const [token, setToken] = useState();
+  
   useEffect(() => {
     getDataFromAsyncStorage();
   }, []);
