@@ -276,6 +276,7 @@ const ChatBox = (props) => {
                         ) : (
                             <Empty
                                 description={'No message yet received'}
+                                image={Empty.PRESENTED_IMAGE_SIMPLE}
                             />
                         )}
                     </div>

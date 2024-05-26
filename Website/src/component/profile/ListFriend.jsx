@@ -59,7 +59,7 @@ const ListFriend = () => {
                                         <Image src={item.avatar} className='avt_friend'/>
                                         <span className='info_friend'>
                                             <Link to={`/user/${item._id}`} style={{color: colorBoldSecondary}}>{item.firstName} {item.lastName}</Link>
-                                            <Typography.Text >Có 7 bạn chung</Typography.Text >
+                                            <Typography.Text >{item.mutual_friends} mutual friends</Typography.Text >
                                         </span>
 
                                         <Dropdown

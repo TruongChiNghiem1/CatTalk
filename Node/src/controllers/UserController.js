@@ -332,24 +332,38 @@ const getFriends = async (req, res) => {
             })
         }
 
-        const friendUsernames = user.friends
-        const friends = await User.find(
-            { userName: { $in: friendUsernames } },
+        const listFriend = await User.aggregate([
             {
-                userName: 1,
-                friends: 1,
-                firstName: 1,
-                lastName: 1,
-                avatar: 1,
-                background: 1,
-            }
-        )
-
-        friends.forEach((userFind) => (userFind.isFriend = 1))
-
+                $match: {
+                    userName: { $in: user.friends },
+                },
+            },
+            {
+                $addFields: {
+                    mutual_friends: {
+                        $size: {
+                            $setIntersection: ['$friends', user.friends],
+                        },
+                    },
+                    isFriend: 1,
+                },
+            },
+            {
+                $project: {
+                    userName: 1,
+                    firstName: 1,
+                    lastName: 1,
+                    avatar: 1,
+                    background: 1,
+                    friends: 1,
+                    mutual_friends: 1,
+                    isFriend: 1,
+                },
+            },
+        ]);
         return res.json({
             status: 200,
-            data: friends,
+            data: listFriend,
         })
     } catch (error) {
         console.log(error)

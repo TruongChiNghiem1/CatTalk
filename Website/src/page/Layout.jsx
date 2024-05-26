@@ -46,10 +46,10 @@ const AppLayout = (props) => {
   }
 
   useEffect(() =>{
-    if(!user){
+    if(!cookies.loginToken){
       navigate('/login')
     }
-  }, [user]) 
+  }, []) 
 
   const handleChangeTheme = async (value) =>{
     try {
