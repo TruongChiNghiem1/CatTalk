@@ -61,6 +61,7 @@ function RenderViewChatGroup(res) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [myUserName, setMyUserName] = useState(myUserNameOne);
+  const [myFullName, setMyFullName] = useState('');
   const [userNameChat, setUserNameChat] = useState('');
   const [newMessageSend, setNewMessageSend] = useState('');
   const [nameUserChat, setNameUserChat] = useState('');
@@ -108,6 +109,7 @@ function RenderViewChatGroup(res) {
       const userStorage = await AsyncStorage.getItem('user');
       const user = JSON.parse(userStorage);
       setMyUserName(user.userName);
+      setMyFullName(user.firstName + ' ' + user.lastName);
 
       setUserNameChat(dataChat.objectChat.userName);
       setAvatar(dataChat.objectChat.avatar);
@@ -263,12 +265,15 @@ function RenderViewChatGroup(res) {
                 alignItems: 'center',
                 marginHorizontal: 10,
               }}>
-              <FontAwesomeIcon
-                style={{}}
-                size={23}
-                color={colors.primary}
-                icon={faVideo}
-              />
+              <TouchableOpacity
+                  onPress={() => navigation.navigate('VoiceCallPageGroup', {myUserNameOne, chatId, myFullName})}>
+                  <FontAwesomeIcon
+                    style={{}}
+                    size={23}
+                    color={colors.primary}
+                    icon={faVideo}
+                  />
+                </TouchableOpacity>
               <Button
                 style={{
                   backgroundColor: colors.bgHeader,
