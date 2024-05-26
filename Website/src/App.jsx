@@ -45,6 +45,14 @@ function App() {
             fontSize: '14px',
         }
       },
+      components: {
+          Button: {
+            colorPrimary: '#44bccc',
+            colorBgContainer: '#e4feff',
+            colorBorderPrimary : '#2ea0af',
+            algorithm: true, // Enable algorithm
+          },
+        }
   }
 
   const darkTheme = { 
@@ -68,7 +76,7 @@ function App() {
         <Router>
        <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/signup/:step" element={<SignUp />} />
+        <Route path="/signup" element={<SignUp />} />
         <Route element={<PrivateWrapper theme={setCurrentTheme}/>}>
           <Route path="/" element={<AppLayout theme={setCurrentTheme}/>}>
             <Route index element={<Navigate to="home" />} />

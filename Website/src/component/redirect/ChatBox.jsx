@@ -68,7 +68,7 @@ const ChatBox = (props) => {
 
     useEffect(() => {
         handelGetMessages()
-    }, [chatId])
+    }, [])
 
     
     useEffect(()=> {
@@ -244,7 +244,7 @@ const ChatBox = (props) => {
                                                                 menu={{
                                                                    items: [
                                                                     {
-                                                                        label: <span >Delete message</span>,
+                                                                        label: <span onClick={() => handleDeleteMessage(item)}>Delete message</span>,
                                                                         key: '1',
                                                                     },
                                                                 ],

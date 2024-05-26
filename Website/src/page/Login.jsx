@@ -16,7 +16,7 @@ const Login = () => {
                     <Link to={'/'}><span style={{ cursor: 'pointer' }}><HomeOutlined style={{ fontSize: '200%' }} /></span></Link>
                 </Col>
                 <Col span={10} style={{ textAlign: 'end' }}>
-                     <Typography.Paragraph>Don't have an account? <Link to={'/signup/1'}><b>Sign up now</b></Link></Typography.Paragraph>
+                     <Typography.Paragraph>Don't have an account? <Link to={'/signup?step=1'}><b>Sign up now</b></Link></Typography.Paragraph>
                 </Col>
             </Row>
             <div className="flex-center">

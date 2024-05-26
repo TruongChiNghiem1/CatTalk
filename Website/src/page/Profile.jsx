@@ -246,7 +246,14 @@ const Profile = () =>{
         </div>
     
         <div className='action_user'>
-            <Button className='mr-1' onClick={() => setIsEdit(!isEdit)} icon={isEdit ? <SwapLeftOutlined /> : <EditOutlined />}>{isEdit ? 'Return' : 'Edit'}</Button>
+            <Button 
+                className='mr-1' 
+                onClick={() => setIsEdit(!isEdit)} 
+                type={isEdit ? 'dashed' : 'primary'}
+                icon={isEdit ? <SwapLeftOutlined /> : <EditOutlined />}
+                >
+                    {isEdit ? 'Return' : 'Edit'}
+                    </Button>
         </div>
         <div className='user_form_box'>
         <div className='box_user'>

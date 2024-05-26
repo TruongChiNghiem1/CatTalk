@@ -1,15 +1,18 @@
-import { Layout, List, theme, Typography, Avatar, Empty, Skeleton  } from 'antd';
+import { Layout, List, theme, Typography, Avatar, Empty, Skeleton, Button   } from 'antd';
+import { CloseOutlined} from '@ant-design/icons';
 import { getAllNotify } from '../service/notify';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useCookies } from 'react-cookie';
 import getHumanReadableDate from '../helper/getHumanReadableDate';
 import { useSpring, animated } from 'react-spring';
+import { AppContext } from '../context/AppContext';
 const {Content } = Layout;
 const Notify = () => {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+    const {setOpenNotify} = useContext(AppContext)
   const [cookies,setCookie] = useCookies(['loginToken']);
   const [data, setData ] = useState([])
   const [loading, setLoading] = useState(true)
@@ -50,11 +53,15 @@ const Notify = () => {
             minHeight: 280,
             background: colorBgContainer,
             borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px',
-             position: 'absolute', zIndex: 2, left: 0, width: '25%'
+             position: 'absolute', zIndex: 2, left: 0, width: '25%',
+             boxShadow: 'rgba(0, 0, 0, 0.15) 2.4px 2.4px 3.2px'
           }}
         >
           <animated.div style={animationProps}>
+                   <div className='flex-between'>
               <Typography.Title className='mt-0 title_feature'>Notify</Typography.Title>
+                            <Button icon={<CloseOutlined style={{color: ' #36a7b6'}}/>} type='secondary' onClick={() => setOpenNotify(false)}></Button>
+                            </div>
               <InfiniteScroll
                 dataLength={data.length ?? 0}
                 next={loadMoreData}
