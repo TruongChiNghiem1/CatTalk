@@ -33,6 +33,7 @@ const Account = (props) => {
            {forget ? (
             <>
              <Form
+                className='w-100'
                 form={form}
                 layout="horizontal"
                 labelCol={{
